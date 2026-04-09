@@ -1,0 +1,116 @@
+---
+title: "Formats d'export"
+description: "Tous les formats d'export supportes par Helix Flight Planner et quand les utiliser"
+---
+
+# Formats d'export
+
+Helix Flight Planner peut exporter un plan de mission finalize dans sept formats. Acces a tous les exports depuis le bouton **Exporter** dans la barre d'outils de la mission.
+
+## KML — Google Earth
+
+**Extension :** `.kml`
+
+Le KML (Keyhole Markup Language) est le format standard pour les donnees geographiques dans Google Earth et la plupart des outils SIG.
+
+**Contenu inclus :**
+- Polygone de l'emprise AOI
+- Axes des bandes de vol (en tant que placemarks LineString)
+- Polygones d'emprise camera (un par prise de vue)
+- Etiquettes de bandes avec cap et numero de sequence
+
+**Quand l'utiliser :**
+- Partager la mission avec le pilote pour la revue pre-vol dans Google Earth
+- Importer dans un outil SIG (QGIS, ArcGIS) pour une analyse plus approfondie
+- Soumettre aux autorites de l'espace aerien avec une zone de vol visuelle
+
+## GPX — Appareils GPS
+
+**Extension :** `.gpx`
+
+Le GPX (GPS Exchange Format) est compatible avec Garmin, DJI et la plupart des systemes de pilotage automatique acceptant des fichiers de points de cheminement.
+
+**Contenu inclus :**
+- Points de trajectoire pour chaque bande de vol (un `<trkpt>` par point de cheminement)
+- Latitude, longitude et altitude pour chaque point
+
+**Quand l'utiliser :**
+- Charger des points de cheminement directement dans un recepteur GPS ou un pilote automatique
+- Exporter vers une station de controle au sol acceptant les traces GPX
+
+## CSV — Tableur / Pipelines personnalises
+
+**Extension :** `.csv`
+
+Un tableau a valeurs separees par des virgules de tous les points de cheminement du plan de mission.
+
+**Definition des colonnes :**
+
+| Colonne | Type | Description |
+|---------|------|-------------|
+| `strip_id` | entier | Numero de sequence de la bande (a partir de 1) |
+| `waypoint_id` | entier | Indice du point dans la bande |
+| `latitude` | decimal | Latitude WGS84 en degres decimaux |
+| `longitude` | decimal | Longitude WGS84 en degres decimaux |
+| `altitude_m` | decimal | Altitude en metres AGL |
+| `heading_deg` | decimal | Cap de l'aeronef a ce point |
+
+**Quand l'utiliser :**
+- Importation dans des flux de planification de mission personnalises
+- Post-traitement avec Python ou R
+- Generation de rapports dans Excel
+
+## GeoJSON — Web / Integrations API
+
+**Extension :** `.geojson`
+
+Format JSON pour les entites geographiques, compatible avec les bibliotheques de cartographie web (Leaflet, MapLibre, Mapbox) et les API SIG modernes.
+
+**Quand l'utiliser :**
+- Integrations de cartes web
+- Soumissions a des API REST acceptant le GeoJSON
+- Stockage de la geometrie de mission dans une base de donnees PostGIS
+
+## TXT — Liste de points lisible
+
+**Extension :** `.txt`
+
+Une liste de points de cheminement en texte brut, lisible par un humain. Formatee pour une lecture facile par un pilote ou copilote.
+
+**Quand l'utiliser :**
+- Imprimer une copie papier de secours pour le pilote
+- Saisie manuelle de points dans un controleur de drone
+- Revue rapide sans outil SIG
+
+## JSON .helix — Donnees completes / Envoi FMS
+
+**Extension :** `.helix`
+
+Le format JSON natif Helix contient l'ensemble des donnees de la mission : emprise, bandes, configuration du capteur, parametres de vol, statistiques et resultats QC. C'est egalement le format utilise pour envoyer les missions vers le FMS Helix.
+
+**Quand l'utiliser :**
+- Envoi direct de missions au FMS Helix via le bouton **Envoyer au FMS**
+- Archivage de la definition complete de la mission pour reference future
+- Partage d'une mission avec un autre utilisateur de Helix Flight Planner
+
+## Rapport PDF
+
+**Extension :** `.pdf`
+
+Un rapport PDF multi-pages au format professionnel, adapte a la remise au client, a la soumission reglementaire ou a la documentation interne.
+
+**Sections du rapport :**
+
+| Section | Contenu |
+|---------|---------|
+| **Page de garde** | Nom du projet, de la mission, date, operateur, logo Helix |
+| **Parametres de mission** | Capteur, altitude, recouvrements, cap, GSD |
+| **Statistiques** | Nombre de prises, bandes, distance totale, temps de vol, surface |
+| **Capture du globe** | Vue de dessus de l'emprise avec les lignes de vol |
+| **Vignettes QC** | Carte de couverture, distribution GSD, distribution recouvrement lateral |
+| **Tableau des bandes** | Liste complete des bandes avec nombre de points et cap |
+
+**Quand l'utiliser :**
+- Remettre un briefing pre-vol au client
+- Soumettre a une autorite reglementaire pour autorisation de vol
+- Archiver la documentation de mission

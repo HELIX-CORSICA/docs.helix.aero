@@ -1,0 +1,125 @@
+---
+title: "Mission Planning"
+description: "Complete walkthrough of the Helix Flight Planner mission planning workflow"
+---
+
+# Mission Planning
+
+This guide covers the complete workflow for planning an aerial survey mission in Helix Flight Planner, from project creation through quality control verification.
+
+## Creating a Project
+
+Projects group related missions together (e.g., all surveys for a single client or geographic area).
+
+1. From the **Dashboard**, click **New Project**.
+2. Enter a descriptive name (e.g., "Carriere Martin — Juin 2026").
+3. Click **Create**. The project opens immediately.
+
+Projects sync automatically to the Helix Aero server when connected. All local changes are preserved offline and pushed on reconnect.
+
+## Defining an Area of Interest (AOI)
+
+The AOI is the polygon that bounds your survey. Helix Flight Planner supports two methods:
+
+### Drawing on the Globe
+
+1. In the mission view, click **Draw AOI** in the toolbar.
+2. Click on the globe to place each vertex of your polygon.
+3. Close the polygon by clicking the first point again, or press **Enter**.
+4. To adjust: drag any vertex to reposition it.
+
+### Importing KML or KMZ
+
+1. Click **Import AOI** in the toolbar.
+2. Select a `.kml` or `.kmz` file from your computer.
+3. The polygon is loaded onto the globe and the AOI boundary is set automatically.
+
+<Tip>
+  For large survey areas, importing a pre-defined KML from a GIS tool is faster and more precise than drawing manually.
+</Tip>
+
+## Selecting a Sensor
+
+The sensor defines the camera or LiDAR system mounted on your aircraft. It directly affects strip spacing, GSD, swath width, and point density calculations.
+
+1. Click the **Sensor** panel on the right side of the mission view.
+2. Browse the catalog: use the search bar or filter by type (Camera / LiDAR) and manufacturer.
+3. Click a sensor to select it. Flight strips recalculate immediately.
+
+To use a custom sensor, click **+ Add Custom Sensor** at the bottom of the catalog. See the [Sensor Configuration guide](/guides/sensors) for details.
+
+## Configuring Flight Parameters
+
+With an AOI and sensor selected, adjust the following parameters in the parameter panel:
+
+| Parameter | Description |
+|-----------|-------------|
+| **Altitude (m AGL)** | Flight altitude above ground level. Higher altitude = larger GSD, fewer strips. |
+| **Forward Overlap (%)** | Overlap between consecutive frames along a strip. Typically 70–85% for photogrammetry. |
+| **Sidelap (%)** | Overlap between adjacent strips. Typically 60–70% for photogrammetry. |
+| **Heading (°)** | Strip orientation in degrees. 0° = North-South strips. |
+
+All parameters update the strip layout in real time — no Calculate button needed.
+
+### Understanding GSD
+
+**Ground Sample Distance (GSD)** is the pixel size in centimeters on the ground. It determines the resolution of your orthophoto or point cloud.
+
+```
+GSD (cm) = (Altitude × Sensor Width) / (Focal Length × Image Width)
+```
+
+- Increasing altitude increases GSD (lower resolution).
+- Decreasing altitude decreases GSD (higher resolution, more strips).
+
+The GSD display updates instantly as you change altitude. You can also enter a **target GSD** to back-calculate the required altitude.
+
+## Reviewing Flight Strips on the Globe
+
+Once parameters are set, flight strips appear as colored lines on the 3D globe. The strip overlay shows:
+
+- **Strip centerlines** — the actual flight paths
+- **Camera footprints** — ground coverage of each frame
+- **LiDAR swath** — the coverage band for LiDAR sensors
+
+Use the layer toggle panel (top-left of the globe) to show or hide individual overlays.
+
+## Mission Statistics
+
+The statistics panel (bottom of the parameter pane) shows computed values for the current plan:
+
+| Statistic | Description |
+|-----------|-------------|
+| **Frame Count** | Total number of photos or LiDAR scan lines |
+| **Strip Count** | Number of parallel flight passes |
+| **Total Distance (km)** | Sum of all flight line lengths |
+| **Estimated Flight Time** | Calculated from distance and a default cruise speed |
+| **GSD (cm/px)** | Effective ground resolution at the configured altitude |
+| **Coverage Area (ha)** | Total area covered by the AOI polygon |
+
+## Quality Control Maps
+
+Before committing to a mission, verify coverage quality using the QC overlay maps. Select a map type from the **QC** panel:
+
+### Coverage Map
+Shows which cells in a grid over the AOI are covered by at least one frame. Red cells indicate gaps in coverage.
+
+### GSD Distribution Map
+Color-codes each grid cell by the effective GSD at the expected flight altitude. Useful for terrain-following missions where altitude varies.
+
+### Sidelap Distribution Map
+Shows the actual sidelap percentage achieved per grid cell, accounting for strip geometry. Identifies areas with insufficient lateral overlap.
+
+### QC Threshold Alerts
+
+The app monitors QC values against configurable thresholds. When a value falls below the minimum:
+
+- A **yellow alert banner** appears at the top of the mission view.
+- The affected cells turn red on the QC map.
+
+Common alerts:
+- **Coverage gap detected** — one or more cells have zero frames
+- **GSD exceeds threshold** — altitude too high for target resolution
+- **Sidelap below minimum** — strip spacing too wide
+
+Adjust flight parameters until all alerts are resolved before exporting.

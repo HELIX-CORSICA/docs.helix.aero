@@ -5,3 +5,7 @@
 # Draft content
 drafts/
 *.draft.mdx
+
+# Internal engineering notes (not published)
+structure_geoserv.md
+ugcs-reverse-engineering-analysis.md

@@ -1,0 +1,177 @@
+---
+title: "Export Formats"
+description: "All export formats supported by Helix Flight Planner and when to use each"
+---
+
+# Export Formats
+
+Helix Flight Planner can export a completed mission plan in seven formats. Access all exports from the **Export** button in the mission toolbar.
+
+## KML — Google Earth
+
+**File extension:** `.kml`
+
+KML (Keyhole Markup Language) is the standard format for geographic data in Google Earth and most GIS tools.
+
+**What's included:**
+- AOI polygon boundary
+- Flight strip centerlines (as LineString placemarks)
+- Camera footprint polygons (one per frame)
+- Strip labels with heading and sequence number
+
+**When to use:**
+- Sharing the mission with the pilot for pre-flight review in Google Earth
+- Importing into a GIS tool (QGIS, ArcGIS) for further analysis
+- Submitting to airspace authorities with a visual flight area
+
+```xml
+<!-- Example KML structure -->
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <Folder><name>AOI</name> ... </Folder>
+    <Folder><name>Flight Strips</name> ... </Folder>
+    <Folder><name>Footprints</name> ... </Folder>
+  </Document>
+</kml>
+```
+
+## GPX — GPS Devices
+
+**File extension:** `.gpx`
+
+GPX (GPS Exchange Format) is compatible with Garmin, DJI, and most autopilot systems that accept waypoint files.
+
+**What's included:**
+- Track points for each flight strip (one `<trkpt>` per waypoint)
+- Latitude, longitude, and altitude for each point
+
+**When to use:**
+- Loading waypoints directly into a GPS receiver or autopilot
+- Exporting to a ground control station that accepts GPX tracks
+
+<Note>
+  GPX uses lat/lon attribute order on `<trkpt>` elements per the GPX specification. Altitude is in meters above WGS84 ellipsoid.
+</Note>
+
+## CSV — Spreadsheet / Custom Pipelines
+
+**File extension:** `.csv`
+
+A comma-separated table of all waypoints in the mission plan.
+
+**Column definitions:**
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `strip_id` | integer | Strip sequence number (1-based) |
+| `waypoint_id` | integer | Waypoint index within the strip |
+| `latitude` | decimal | WGS84 latitude in decimal degrees |
+| `longitude` | decimal | WGS84 longitude in decimal degrees |
+| `altitude_m` | decimal | Altitude in meters AGL |
+| `heading_deg` | decimal | Aircraft heading at this waypoint |
+
+**When to use:**
+- Importing into custom mission planning workflows
+- Post-processing with Python or R
+- Generating reports in Excel
+
+## GeoJSON — Web / API Integrations
+
+**File extension:** `.geojson`
+
+A JSON-based format for geographic features, compatible with web mapping libraries (Leaflet, MapLibre, Mapbox) and modern GIS APIs.
+
+**Structure:**
+```json
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": { "type": "Polygon", ... },
+      "properties": { "type": "aoi" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "LineString", ... },
+      "properties": { "type": "strip", "strip_id": 1, "heading": 45.0 }
+    }
+  ]
+}
+```
+
+**When to use:**
+- Web map integrations
+- REST API submissions that accept GeoJSON
+- Storing mission geometry in a PostGIS database
+
+## TXT — Pilot-Readable Waypoint List
+
+**File extension:** `.txt`
+
+A plain-text, human-readable list of all waypoints. Formatted for easy reading by a pilot or copilot during flight.
+
+**Format:**
+```
+HELIX FLIGHT PLAN — Project: Survey Zone A
+Mission: M001 — Sensor: Sony A7R IV
+Total strips: 12 — Total waypoints: 84
+
+STRIP 01 (HDG 045°)
+  WP 001  lat: 48.856614  lon: 2.352222  alt: 120 m
+  WP 002  lat: 48.857032  lon: 2.353910  alt: 120 m
+  ...
+```
+
+**When to use:**
+- Printing a paper backup for the pilot
+- Reading waypoints into a drone controller manually
+- Quick review without a GIS tool
+
+## .helix JSON — Full Mission Data / FMS Push
+
+**File extension:** `.helix`
+
+The native Helix JSON format contains the complete mission dataset: AOI, strips, sensor configuration, flight parameters, statistics, and QC results. It is also the format used to push missions to the Helix FMS.
+
+**Contents:**
+```json
+{
+  "version": "1.0",
+  "project": { "id": "...", "name": "..." },
+  "mission": { "id": "...", "name": "..." },
+  "sensor": { "type": "camera", "name": "Sony A7R IV", ... },
+  "parameters": { "altitude_m": 120, "overlap": 80, "sidelap": 70, "heading_deg": 45 },
+  "statistics": { "frame_count": 840, "total_distance_km": 12.4, "flight_time_min": 22 },
+  "aoi": { "type": "Polygon", "coordinates": [...] },
+  "strips": [ { "id": 1, "waypoints": [...] } ],
+  "qc": { "coverage_pct": 99.8, "alerts": [] }
+}
+```
+
+**When to use:**
+- Pushing missions directly to Helix FMS via the **Send to FMS** button
+- Archiving the complete mission definition for future reference
+- Sharing a mission with another Helix Flight Planner user
+
+## PDF Mission Report
+
+**File extension:** `.pdf`
+
+A professionally formatted multi-page PDF report suitable for client delivery, regulatory submission, or internal documentation.
+
+**Report sections:**
+
+| Section | Contents |
+|---------|----------|
+| **Cover page** | Project name, mission name, date, operator, Helix logo |
+| **Mission parameters** | Sensor, altitude, overlap, sidelap, heading, GSD |
+| **Statistics** | Frame count, strip count, total distance, flight time, coverage area |
+| **Globe screenshot** | Top-down view of the AOI with flight strips overlaid |
+| **QC thumbnails** | Coverage map, GSD distribution map, sidelap distribution map |
+| **Strip table** | Full list of strips with waypoint count and heading |
+
+**When to use:**
+- Delivering a pre-flight brief to the client
+- Submitting to a regulatory body for flight authorization
+- Archiving mission documentation

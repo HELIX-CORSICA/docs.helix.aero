@@ -1,0 +1,269 @@
+---
+title: "Missions"
+description: "Create, retrieve, update, and delete missions within a project"
+---
+
+# Missions
+
+Missions are flight plans within a project. Each mission stores the AOI polygon, sensor selection, flight parameters, computed strips, statistics, and QC results.
+
+## GET /projects/{projectId}/missions
+
+Retrieve all missions for a project.
+
+```http
+GET https://api.helix.aero/api/v1/projects/{projectId}/missions
+Authorization: Bearer <token>
+```
+
+### Path Parameters
+
+<ParamField path="projectId" type="string" required>
+  Project UUID.
+</ParamField>
+
+### Response `200 OK`
+
+<ResponseField name="data" type="array">
+  Array of mission objects.
+</ResponseField>
+
+<ResponseField name="data[].id" type="string">
+  Mission UUID.
+</ResponseField>
+
+<ResponseField name="data[].project_id" type="string">
+  Parent project UUID.
+</ResponseField>
+
+<ResponseField name="data[].name" type="string">
+  Mission name.
+</ResponseField>
+
+<ResponseField name="data[].flight_plan" type="object | null">
+  Serialized flight plan data (AOI, strips, parameters, statistics). `null` if not yet computed.
+</ResponseField>
+
+<ResponseField name="data[].created_at" type="string">
+  ISO 8601 creation timestamp.
+</ResponseField>
+
+<ResponseField name="data[].updated_at" type="string">
+  ISO 8601 last update timestamp.
+</ResponseField>
+
+```json
+{
+  "data": [
+    {
+      "id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
+      "project_id": "550e8400-e29b-41d4-a716-446655440000",
+      "name": "Zone Nord — 120m",
+      "flight_plan": {
+        "sensor": { "type": "camera", "name": "Sony A7R IV" },
+        "parameters": {
+          "altitude_m": 120,
+          "overlap": 80,
+          "sidelap": 70,
+          "heading_deg": 45
+        },
+        "statistics": {
+          "frame_count": 840,
+          "strip_count": 12,
+          "total_distance_km": 12.4,
+          "flight_time_min": 22,
+          "gsd_cm": 2.1,
+          "coverage_ha": 48.5
+        },
+        "aoi": {
+          "type": "Polygon",
+          "coordinates": [[[2.35, 48.85], [2.36, 48.85], [2.36, 48.86], [2.35, 48.86], [2.35, 48.85]]]
+        }
+      },
+      "created_at": "2026-04-01T11:00:00Z",
+      "updated_at": "2026-04-02T09:00:00Z"
+    }
+  ]
+}
+```
+
+### Errors
+
+| Status | Message |
+|--------|---------|
+| `401` | Missing or expired JWT |
+| `403` | Project does not belong to authenticated user |
+| `404` | Project not found |
+
+---
+
+## POST /projects/{projectId}/missions
+
+Create a new mission within a project.
+
+```http
+POST https://api.helix.aero/api/v1/projects/{projectId}/missions
+Authorization: Bearer <token>
+Content-Type: application/json
+```
+
+### Path Parameters
+
+<ParamField path="projectId" type="string" required>
+  Parent project UUID.
+</ParamField>
+
+### Request Body
+
+<ParamField body="id" type="string">
+  Client-generated UUID for offline-first creation.
+</ParamField>
+
+<ParamField body="name" type="string" required>
+  Mission name (1–255 characters).
+</ParamField>
+
+<ParamField body="flight_plan" type="object">
+  Serialized flight plan. Include the full `.helix` JSON payload when saving a computed mission.
+</ParamField>
+
+<ParamField body="created_at" type="string">
+  Client-side creation timestamp for sync.
+</ParamField>
+
+```json
+{
+  "id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
+  "name": "Zone Nord — 120m",
+  "flight_plan": { ... }
+}
+```
+
+### Response `201 Created`
+
+Returns the created mission object (same schema as list response items).
+
+### Errors
+
+| Status | Message |
+|--------|---------|
+| `401` | Missing or expired JWT |
+| `403` | Project does not belong to authenticated user |
+| `404` | Project not found |
+| `422` | Validation errors |
+
+---
+
+## GET /projects/{projectId}/missions/{id}
+
+Retrieve a single mission.
+
+```http
+GET https://api.helix.aero/api/v1/projects/{projectId}/missions/{id}
+Authorization: Bearer <token>
+```
+
+### Response `200 OK`
+
+Returns the mission object.
+
+### Errors
+
+| Status | Message |
+|--------|---------|
+| `401` | Missing or expired JWT |
+| `403` | Not authorized |
+| `404` | Mission or project not found |
+
+---
+
+## PUT /projects/{projectId}/missions/{id}
+
+Update an existing mission (name, flight plan data, or both).
+
+```http
+PUT https://api.helix.aero/api/v1/projects/{projectId}/missions/{id}
+Authorization: Bearer <token>
+Content-Type: application/json
+```
+
+### Request Body
+
+<ParamField body="name" type="string">
+  New mission name.
+</ParamField>
+
+<ParamField body="flight_plan" type="object">
+  Updated flight plan payload. Replaces the existing flight_plan entirely.
+</ParamField>
+
+<ParamField body="updated_at" type="string">
+  Client-side timestamp for last-write-wins conflict resolution.
+</ParamField>
+
+### Response `200 OK`
+
+Returns the updated mission object.
+
+### Errors
+
+| Status | Message |
+|--------|---------|
+| `401` | Missing or expired JWT |
+| `403` | Not authorized |
+| `404` | Mission or project not found |
+| `422` | Validation errors |
+
+---
+
+## DELETE /projects/{projectId}/missions/{id}
+
+Soft-delete a mission.
+
+```http
+DELETE https://api.helix.aero/api/v1/projects/{projectId}/missions/{id}
+Authorization: Bearer <token>
+```
+
+### Response `204 No Content`
+
+### Errors
+
+| Status | Message |
+|--------|---------|
+| `401` | Missing or expired JWT |
+| `403` | Not authorized |
+| `404` | Mission or project not found |
+
+---
+
+## POST /projects/{projectId}/missions/{missionId}/send-to-fms
+
+Push a mission as a `.helix` JSON payload to the Helix FMS (Flight Management System).
+
+```http
+POST https://api.helix.aero/api/v1/projects/{projectId}/missions/{missionId}/send-to-fms
+Authorization: Bearer <token>
+```
+
+### Response `200 OK`
+
+```json
+{
+  "data": {
+    "status": "accepted",
+    "message": "Mission received by FMS"
+  }
+}
+```
+
+<Note>
+  The FMS endpoint is currently in mock mode and always returns `accepted`. Full FMS integration is planned for a future release.
+</Note>
+
+### Errors
+
+| Status | Message |
+|--------|---------|
+| `401` | Missing or expired JWT |
+| `404` | Mission or project not found |

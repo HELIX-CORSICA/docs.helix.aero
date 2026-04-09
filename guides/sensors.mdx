@@ -1,0 +1,125 @@
+---
+title: "Sensor Configuration"
+description: "Managing cameras and LiDAR sensors in Helix Flight Planner"
+---
+
+# Sensor Configuration
+
+Helix Flight Planner ships with a comprehensive sensor catalog and supports custom sensor definitions. The sensor you select directly determines GSD, strip spacing, swath width, and point density for your mission.
+
+## Standard Sensor Catalog
+
+The app includes over **80 cameras** and **14 LiDAR sensors** from leading manufacturers, synchronized from the Helix Aero server. Sensors update automatically when you connect to the internet.
+
+**Supported camera manufacturers include:** Sony, Phase One, Hasselblad, DJI, MicaSense, Parrot, Leica, Trimble, and more.
+
+**Supported LiDAR manufacturers include:** Velodyne, Ouster, Livox, Riegl, Leica, YellowScan, and more.
+
+Access the catalog from the **Sensor** panel in the mission planning view. Use the search bar or filter by:
+- **Type:** Camera or LiDAR
+- **Manufacturer**
+
+## Camera Sensor Specifications
+
+When you select a camera sensor, Helix Flight Planner uses the following specifications to calculate GSD and strip spacing:
+
+| Specification | Description | Example |
+|--------------|-------------|---------|
+| **Focal Length (mm)** | Lens focal length | 35 mm |
+| **Sensor Width (mm)** | Physical width of the image sensor | 35.9 mm |
+| **Sensor Height (mm)** | Physical height of the image sensor | 24 mm |
+| **Pixel Size (µm)** | Physical size of each pixel | 4.51 µm |
+| **Image Width (px)** | Resolution in pixels along sensor width | 7952 px |
+| **Image Height (px)** | Resolution in pixels along sensor height | 5304 px |
+
+### GSD Formula
+
+```
+GSD_width (cm) = (Altitude_m × Sensor_Width_mm) / (Focal_Length_mm × Image_Width_px) × 100
+GSD_height (cm) = (Altitude_m × Sensor_Height_mm) / (Focal_Length_mm × Image_Height_px) × 100
+```
+
+GSD updates in real time as you change altitude or sensor selection.
+
+### Strip Spacing from Overlap
+
+```
+Strip_spacing (m) = Footprint_width_m × (1 - Sidelap / 100)
+Frame_interval (m) = Footprint_height_m × (1 - Forward_overlap / 100)
+```
+
+## LiDAR Sensor Specifications
+
+LiDAR sensors are defined by beam geometry and data rate:
+
+| Specification | Description | Example |
+|--------------|-------------|---------|
+| **FOV (°)** | Full field of view angle across-track | 120° |
+| **PRR (kHz)** | Pulse repetition rate (pulses per second) | 600 kHz |
+| **Scan Rate (Hz)** | Rotational scan speed | 100 Hz |
+| **Beam Divergence (mrad)** | Cone angle of each laser beam | 0.5 mrad |
+
+### LiDAR Swath Width
+
+```
+Swath_width (m) = 2 × Altitude_m × tan(FOV_deg / 2 × π / 180)
+```
+
+### LiDAR Point Density
+
+```
+Points_per_sqm = (PRR × Scan_Rate) / (Ground_speed_ms × Swath_width_m)
+```
+
+Point density updates as you adjust altitude (which changes swath width).
+
+## How Sensor Specs Affect Mission Planning
+
+The sensor selection has a cascade effect on the entire mission:
+
+```
+Sensor specs + Altitude
+    → GSD (cm/px for cameras, density pts/m² for LiDAR)
+    → Footprint / swath width
+    → Strip spacing (sidelap-controlled)
+    → Number of strips
+    → Frame count / total distance
+    → Estimated flight time
+```
+
+Changing any sensor parameter or altitude immediately recalculates all downstream values with no manual action required.
+
+## Custom Sensors
+
+If your sensor is not in the standard catalog, you can create a custom sensor.
+
+### Creating a Custom Camera
+
+1. In the **Sensor** panel, click **+ Add Custom Sensor**.
+2. Select **Camera** as the sensor type.
+3. Fill in the required fields:
+   - Sensor name (e.g., "Hasselblad L2D-20c Custom")
+   - Focal length (mm)
+   - Sensor width and height (mm)
+   - Pixel size (µm) — or enter image resolution in pixels and the app calculates pixel size
+4. Click **Save**. The custom sensor is available immediately and syncs to your account.
+
+### Creating a Custom LiDAR
+
+1. In the **Sensor** panel, click **+ Add Custom Sensor**.
+2. Select **LiDAR** as the sensor type.
+3. Fill in the required fields:
+   - Sensor name
+   - FOV (degrees, full angle)
+   - Pulse repetition rate (kHz)
+   - Scan rate (Hz)
+   - Beam divergence (mrad)
+4. Click **Save**.
+
+### Editing and Deleting Custom Sensors
+
+Custom sensors can be edited or deleted from the **Sensor** panel. Standard catalog sensors (synced from the server) cannot be modified — if you need a variant, create a custom sensor based on the standard specs.
+
+<Warning>
+  Deleting a custom sensor does not affect missions already created with it. Existing missions retain the sensor specs captured at creation time.
+</Warning>

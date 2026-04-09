@@ -1,0 +1,138 @@
+---
+title: "Vue d'ensemble de l'API"
+description: "API REST Helix Aero — URL de base, authentification, limitation de debit et format des erreurs"
+---
+
+# Vue d'ensemble de l'API
+
+L'API Helix Aero est une API REST JSON utilisee par Helix Flight Planner (application desktop) et les integrations tierces. Tous les endpoints sont sous une URL de base versionnee.
+
+## URL de base
+
+```
+https://api.helix.aero/api/v1
+```
+
+Un endpoint de sante est disponible a la racine :
+
+```bash
+GET https://api.helix.aero/api/v1
+```
+
+```json
+{
+  "data": {
+    "status": "ok",
+    "version": "v1"
+  }
+}
+```
+
+## Authentification
+
+L'API utilise des **tokens JWT Bearer**. Incluez le token dans l'en-tete `Authorization` de chaque requete :
+
+```http
+Authorization: Bearer <votre_token_jwt>
+```
+
+Les tokens s'obtiennent via les [endpoints d'authentification](/api-reference/authentication) (`POST /auth/login` ou `POST /auth/register`).
+
+**Duree de vie du token :** 7 jours (604 800 secondes). Apres expiration, authentifiez-vous a nouveau pour obtenir un nouveau token.
+
+## Limitation de debit
+
+| Groupe d'endpoints | Limite |
+|--------------------|--------|
+| Toutes les routes API | 60 requetes / minute |
+| `POST /auth/login`, `POST /auth/register` | 5 requetes / minute |
+| `POST /license/activate`, `POST /license/verify` | 30 requetes / minute |
+
+En cas de depassement, l'API retourne HTTP `429 Too Many Requests` :
+
+```json
+{
+  "message": "Too Many Attempts.",
+  "retry_after": 30
+}
+```
+
+## Format des requetes
+
+Tous les corps de requete doivent etre en JSON avec l'en-tete `Content-Type: application/json`.
+
+```http
+Content-Type: application/json
+Accept: application/json
+```
+
+## Format des reponses
+
+Toutes les reponses reussies encapsulent les donnees dans une cle `data` :
+
+```json
+{
+  "data": { ... }
+}
+```
+
+Les reponses de collection incluent des metadonnees de pagination :
+
+```json
+{
+  "data": [ ... ],
+  "meta": {
+    "current_page": 1,
+    "last_page": 3,
+    "per_page": 20,
+    "total": 58
+  }
+}
+```
+
+## Format des erreurs
+
+Les erreurs retournent un statut HTTP non-2xx et un corps JSON :
+
+```json
+{
+  "message": "Description lisible de l'erreur",
+  "errors": {
+    "nom_champ": ["Message d'erreur de validation"]
+  }
+}
+```
+
+L'objet `errors` est present uniquement pour les erreurs de validation (HTTP `422`).
+
+### Codes HTTP courants
+
+| Code | Signification |
+|------|---------------|
+| `200` | OK — requete reussie |
+| `201` | Created — ressource creee |
+| `204` | No Content — ressource supprimee |
+| `401` | Unauthorized — JWT manquant ou invalide |
+| `403` | Forbidden — authentifie mais non autorise |
+| `404` | Not Found — ressource inexistante |
+| `422` | Unprocessable Entity — validation echouee |
+| `429` | Too Many Requests — limite de debit depassee |
+| `500` | Internal Server Error — contacter le support |
+
+## Reference des endpoints
+
+La documentation detaillee de chaque endpoint est disponible en anglais :
+
+- [Authentification](/api-reference/authentication) — register, login, me, logout
+- [Capteurs](/api-reference/sensors) — catalogue standard et capteurs personnalises
+- [Projets](/api-reference/projects) — CRUD projets et synchronisation bidirectionnelle
+- [Missions](/api-reference/missions) — CRUD missions et envoi FMS
+- [Licences](/api-reference/licenses) — activation et verification de licence
+
+<Note>
+  La documentation technique des endpoints (schemas JSON, exemples de requetes et reponses) est fournie en anglais car les termes techniques d'API (noms de champs, codes d'erreur, exemples de code) sont universellement utilises en anglais dans les integrations.
+</Note>
+
+## Versionnage
+
+La version actuelle de l'API est `v1`. Les changements incompatibles seront introduits dans une nouvelle version (`/api/v2`) avec un avis de deprecation pour `v1`.

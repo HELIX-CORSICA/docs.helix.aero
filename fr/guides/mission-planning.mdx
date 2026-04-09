@@ -1,0 +1,125 @@
+---
+title: "Planification de mission"
+description: "Guide complet du flux de planification de mission avec Helix Flight Planner"
+---
+
+# Planification de mission
+
+Ce guide couvre l'integralite du flux de planification d'une mission de releve aerien dans Helix Flight Planner, de la creation du projet jusqu'a la verification du controle qualite.
+
+## Creer un projet
+
+Les projets regroupent les missions associees (ex. : tous les releves pour un client ou une zone geographique donnee).
+
+1. Depuis le **Tableau de bord**, cliquez sur **Nouveau projet**.
+2. Saisissez un nom descriptif (ex. : "Carriere Martin — Juin 2026").
+3. Cliquez sur **Creer**. Le projet s'ouvre immediatement.
+
+Les projets se synchronisent automatiquement avec le serveur Helix Aero lorsqu'une connexion est disponible. Toutes les modifications locales sont conservees hors ligne et envoyees a la reconnexion.
+
+## Definir l'emprise (AOI)
+
+L'emprise est le polygone qui delimite votre zone de releve. Helix Flight Planner propose deux methodes :
+
+### Dessin sur le globe
+
+1. Dans la vue mission, cliquez sur **Dessiner l'emprise** dans la barre d'outils.
+2. Cliquez sur le globe pour placer chaque sommet du polygone.
+3. Fermez le polygone en cliquant sur le premier point ou en appuyant sur **Entree**.
+4. Pour ajuster : faites glisser un sommet pour le repositionner.
+
+### Import KML ou KMZ
+
+1. Cliquez sur **Importer l'emprise** dans la barre d'outils.
+2. Selectionnez un fichier `.kml` ou `.kmz` depuis votre ordinateur.
+3. Le polygone est charge sur le globe et l'emprise est definie automatiquement.
+
+<Tip>
+  Pour les grandes zones de releve, l'import d'un KML pre-defini depuis un outil SIG est plus rapide et plus precis qu'un dessin manuel.
+</Tip>
+
+## Selectionner un capteur
+
+Le capteur definit la camera ou le systeme LiDAR monte sur l'aeronef. Il influe directement sur l'espacement des bandes, le GSD, la largeur de fauchee et la densite de points.
+
+1. Cliquez sur le panneau **Capteur** a droite de la vue mission.
+2. Parcourez le catalogue : utilisez la barre de recherche ou filtrez par type (Camera / LiDAR) et fabricant.
+3. Cliquez sur un capteur pour le selectionner. Le calepinage se recalcule immediatement.
+
+Pour utiliser un capteur personnalise, cliquez sur **+ Ajouter un capteur personnalise** en bas du catalogue. Consultez le [guide de configuration des capteurs](/fr/guides/sensors) pour les details.
+
+## Configurer les parametres de vol
+
+Une fois l'emprise et le capteur definis, ajustez les parametres suivants dans le panneau de configuration :
+
+| Parametre | Description |
+|-----------|-------------|
+| **Altitude (m sol)** | Altitude de vol au-dessus du sol. Une altitude plus elevee = GSD plus grand, moins de bandes. |
+| **Recouvrement longitudinal (%)** | Recouvrement entre les prises de vue consecutives le long d'une bande. Generalement 70–85 % en photogrammetrie. |
+| **Recouvrement lateral (%)** | Recouvrement entre les bandes adjacentes. Generalement 60–70 % en photogrammetrie. |
+| **Cap (°)** | Orientation des bandes en degres. 0° = bandes Nord-Sud. |
+
+Tous les parametres mettent a jour le calepinage en temps reel — aucun bouton de calcul n'est necessaire.
+
+### Comprendre le GSD
+
+Le **GSD (Ground Sample Distance)** est la taille d'un pixel en centimetres au sol. Il determine la resolution de l'orthophoto ou du nuage de points.
+
+```
+GSD (cm) = (Altitude × Largeur capteur) / (Focale × Largeur image)
+```
+
+- Augmenter l'altitude augmente le GSD (resolution plus faible).
+- Diminuer l'altitude reduit le GSD (resolution plus elevee, plus de bandes).
+
+L'affichage du GSD se met a jour instantanement lorsque vous modifiez l'altitude. Vous pouvez egalement saisir un **GSD cible** pour calculer l'altitude requise en retour.
+
+## Visualiser les lignes de vol sur le globe
+
+Une fois les parametres definis, les lignes de vol apparaissent sous forme de lignes colorees sur le globe 3D. L'affichage des bandes comprend :
+
+- **Axes de bandes** — les trajets de vol reels
+- **Emprises camera** — la couverture au sol de chaque prise de vue
+- **Fauchee LiDAR** — la bande de couverture pour les capteurs LiDAR
+
+Utilisez le panneau de couches (haut gauche du globe) pour afficher ou masquer les couches individuelles.
+
+## Statistiques de mission
+
+Le panneau de statistiques (bas du panneau de configuration) affiche les valeurs calculees pour le plan actuel :
+
+| Statistique | Description |
+|-------------|-------------|
+| **Nombre de prises de vue** | Nombre total de photos ou de lignes de balayage LiDAR |
+| **Nombre de bandes** | Nombre de passages de vol paralleles |
+| **Distance totale (km)** | Somme de toutes les longueurs de bandes |
+| **Temps de vol estime** | Calcule a partir de la distance et d'une vitesse de croisiere par defaut |
+| **GSD (cm/px)** | Resolution effective au sol a l'altitude configuree |
+| **Surface couverte (ha)** | Surface totale couverte par le polygone d'emprise |
+
+## Cartes de controle qualite
+
+Avant de valider une mission, verifiez la qualite de la couverture via les cartes QC. Selectionnez un type de carte dans le panneau **QC** :
+
+### Carte de couverture
+Montre quelles cellules d'une grille sur l'emprise sont couvertes par au moins une prise de vue. Les cellules rouges indiquent des lacunes de couverture.
+
+### Carte de distribution du GSD
+Code couleur chaque cellule de la grille selon le GSD effectif a l'altitude de vol prevue. Utile pour les missions de suivi de terrain avec altitude variable.
+
+### Carte de recouvrement lateral
+Montre le pourcentage de recouvrement lateral effectif atteint par cellule, compte tenu de la geometrie du calepinage. Identifie les zones avec un recouvrement insuffisant.
+
+### Alertes de seuil QC
+
+L'application surveille les valeurs QC par rapport aux seuils configurables. Lorsqu'une valeur passe en dessous du minimum :
+
+- Une **banniere d'alerte jaune** apparait en haut de la vue mission.
+- Les cellules concernees passent en rouge sur la carte QC.
+
+Alertes courantes :
+- **Lacune de couverture detectee** — une ou plusieurs cellules n'ont aucune prise de vue
+- **GSD depasse le seuil** — altitude trop elevee pour la resolution cible
+- **Recouvrement lateral insuffisant** — espacement des bandes trop important
+
+Ajustez les parametres de vol jusqu'a ce que toutes les alertes soient resolues avant d'exporter.

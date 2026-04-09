@@ -1,0 +1,94 @@
+---
+title: "Demarrage rapide"
+description: "Installez Helix Flight Planner et creez votre premiere mission en moins de 10 minutes"
+---
+
+# Demarrage rapide
+
+Suivez ces etapes pour installer Helix Flight Planner et creer votre premiere mission de releve aerien.
+
+## Etape 1 : Telecharger l'application
+
+Rendez-vous sur [app.helix.aero/download](https://app.helix.aero/download) et selectionnez votre plateforme.
+
+<Tabs>
+  <Tab title="Windows">
+    Telechargez l'installateur **Helix-FlightPlanner-Setup-x64.exe** pour Windows 10 ou superieur (64 bits).
+
+    ![Page de telechargement — Windows selectionne](/images/quickstart-download-windows.png)
+  </Tab>
+  <Tab title="macOS">
+    Telechargez l'image disque **Helix-FlightPlanner-macOS.dmg** pour macOS 12 Monterey ou superieur.
+
+    ![Page de telechargement — macOS selectionne](/images/quickstart-download-macos.png)
+  </Tab>
+</Tabs>
+
+## Etape 2 : Installer et lancer
+
+<Tabs>
+  <Tab title="Windows">
+    1. Executez l'installateur `.exe` telecharge.
+    2. Suivez l'assistant d'installation (chemin par defaut : `C:\Program Files\Helix Flight Planner`).
+    3. Lancez **Helix Flight Planner** depuis le menu Demarrer ou le raccourci bureau.
+  </Tab>
+  <Tab title="macOS">
+    1. Ouvrez le fichier `.dmg` telecharge.
+    2. Glissez **Helix Flight Planner** dans votre dossier Applications.
+    3. Lancez l'application depuis Applications ou Spotlight.
+
+    <Note>
+      Au premier lancement, macOS peut afficher une invite de securite. L'application est notariee par Apple — cliquez sur **Ouvrir** pour continuer.
+    </Note>
+  </Tab>
+</Tabs>
+
+## Etape 3 : Se connecter
+
+Sur l'ecran de connexion, saisissez vos identifiants Helix Aero.
+
+![Ecran de connexion](/images/quickstart-login.png)
+
+Si vous n'avez pas encore de compte, rendez-vous sur [app.helix.aero](https://app.helix.aero) pour vous inscrire ou demander une licence d'essai.
+
+## Etape 4 : Activation de la licence
+
+L'activation de la licence s'effectue automatiquement lors de votre premiere connexion. L'application envoie l'empreinte de votre machine au serveur de licences Helix Aero.
+
+- **Succes :** Un message de confirmation apparait brievement et vous etes redirige vers le tableau de bord.
+- **Limite de machines atteinte :** Si votre compte a atteint le nombre maximum de machines enregistrees, un message apparait avec un lien pour gerer vos machines sur [app.helix.aero](https://app.helix.aero).
+
+<Note>
+  Votre licence autorise une utilisation hors ligne jusqu'a 7 jours. Apres 7 jours sans connexion reseau, l'application passe en mode lecture seule jusqu'a ce qu'elle puisse se re-verifier en ligne.
+</Note>
+
+## Etape 5 : Creer votre premier projet
+
+1. Depuis le **Tableau de bord**, cliquez sur **Nouveau projet**.
+2. Saisissez un nom de projet (ex. : "Zone de releve A — Avril 2026").
+3. Cliquez sur **Creer**. Le projet s'ouvre dans la vue de planification de mission.
+
+![Tableau de bord avec le bouton nouveau projet](/images/quickstart-dashboard.png)
+
+## Etape 6 : Creer une mission
+
+1. Dans votre projet, cliquez sur **Nouvelle mission**.
+2. Sur le globe 3D, dessinez votre **Emprise (AOI)** :
+   - Cliquez pour placer chaque sommet du polygone.
+   - Fermez le polygone en cliquant sur le premier point ou en appuyant sur Entree.
+3. Selectionnez un **capteur** dans le panneau catalogue a droite.
+4. Ajustez les parametres de vol : altitude, recouvrement longitudinal, recouvrement lateral, cap.
+5. L'application calcule immediatement les lignes de vol et les affiche sur le globe.
+
+![Vue de planification de mission avec emprise et lignes de vol](/images/quickstart-mission.png)
+
+## Etapes suivantes
+
+<CardGroup cols={2}>
+  <Card title="Guide de planification de mission" icon="map" href="/fr/guides/mission-planning">
+    Decouvrez l'import d'emprise avance, les cartes QC et les statistiques de mission.
+  </Card>
+  <Card title="Formats d'export" icon="download" href="/fr/guides/export-formats">
+    Exportez votre plan en KML, GPX, PDF et plus encore.
+  </Card>
+</CardGroup>

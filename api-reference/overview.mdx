@@ -1,0 +1,128 @@
+---
+title: "API Overview"
+description: "Helix Aero REST API — base URL, authentication, rate limiting, and error format"
+---
+
+# API Overview
+
+The Helix Aero API is a RESTful JSON API used by Helix Flight Planner (desktop app) and third-party integrations. All endpoints are under a versioned base URL.
+
+## Base URL
+
+```
+https://api.helix.aero/api/v1
+```
+
+A health check endpoint is available at the root:
+
+```bash
+GET https://api.helix.aero/api/v1
+```
+
+```json
+{
+  "data": {
+    "status": "ok",
+    "version": "v1"
+  }
+}
+```
+
+## Authentication
+
+The API uses **JWT Bearer tokens**. Include the token in the `Authorization` header of every request:
+
+```http
+Authorization: Bearer <your_jwt_token>
+```
+
+Tokens are obtained via the [authentication endpoints](/api-reference/authentication) (`POST /auth/login` or `POST /auth/register`).
+
+**Token lifetime:** 7 days (604,800 seconds). After expiry, re-authenticate to obtain a new token.
+
+## Rate Limiting
+
+| Endpoint Group | Limit |
+|----------------|-------|
+| All API routes | 60 requests / minute |
+| `POST /auth/login`, `POST /auth/register` | 5 requests / minute |
+| `POST /license/activate`, `POST /license/verify` | 30 requests / minute |
+
+When a rate limit is exceeded, the API returns HTTP `429 Too Many Requests`:
+
+```json
+{
+  "message": "Too Many Attempts.",
+  "retry_after": 30
+}
+```
+
+## Request Format
+
+All request bodies must be JSON with the `Content-Type: application/json` header.
+
+```http
+Content-Type: application/json
+Accept: application/json
+```
+
+## Response Format
+
+All successful responses wrap the payload in a `data` key:
+
+```json
+{
+  "data": { ... }
+}
+```
+
+Collection responses include pagination metadata:
+
+```json
+{
+  "data": [ ... ],
+  "meta": {
+    "current_page": 1,
+    "last_page": 3,
+    "per_page": 20,
+    "total": 58
+  }
+}
+```
+
+## Error Format
+
+Errors return a non-2xx HTTP status and a JSON body:
+
+```json
+{
+  "message": "Human-readable error description",
+  "errors": {
+    "field_name": ["Validation error message"]
+  }
+}
+```
+
+The `errors` object is only present for validation errors (HTTP `422`).
+
+### Common HTTP Status Codes
+
+| Code | Meaning |
+|------|---------|
+| `200` | OK — request succeeded |
+| `201` | Created — resource created |
+| `204` | No Content — resource deleted |
+| `401` | Unauthorized — missing or invalid JWT |
+| `403` | Forbidden — authenticated but not authorized |
+| `404` | Not Found — resource does not exist |
+| `422` | Unprocessable Entity — validation failed |
+| `429` | Too Many Requests — rate limit exceeded |
+| `500` | Internal Server Error — contact support |
+
+## CORS
+
+The API allows requests from `https://app.helix.aero` and `https://admin.helix.aero`. For server-to-server integrations, CORS headers are not required.
+
+## Versioning
+
+The current API version is `v1`. Breaking changes will be introduced in a new version (`/api/v2`) with a deprecation notice for `v1`.

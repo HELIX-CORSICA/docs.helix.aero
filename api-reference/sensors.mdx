@@ -1,0 +1,279 @@
+---
+title: "Sensors"
+description: "Retrieve and manage sensors from the Helix Aero sensor catalog"
+---
+
+# Sensors
+
+Sensors define the cameras and LiDAR systems used in flight planning. The API provides access to the standard catalog (managed by Helix Aero) and custom sensors created by the user.
+
+## GET /sensors/standard
+
+Retrieve all standard sensors from the Helix Aero catalog.
+
+Supports delta sync with the `updated_since` parameter — the desktop app uses this to fetch only sensors changed since the last sync.
+
+```http
+GET https://api.helix.aero/api/v1/sensors/standard
+Authorization: Bearer <token>
+```
+
+### Query Parameters
+
+<ParamField query="updated_since" type="string">
+  ISO 8601 datetime. Only returns sensors updated after this timestamp.
+  Example: `2026-01-01T00:00:00Z`
+</ParamField>
+
+### Response `200 OK`
+
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "Sony A7R IV",
+      "type": "camera",
+      "manufacturer": "Sony",
+      "focal_length_mm": 35.0,
+      "sensor_width_mm": 35.9,
+      "sensor_height_mm": 24.0,
+      "pixel_size_um": 4.51,
+      "image_width_px": 9504,
+      "image_height_px": 6336,
+      "updated_at": "2026-01-10T12:00:00Z"
+    },
+    {
+      "id": 87,
+      "name": "Velodyne VLP-32C",
+      "type": "lidar",
+      "manufacturer": "Velodyne",
+      "fov_deg": 40.0,
+      "prr_khz": 600.0,
+      "scan_rate_hz": 20.0,
+      "beam_divergence_mrad": 1.5,
+      "updated_at": "2026-02-01T08:00:00Z"
+    }
+  ]
+}
+```
+
+### Errors
+
+| Status | Message |
+|--------|---------|
+| `401` | Missing or expired JWT |
+
+---
+
+## GET /sensors/standard/{id}
+
+Retrieve a single standard sensor by ID.
+
+```http
+GET https://api.helix.aero/api/v1/sensors/standard/{id}
+Authorization: Bearer <token>
+```
+
+### Path Parameters
+
+<ParamField path="id" type="integer" required>
+  Standard sensor ID.
+</ParamField>
+
+### Response `200 OK`
+
+```json
+{
+  "data": {
+    "id": 1,
+    "name": "Sony A7R IV",
+    "type": "camera",
+    "manufacturer": "Sony",
+    "focal_length_mm": 35.0,
+    "sensor_width_mm": 35.9,
+    "sensor_height_mm": 24.0,
+    "pixel_size_um": 4.51,
+    "image_width_px": 9504,
+    "image_height_px": 6336,
+    "updated_at": "2026-01-10T12:00:00Z"
+  }
+}
+```
+
+### Errors
+
+| Status | Message |
+|--------|---------|
+| `401` | Missing or expired JWT |
+| `404` | Sensor not found |
+
+---
+
+## GET /sensors/custom
+
+Retrieve all custom sensors created by the authenticated user.
+
+```http
+GET https://api.helix.aero/api/v1/sensors/custom
+Authorization: Bearer <token>
+```
+
+### Query Parameters
+
+<ParamField query="updated_since" type="string">
+  ISO 8601 datetime for delta sync.
+</ParamField>
+
+### Response `200 OK`
+
+```json
+{
+  "data": [
+    {
+      "id": "uuid-here",
+      "name": "My Custom Camera",
+      "type": "camera",
+      "focal_length_mm": 50.0,
+      "sensor_width_mm": 36.0,
+      "sensor_height_mm": 24.0,
+      "pixel_size_um": 5.0,
+      "image_width_px": 7200,
+      "image_height_px": 4800,
+      "updated_at": "2026-03-15T14:00:00Z"
+    }
+  ]
+}
+```
+
+---
+
+## POST /sensors/custom
+
+Create a new custom sensor for the authenticated user.
+
+```http
+POST https://api.helix.aero/api/v1/sensors/custom
+Authorization: Bearer <token>
+Content-Type: application/json
+```
+
+### Request Body (Camera)
+
+<ParamField body="name" type="string" required>
+  Sensor name (2–255 characters).
+</ParamField>
+
+<ParamField body="type" type="string" required>
+  Must be `"camera"` or `"lidar"`.
+</ParamField>
+
+<ParamField body="focal_length_mm" type="number" required>
+  Focal length in millimeters (camera only).
+</ParamField>
+
+<ParamField body="sensor_width_mm" type="number" required>
+  Physical sensor width in millimeters (camera only).
+</ParamField>
+
+<ParamField body="sensor_height_mm" type="number" required>
+  Physical sensor height in millimeters (camera only).
+</ParamField>
+
+<ParamField body="pixel_size_um" type="number" required>
+  Pixel pitch in micrometers (camera only).
+</ParamField>
+
+<ParamField body="image_width_px" type="integer">
+  Image width in pixels (camera only). Calculated from sensor width / pixel size if omitted.
+</ParamField>
+
+<ParamField body="image_height_px" type="integer">
+  Image height in pixels (camera only).
+</ParamField>
+
+### Request Body (LiDAR)
+
+<ParamField body="fov_deg" type="number" required>
+  Full field of view in degrees (LiDAR only).
+</ParamField>
+
+<ParamField body="prr_khz" type="number" required>
+  Pulse repetition rate in kHz (LiDAR only).
+</ParamField>
+
+<ParamField body="scan_rate_hz" type="number" required>
+  Scan rotation rate in Hz (LiDAR only).
+</ParamField>
+
+<ParamField body="beam_divergence_mrad" type="number">
+  Beam divergence in milliradians (LiDAR only).
+</ParamField>
+
+### Response `201 Created`
+
+```json
+{
+  "data": {
+    "id": "new-uuid",
+    "name": "My Custom Camera",
+    "type": "camera",
+    ...
+  }
+}
+```
+
+### Errors
+
+| Status | Message |
+|--------|---------|
+| `401` | Missing or expired JWT |
+| `422` | Validation errors |
+
+---
+
+## PUT /sensors/custom/{sensor}
+
+Update an existing custom sensor.
+
+```http
+PUT https://api.helix.aero/api/v1/sensors/custom/{sensor}
+Authorization: Bearer <token>
+Content-Type: application/json
+```
+
+Only the authenticated user's own custom sensors can be updated.
+
+### Response `200 OK`
+
+Returns the updated sensor object.
+
+### Errors
+
+| Status | Message |
+|--------|---------|
+| `401` | Missing or expired JWT |
+| `403` | Not the sensor owner |
+| `404` | Sensor not found |
+| `422` | Validation errors |
+
+---
+
+## DELETE /sensors/custom/{sensor}
+
+Delete a custom sensor. Does not affect missions already created with this sensor.
+
+```http
+DELETE https://api.helix.aero/api/v1/sensors/custom/{sensor}
+Authorization: Bearer <token>
+```
+
+### Response `204 No Content`
+
+### Errors
+
+| Status | Message |
+|--------|---------|
+| `401` | Missing or expired JWT |
+| `403` | Not the sensor owner |
+| `404` | Sensor not found |

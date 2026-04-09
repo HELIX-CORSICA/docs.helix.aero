@@ -1,0 +1,168 @@
+---
+title: "Licenses"
+description: "Activate and verify Helix Flight Planner desktop licenses"
+---
+
+# Licenses
+
+The license API manages machine activation and verification for Helix Flight Planner desktop clients. Each user account has a license with a configurable number of machine slots.
+
+## POST /license/verify
+
+Verify that the current machine's license is active and valid. Called on app startup to confirm the license has not been revoked and the machine slot is still registered.
+
+```http
+POST https://api.helix.aero/api/v1/license/verify
+Authorization: Bearer <token>
+Content-Type: application/json
+```
+
+**Rate limit:** 30 requests / minute
+
+### Request Body
+
+<ParamField body="machine_id" type="string" required>
+  Machine fingerprint UUID. Generated from the OS hardware identifier on first activation. Must be stable across app restarts.
+</ParamField>
+
+```json
+{
+  "machine_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+}
+```
+
+### Response `200 OK`
+
+<ResponseField name="data.valid" type="boolean">
+  `true` if the license is active and the machine is registered.
+</ResponseField>
+
+<ResponseField name="data.plan" type="string">
+  License plan identifier (e.g., `"carto"`, `"drone"`, `"bundle"`).
+</ResponseField>
+
+<ResponseField name="data.expires_at" type="string | null">
+  ISO 8601 expiry date, or `null` for perpetual licenses.
+</ResponseField>
+
+<ResponseField name="data.features" type="array">
+  Array of feature flag strings enabled on this license.
+</ResponseField>
+
+<ResponseField name="data.machines_used" type="integer">
+  Number of machine slots currently occupied.
+</ResponseField>
+
+<ResponseField name="data.machines_max" type="integer">
+  Maximum allowed machines for this license.
+</ResponseField>
+
+```json
+{
+  "data": {
+    "valid": true,
+    "plan": "carto",
+    "expires_at": null,
+    "features": ["export_pdf", "export_kml", "export_gpx", "qc_maps"],
+    "machines_used": 1,
+    "machines_max": 2
+  }
+}
+```
+
+### Errors
+
+| Status | Message |
+|--------|---------|
+| `401` | Missing or expired JWT |
+| `403` | Machine not registered — call `/license/activate` first |
+| `422` | Missing `machine_id` |
+| `429` | Rate limit exceeded |
+
+---
+
+## POST /license/activate
+
+Register a machine fingerprint against the authenticated user's license. Called once on first app launch (or after dissociating the previous machine).
+
+```http
+POST https://api.helix.aero/api/v1/license/activate
+Authorization: Bearer <token>
+Content-Type: application/json
+```
+
+**Rate limit:** 30 requests / minute
+
+### Request Body
+
+<ParamField body="machine_id" type="string" required>
+  Machine fingerprint UUID.
+</ParamField>
+
+<ParamField body="machine_name" type="string">
+  Human-readable machine name (e.g., `"MacBook Pro 16 (Jean)"`, `"Survey Laptop"`). Displayed in the portal's machine management page.
+</ParamField>
+
+```json
+{
+  "machine_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "machine_name": "Survey Laptop"
+}
+```
+
+### Response `200 OK`
+
+Returns the same structure as `POST /license/verify`:
+
+```json
+{
+  "data": {
+    "valid": true,
+    "plan": "carto",
+    "expires_at": null,
+    "features": ["export_pdf", "export_kml", "export_gpx", "qc_maps"],
+    "machines_used": 2,
+    "machines_max": 2
+  }
+}
+```
+
+### Errors
+
+| Status | Message |
+|--------|---------|
+| `401` | Missing or expired JWT |
+| `422` | Machine slot limit exceeded (see below), or missing `machine_id` |
+| `429` | Rate limit exceeded |
+
+#### Slot Limit Error (`422`)
+
+When the user has reached `machines_max`, activation fails with:
+
+```json
+{
+  "message": "Machine slot limit reached.",
+  "errors": {
+    "machine_id": [
+      "Your license allows 2 machines. Please dissociate an existing machine from app.helix.aero before activating this one."
+    ]
+  }
+}
+```
+
+To free a slot, the user must dissociate an existing machine at [app.helix.aero](https://app.helix.aero) in the **My Machines** section.
+
+<Note>
+  Machine dissociation is subject to a 30-day cooldown period per slot to prevent license sharing.
+</Note>
+
+---
+
+## Machine Management
+
+Machine slot management (listing machines, dissociating a machine) is available through the **app.helix.aero** client portal, not through the API. This is by design — dissociation requires user authentication via the web portal.
+
+Navigate to **app.helix.aero → My Machines** to:
+- View all registered machines for your license
+- See the last activation date and machine name for each slot
+- Dissociate a machine (subject to 30-day cooldown)
