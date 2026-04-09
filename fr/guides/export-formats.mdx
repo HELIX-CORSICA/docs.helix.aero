@@ -5,112 +5,200 @@ description: "Tous les formats d'export supportes par Helix Flight Planner et qu
 
 # Formats d'export
 
-Helix Flight Planner peut exporter un plan de mission finalize dans sept formats. Acces a tous les exports depuis le bouton **Exporter** dans la barre d'outils de la mission.
+Helix Flight Planner peut exporter un plan de vol termine dans de nombreux formats. Ouvrez le menu **Exporter** dans la barre d'outils de la vue mission (ou appuyez sur `Ctrl+E`) pour en choisir un. Le menu est regroupe en :
 
-## KML — Google Earth
+- **Plan de vol** — formats geometriques / de donnees pour outils externes (KML, KMZ, GPX, CSV, GeoJSON, XLSX).
+- **Vue client** — un livrable HTML pour les parties prenantes non techniques.
+- **Waypoints drone** — un profil CSV adapte aux controleurs de drone.
+- **Rapport PDF** — un rapport multi-pages imprimable.
+- **Fichier Helix natif** — un conteneur opaque a charger localement dans le FMS Helix.
+
+## KML — Google Earth et SIG
 
 **Extension :** `.kml`
 
-Le KML (Keyhole Markup Language) est le format standard pour les donnees geographiques dans Google Earth et la plupart des outils SIG.
+KML (Keyhole Markup Language) est le format geographique standard utilise par Google Earth et la plupart des outils SIG.
 
-**Contenu inclus :**
-- Polygone de l'emprise AOI
-- Axes des bandes de vol (en tant que placemarks LineString)
-- Polygones d'emprise camera (un par prise de vue)
-- Etiquettes de bandes avec cap et numero de sequence
+**Contenu :**
+- Polygone de la zone d'interet
+- Lignes de vol sous forme de `LineString`
+- Empreintes camera (une par image)
+- Etiquettes de bande avec cap et numero de sequence
 
 **Quand l'utiliser :**
-- Partager la mission avec le pilote pour la revue pre-vol dans Google Earth
-- Importer dans un outil SIG (QGIS, ArcGIS) pour une analyse plus approfondie
-- Soumettre aux autorites de l'espace aerien avec une zone de vol visuelle
+- Partager la mission avec le pilote pour une revision dans Google Earth
+- Importer dans QGIS, ArcGIS ou outil SIG pour analyse complementaire
+- Soumettre une zone de vol visuelle aux autorites aeriennes
 
-## GPX — Appareils GPS
+## KMZ — KML zippe
+
+**Extension :** `.kmz`
+
+Archive KML compressee avec styles et overlays raster embarques. KMZ se transporte mieux que KML quand l'export contient des styles ou des heatmaps QC.
+
+**Quand l'utiliser :**
+- Envoyer un paquet complet et autonome a un client par mail
+- Archiver la mission avec tout son style visuel dans un seul fichier
+
+## GPX — GPS et autopilotes
 
 **Extension :** `.gpx`
 
-Le GPX (GPS Exchange Format) est compatible avec Garmin, DJI et la plupart des systemes de pilotage automatique acceptant des fichiers de points de cheminement.
+GPX (GPS Exchange Format) est compatible avec Garmin, DJI et la plupart des autopilotes qui acceptent des fichiers de waypoints.
 
-**Contenu inclus :**
-- Points de trajectoire pour chaque bande de vol (un `<trkpt>` par point de cheminement)
-- Latitude, longitude et altitude pour chaque point
+**Contenu :**
+- Une trace par bande avec points `<trkpt>` ordonnes
+- Latitude, longitude et altitude pour chaque waypoint
+
+<Note>
+  L'altitude est exportee en metres au-dessus de l'ellipsoide WGS84, selon la specification GPX.
+</Note>
 
 **Quand l'utiliser :**
-- Charger des points de cheminement directement dans un recepteur GPS ou un pilote automatique
-- Exporter vers une station de controle au sol acceptant les traces GPX
+- Charger des waypoints dans un recepteur GPS ou un autopilote
+- Remettre le plan a une station de controle au sol acceptant les traces GPX
 
-## CSV — Tableur / Pipelines personnalises
+## CSV — Tableurs et pipelines
 
 **Extension :** `.csv`
 
-Un tableau a valeurs separees par des virgules de tous les points de cheminement du plan de mission.
+Table CSV de tous les waypoints du plan de vol.
 
 **Definition des colonnes :**
 
 | Colonne | Type | Description |
 |---------|------|-------------|
-| `strip_id` | entier | Numero de sequence de la bande (a partir de 1) |
-| `waypoint_id` | entier | Indice du point dans la bande |
+| `strip_id` | entier | Numero de sequence de la bande (base 1) |
+| `waypoint_id` | entier | Index du waypoint dans la bande |
 | `latitude` | decimal | Latitude WGS84 en degres decimaux |
 | `longitude` | decimal | Longitude WGS84 en degres decimaux |
-| `altitude_m` | decimal | Altitude en metres AGL |
-| `heading_deg` | decimal | Cap de l'aeronef a ce point |
+| `altitude_m` | decimal | Altitude en metres (interpretation selon le mode d'altitude) |
+| `heading_deg` | decimal | Cap de l'aeronef a ce waypoint |
 
 **Quand l'utiliser :**
-- Importation dans des flux de planification de mission personnalises
-- Post-traitement avec Python ou R
-- Generation de rapports dans Excel
+- Importer dans des workflows personnalises de planification ou post-traitement
+- Scripter avec Python, R ou tableurs
+- Generer des rapports internes dans Excel
 
-## GeoJSON — Web / Integrations API
+## GeoJSON — Web et API
 
 **Extension :** `.geojson`
 
-Format JSON pour les entites geographiques, compatible avec les bibliotheques de cartographie web (Leaflet, MapLibre, Mapbox) et les API SIG modernes.
+Format geographique JSON compatible avec les bibliotheques de cartographie web (Leaflet, MapLibre, Mapbox) et les API SIG modernes.
+
+**Structure typique :**
+```json
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": { "type": "Polygon", "coordinates": [[[...]]] },
+      "properties": { "type": "aoi" }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "LineString", "coordinates": [[...]] },
+      "properties": { "type": "strip", "strip_id": 1, "heading": 45.0 }
+    }
+  ]
+}
+```
 
 **Quand l'utiliser :**
-- Integrations de cartes web
-- Soumissions a des API REST acceptant le GeoJSON
-- Stockage de la geometrie de mission dans une base de donnees PostGIS
+- Integrer la mission dans une carte web
+- Soumettre a une API REST acceptant GeoJSON
+- Stocker la geometrie dans une base PostGIS
 
-## TXT — Liste de points lisible
+## TXT — Liste de waypoints lisible
 
 **Extension :** `.txt`
 
-Une liste de points de cheminement en texte brut, lisible par un humain. Formatee pour une lecture facile par un pilote ou copilote.
+Liste texte, lisible, de tous les waypoints, formatee pour etre consultee par un pilote ou copilote en vol.
+
+```
+HELIX FLIGHT PLAN — Projet : Zone A
+Mission : M001 — Capteur : Sony A7R IV
+Total bandes : 12 — Total waypoints : 84
+
+BANDE 01 (CAP 045 deg)
+  WP 001  lat: 48.856614  lon: 2.352222  alt: 120 m
+  WP 002  lat: 48.857032  lon: 2.353910  alt: 120 m
+  ...
+```
 
 **Quand l'utiliser :**
-- Imprimer une copie papier de secours pour le pilote
-- Saisie manuelle de points dans un controleur de drone
-- Revue rapide sans outil SIG
+- Imprimer un backup papier pour le pilote
+- Saisir les waypoints manuellement dans un controleur de drone
+- Relecture rapide sans outil SIG
 
-## JSON .helix — Donnees completes / Envoi FMS
+## XLSX — Classeur Excel
 
-**Extension :** `.helix`
+**Extension :** `.xlsx`
 
-Le format JSON natif Helix contient l'ensemble des donnees de la mission : emprise, bandes, configuration du capteur, parametres de vol, statistiques et resultats QC. C'est egalement le format utilise pour envoyer les missions vers le FMS Helix.
+Classeur Excel structure avec plusieurs feuilles : parametres de mission, liste des bandes, liste des waypoints et synthese QC.
 
 **Quand l'utiliser :**
-- Envoi direct de missions au FMS Helix via le bouton **Envoyer au FMS**
-- Archivage de la definition complete de la mission pour reference future
-- Partage d'une mission avec un autre utilisateur de Helix Flight Planner
+- Remettre une feuille formatee prete a imprimer a une equipe operationnelle
+- Executer des tableaux croises ou des graphiques rapides sans scripting
+
+## Waypoints drone
+
+**Extension :** `.csv`
+
+Profil CSV specifique adapte aux controleurs de drone courants (ordre des colonnes et unites conformes a ce que la plupart des drones grand public / prosumer attendent a l'import).
+
+**Quand l'utiliser :**
+- Charger un plan Helix dans un controleur de drone sans retravail manuel
+- Quand le CSV generique necessite un reformatage supplementaire pour le drone cible
+
+## Vue client (HTML)
+
+**Extension :** `.html`
+
+Livrable HTML autonome montrant l'AOI, les bandes et les statistiques cles de la mission dans une mise en page client. Aucune installation de Helix Flight Planner requise — le destinataire ouvre le fichier dans un navigateur.
+
+**Quand l'utiliser :**
+- Partager un apercu visuel avec une partie prenante non technique
+- Integrer la mission dans une page projet ou dans un mail
 
 ## Rapport PDF
 
 **Extension :** `.pdf`
 
-Un rapport PDF multi-pages au format professionnel, adapte a la remise au client, a la soumission reglementaire ou a la documentation interne.
+Rapport PDF multi-pages au formatage professionnel, adapte a la livraison client, la soumission reglementaire ou la documentation interne. Le PDF est genere via une boite de dialogue d'apercu qui permet de choisir les sections a inclure.
 
 **Sections du rapport :**
 
 | Section | Contenu |
 |---------|---------|
-| **Page de garde** | Nom du projet, de la mission, date, operateur, logo Helix |
-| **Parametres de mission** | Capteur, altitude, recouvrements, cap, GSD |
-| **Statistiques** | Nombre de prises, bandes, distance totale, temps de vol, surface |
-| **Capture du globe** | Vue de dessus de l'emprise avec les lignes de vol |
-| **Vignettes QC** | Carte de couverture, distribution GSD, distribution recouvrement lateral |
-| **Tableau des bandes** | Liste complete des bandes avec nombre de points et cap |
+| **Page de couverture** | Projet, mission, date, operateur, logo Helix |
+| **Parametres de mission** | Capteur, aeronef, mode et valeur d'altitude, recouvrement, laterale, cap, GSD |
+| **Statistiques** | Nombre d'images, nombre de bandes, distance totale, temps de vol, surface couverte |
+| **Capture du globe** | Vue zenithale de l'AOI avec les bandes en superposition |
+| **Cartes QC** | Couverture, GSD, laterale, HAGL, densite et MTA (si calcules) |
+| **Tableau des bandes** | Liste ordonnee des bandes avec nombre de waypoints et cap |
 
 **Quand l'utiliser :**
-- Remettre un briefing pre-vol au client
+- Livrer un brief pre-vol au client
 - Soumettre a une autorite reglementaire pour autorisation de vol
 - Archiver la documentation de mission
+
+## .helix — Conteneur natif Helix
+
+**Extension :** `.helix`
+
+`.helix` est le conteneur de mission natif de Helix Aero. Il est produit par Helix Flight Planner a l'export et charge localement dans le logiciel FMS Helix sur la machine de l'operateur.
+
+**Quand l'utiliser :**
+- Charger une mission dans le FMS Helix depuis l'ordinateur de l'operateur
+- Archiver une mission complete pour reference future
+- Partager une mission avec un autre utilisateur Helix Flight Planner qui continuera a travailler dessus
+
+<Note>
+  `.helix` est un format proprietaire Helix Aero. Sa structure interne n'est pas documentee publiquement — considerez-le comme un conteneur opaque que seuls Helix Flight Planner et le FMS Helix savent lire ou ecrire.
+</Note>
+
+## Tout exporter
+
+En bas du menu, **Tout exporter** ecrit chaque format supporte dans un dossier unique de votre choix. Pratique pour livrer un package complet a un client ou a une equipe operationnelle.

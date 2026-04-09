@@ -5,22 +5,18 @@ description: "Installez Helix Flight Planner et creez votre premiere mission en 
 
 # Demarrage rapide
 
-Suivez ces etapes pour installer Helix Flight Planner et creer votre premiere mission de releve aerien.
+Suivez ces etapes pour installer Helix Flight Planner et produire votre premier plan de vol.
 
 ## Etape 1 : Telecharger l'application
 
-Rendez-vous sur [app.helix.aero/download](https://app.helix.aero/download) et selectionnez votre plateforme.
+Visitez [app.helix.aero/download](https://app.helix.aero/download) et choisissez votre plateforme.
 
 <Tabs>
   <Tab title="Windows">
-    Telechargez l'installateur **Helix-FlightPlanner-Setup-x64.exe** pour Windows 10 ou superieur (64 bits).
-
-    ![Page de telechargement — Windows selectionne](/images/quickstart-download-windows.png)
+    Telechargez l'installeur **Helix-FlightPlanner-Setup-x64.exe** pour Windows 10 ou superieur (64 bits).
   </Tab>
   <Tab title="macOS">
     Telechargez l'image disque **Helix-FlightPlanner-macOS.dmg** pour macOS 12 Monterey ou superieur.
-
-    ![Page de telechargement — macOS selectionne](/images/quickstart-download-macos.png)
   </Tab>
 </Tabs>
 
@@ -28,67 +24,96 @@ Rendez-vous sur [app.helix.aero/download](https://app.helix.aero/download) et se
 
 <Tabs>
   <Tab title="Windows">
-    1. Executez l'installateur `.exe` telecharge.
-    2. Suivez l'assistant d'installation (chemin par defaut : `C:\Program Files\Helix Flight Planner`).
-    3. Lancez **Helix Flight Planner** depuis le menu Demarrer ou le raccourci bureau.
+    <Steps>
+      <Step title="Lancer l'installeur">
+        Executez le `.exe` telecharge et suivez l'assistant. Le chemin par defaut est `C:\Program Files\Helix Flight Planner`.
+      </Step>
+      <Step title="Demarrer l'application">
+        Ouvrez **Helix Flight Planner** depuis le menu Demarrer ou le raccourci bureau. L'application s'ouvre directement sur l'ecran de connexion.
+      </Step>
+    </Steps>
   </Tab>
   <Tab title="macOS">
-    1. Ouvrez le fichier `.dmg` telecharge.
-    2. Glissez **Helix Flight Planner** dans votre dossier Applications.
-    3. Lancez l'application depuis Applications ou Spotlight.
-
-    <Note>
-      Au premier lancement, macOS peut afficher une invite de securite. L'application est notariee par Apple — cliquez sur **Ouvrir** pour continuer.
-    </Note>
+    <Steps>
+      <Step title="Monter le DMG">
+        Ouvrez le `.dmg` telecharge et glissez **Helix Flight Planner** dans votre dossier Applications.
+      </Step>
+      <Step title="Lancer depuis Applications">
+        Ouvrez l'application depuis Applications ou Spotlight. Au premier lancement, macOS peut afficher une demande Gatekeeper — le build est notarise, cliquez sur **Ouvrir** pour continuer.
+      </Step>
+    </Steps>
   </Tab>
 </Tabs>
 
-## Etape 3 : Se connecter
+## Etape 3 : Connexion et activation
 
-Sur l'ecran de connexion, saisissez vos identifiants Helix Aero.
+Sur l'ecran de connexion, saisissez vos identifiants Helix Aero. Si vous n'avez pas de compte, visitez [app.helix.aero](https://app.helix.aero) pour vous inscrire ou demander un essai.
 
-![Ecran de connexion](/images/quickstart-login.png)
-
-Si vous n'avez pas encore de compte, rendez-vous sur [app.helix.aero](https://app.helix.aero) pour vous inscrire ou demander une licence d'essai.
-
-## Etape 4 : Activation de la licence
-
-L'activation de la licence s'effectue automatiquement lors de votre premiere connexion. L'application envoie l'empreinte de votre machine au serveur de licences Helix Aero.
-
-- **Succes :** Un message de confirmation apparait brievement et vous etes redirige vers le tableau de bord.
-- **Limite de machines atteinte :** Si votre compte a atteint le nombre maximum de machines enregistrees, un message apparait avec un lien pour gerer vos machines sur [app.helix.aero](https://app.helix.aero).
+L'activation est automatique au premier lancement — l'application envoie l'empreinte de votre machine au serveur de licence et enregistre un poste.
 
 <Note>
-  Votre licence autorise une utilisation hors ligne jusqu'a 7 jours. Apres 7 jours sans connexion reseau, l'application passe en mode lecture seule jusqu'a ce qu'elle puisse se re-verifier en ligne.
+  Votre licence permet une utilisation hors ligne jusqu'a 7 jours. Au-dela, l'application se re-verifie en ligne avant de pouvoir modifier des missions.
 </Note>
 
-## Etape 5 : Creer votre premier projet
+Si le message **Limite de postes atteinte** apparait, gerez vos machines enregistrees sur [app.helix.aero](https://app.helix.aero).
 
-1. Depuis le **Tableau de bord**, cliquez sur **Nouveau projet**.
-2. Saisissez un nom de projet (ex. : "Zone de releve A — Avril 2026").
-3. Cliquez sur **Creer**. Le projet s'ouvre dans la vue de planification de mission.
+## Etape 4 : Tutoriel de premier lancement
 
-![Tableau de bord avec le bouton nouveau projet](/images/quickstart-dashboard.png)
+Au premier lancement, Helix Flight Planner affiche une courte infobulle qui presente l'espace de travail : le tableau de bord, l'assistant de mission, le globe 3D, le panneau de planification et le menu d'export. Vous pouvez le rejouer a tout moment depuis **Aide > Tutoriel**.
 
-## Etape 6 : Creer une mission
+## Etape 5 : Creer votre premiere mission
 
-1. Dans votre projet, cliquez sur **Nouvelle mission**.
-2. Sur le globe 3D, dessinez votre **Emprise (AOI)** :
-   - Cliquez pour placer chaque sommet du polygone.
-   - Fermez le polygone en cliquant sur le premier point ou en appuyant sur Entree.
-3. Selectionnez un **capteur** dans le panneau catalogue a droite.
-4. Ajustez les parametres de vol : altitude, recouvrement longitudinal, recouvrement lateral, cap.
-5. L'application calcule immediatement les lignes de vol et les affiche sur le globe.
+Depuis le tableau de bord, cliquez sur **Nouvelle mission**. L'assistant vous guide en six etapes :
 
-![Vue de planification de mission avec emprise et lignes de vol](/images/quickstart-mission.png)
+<Steps>
+  <Step title="Projet et nom">
+    Donnez un nom a la mission et, optionnellement, rattachez-la a un projet. Les missions creees sans projet apparaissent en haut du tableau de bord en tant que missions "orphelines".
+  </Step>
+  <Step title="Localisation">
+    Recherchez un lieu par nom ou pointez-le sur la carte. Cela centrera le globe a l'ouverture de la mission.
+  </Step>
+  <Step title="CRS">
+    Choisissez le systeme de reference. Par defaut WGS84 avec zone UTM automatique, ou un code EPSG manuel.
+  </Step>
+  <Step title="Source MNT">
+    Choisissez la source terrain : **SRTM 30 m** (par defaut, mondiale), **Copernicus GLO-30** (meilleure qualite en zone montagneuse) ou **Aucune** (terrain plat).
+  </Step>
+  <Step title="Capteur">
+    Selectionnez un capteur dans le catalogue et, si besoin, sa focale.
+  </Step>
+  <Step title="Aeronef">
+    Choisissez le type d'aeronef. Cela initialise l'altitude, la vitesse et le recouvrement par defaut.
+  </Step>
+</Steps>
+
+Cliquez sur **Creer**. Le globe s'ouvre sur votre localisation avec le panneau de planification a droite.
+
+## Etape 6 : Tracer la zone d'interet
+
+Sur le globe 3D, ouvrez la barre d'outils de dessin (a gauche, sous le panneau de couches) :
+
+- Cliquez sur **Dessiner** pour commencer un polygone, puis cliquez sur le globe pour placer chaque sommet. Fermez le polygone en cliquant sur le premier point ou en appuyant sur **Entree**.
+- Cliquez sur **Dessiner corridor** pour tracer un corridor lineaire (routes, rivieres, pipelines).
+- Cliquez sur **Recentrer** pour ramener la camera sur la zone.
+
+Des que le polygone est ferme, les bandes de vol sont calculees automatiquement et affichees sur le globe.
+
+## Etape 7 : Reviser et exporter
+
+Utilisez l'onglet **Parametres** du panneau de planification a droite pour ajuster l'altitude, le recouvrement, la laterale et le cap. Ouvrez l'onglet **Bandes** pour consulter ou editer les bandes individuelles, et l'onglet **Resume** pour voir les statistiques et les indicateurs QC.
+
+Quand vous etes satisfait, cliquez sur **Exporter** dans la barre superieure et choisissez un format — KML, PDF, CSV, GPX, XLSX ou le conteneur natif `.helix` a charger localement dans le FMS Helix.
 
 ## Etapes suivantes
 
 <CardGroup cols={2}>
-  <Card title="Guide de planification de mission" icon="map" href="/fr/guides/mission-planning">
-    Decouvrez l'import d'emprise avance, les cartes QC et les statistiques de mission.
+  <Card title="Planification de mission" icon="map" href="/guides/mission-planning">
+    Guide complet du flux de planification, des overlays QC et de l'edition de bandes.
   </Card>
-  <Card title="Formats d'export" icon="download" href="/fr/guides/export-formats">
-    Exportez votre plan en KML, GPX, PDF et plus encore.
+  <Card title="Catalogue capteurs" icon="camera" href="/guides/sensors">
+    Recherche, filtres, vue grille/tableau et capteurs personnalises.
+  </Card>
+  <Card title="Formats d'export" icon="download" href="/guides/export-formats">
+    Contenu de chaque export et quand l'utiliser.
   </Card>
 </CardGroup>

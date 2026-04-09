@@ -1,0 +1,164 @@
+---
+title: "Missions"
+description: "Creer, consulter, modifier et supprimer des missions"
+---
+
+Les missions sont des plans de vol imbriques dans un projet. Chaque mission stocke son AOI, les references capteur et aeronef, les parametres du plan de vol, les strips calcules et les resultats QC.
+
+<Info>
+  **Auth :** chaque endpoint ci-dessous requiert `auth:api`. L'acces est controle par `ProjectPolicy` (view) et `MissionPolicy` (update/delete). Les routes mission sont imbriquees sous leur projet parent.
+</Info>
+
+## Ressource mission
+
+<ResponseField name="id" type="string">UUID de la mission.</ResponseField>
+<ResponseField name="project_id" type="string">UUID du projet parent.</ResponseField>
+<ResponseField name="name" type="string">Nom de la mission.</ResponseField>
+<ResponseField name="description" type="string | null">Description libre.</ResponseField>
+<ResponseField name="sensor_id" type="integer | null">Capteur reference (standard ou personnalise).</ResponseField>
+<ResponseField name="aircraft_id" type="integer | null">Aeronef reference.</ResponseField>
+<ResponseField name="flight_plan" type="object | null">Payload serialisee du plan de vol (AOI, parametres, strips, stats, QC). Opaque pour l'API.</ResponseField>
+<ResponseField name="status" type="string">Un parmi `planned`, `in_progress`, `completed`, `cancelled`.</ResponseField>
+<ResponseField name="mission_date" type="string | null">Date planifiee (`YYYY-MM-DD`).</ResponseField>
+<ResponseField name="local_updated_at" type="string | null">Horodatage cote client pour le last-write-wins.</ResponseField>
+<ResponseField name="created_at" type="string">Horodatage ISO 8601 de creation.</ResponseField>
+<ResponseField name="updated_at" type="string">Horodatage ISO 8601 de derniere mise a jour.</ResponseField>
+<ResponseField name="deleted_at" type="string | null">Renseigne uniquement si soft-deleted et encore dans la fenetre de retention.</ResponseField>
+
+---
+
+## GET /projects/\{project\}/missions
+
+Liste toutes les missions d'un projet.
+
+<ParamField path="project" type="string" required>UUID du projet.</ParamField>
+
+<RequestExample>
+```bash cURL
+curl -H "Authorization: Bearer $TOKEN" \
+  https://api.helix.aero/api/v1/projects/550e8400-e29b-41d4-a716-446655440000/missions
+```
+</RequestExample>
+
+<ResponseExample>
+```json 200 OK
+{
+  "data": [
+    {
+      "id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
+      "project_id": "550e8400-e29b-41d4-a716-446655440000",
+      "name": "Zone Nord — 120m",
+      "sensor_id": 87,
+      "aircraft_id": 4,
+      "flight_plan": { "parameters": { "altitude_m": 120 } },
+      "status": "planned",
+      "mission_date": "2026-06-12",
+      "created_at": "2026-04-01T11:00:00+00:00",
+      "updated_at": "2026-04-02T09:00:00+00:00"
+    }
+  ]
+}
+```
+</ResponseExample>
+
+### Erreurs
+
+| Statut | Signification |
+|--------|---------------|
+| `401` | JWT manquant ou expire. |
+| `403` | Pas le proprietaire du projet parent. |
+| `404` | Projet introuvable. |
+
+---
+
+## POST /projects/\{project\}/missions
+
+Cree une nouvelle mission sous un projet.
+
+<ParamField path="project" type="string" required>UUID du projet parent.</ParamField>
+
+<ParamField body="name" type="string" required>Nom de la mission (255 max).</ParamField>
+<ParamField body="description" type="string">Description libre (5000 max).</ParamField>
+<ParamField body="sensor_id" type="integer">Cle etrangere capteur.</ParamField>
+<ParamField body="aircraft_id" type="integer">Cle etrangere aeronef.</ParamField>
+<ParamField body="flight_plan" type="object">Payload serialisee du plan de vol.</ParamField>
+<ParamField body="status" type="string">Un parmi `planned`, `in_progress`, `completed`, `cancelled`.</ParamField>
+<ParamField body="mission_date" type="string">Date mission `YYYY-MM-DD`.</ParamField>
+<ParamField body="local_updated_at" type="string">Horodatage cote client pour le sync.</ParamField>
+
+<RequestExample>
+```json Body
+{
+  "name": "Zone Nord — 120m",
+  "sensor_id": 87,
+  "aircraft_id": 4,
+  "flight_plan": {
+    "aoi": { "type": "Polygon", "coordinates": [[[2.35, 48.85], [2.36, 48.85], [2.36, 48.86], [2.35, 48.86], [2.35, 48.85]]] },
+    "parameters": { "altitude_m": 120, "overlap": 80, "sidelap": 70 }
+  },
+  "status": "planned",
+  "mission_date": "2026-06-12"
+}
+```
+</RequestExample>
+
+### Erreurs
+
+| Statut | Signification |
+|--------|---------------|
+| `401` | JWT manquant ou expire. |
+| `403` | Pas le proprietaire du projet parent. |
+| `404` | Projet introuvable. |
+| `422` | Echec de validation. |
+
+---
+
+## GET /projects/\{project\}/missions/\{mission\}
+
+Retourne une seule mission.
+
+<ParamField path="project" type="string" required>UUID du projet.</ParamField>
+<ParamField path="mission" type="string" required>UUID de la mission.</ParamField>
+
+### Erreurs
+
+| Statut | Signification |
+|--------|---------------|
+| `401` | JWT manquant ou expire. |
+| `403` | Pas le proprietaire. |
+| `404` | Mission ou projet introuvable. |
+
+---
+
+## PUT /projects/\{project\}/missions/\{mission\}
+
+Met a jour une mission. Tous les champs du corps sont optionnels ; passer `flight_plan` remplace entierement l'objet stocke.
+
+### Erreurs
+
+| Statut | Signification |
+|--------|---------------|
+| `401` | JWT manquant ou expire. |
+| `403` | Pas le proprietaire de la mission. |
+| `404` | Mission ou projet introuvable. |
+| `422` | Echec de validation. |
+
+---
+
+## DELETE /projects/\{project\}/missions/\{mission\}
+
+Soft-delete une mission. La ligne est marquee avec `deleted_at` puis purgee apres 7 jours par le trait `Prunable`. Diffusez le tombstone via `POST /sync` avant l'expiration de cette fenetre.
+
+<ResponseExample>
+```http 204 No Content
+```
+</ResponseExample>
+
+### Erreurs
+
+| Statut | Signification |
+|--------|---------------|
+| `401` | JWT manquant ou expire. |
+| `403` | Pas le proprietaire. |
+| `404` | Mission ou projet introuvable. |
+

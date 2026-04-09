@@ -1,269 +1,164 @@
 ---
 title: "Missions"
-description: "Create, retrieve, update, and delete missions within a project"
+description: "Create, retrieve, update and delete missions"
 ---
 
-# Missions
+Missions are flight plans nested under a project. Each mission stores its AOI, sensor and aircraft references, flight plan parameters, computed strips and QC results.
 
-Missions are flight plans within a project. Each mission stores the AOI polygon, sensor selection, flight parameters, computed strips, statistics, and QC results.
+<Info>
+  **Auth:** every endpoint below requires `auth:api`. Access is gated by the `ProjectPolicy` (view) and `MissionPolicy` (update/delete). Mission routes are nested under their parent project.
+</Info>
 
-## GET /projects/{projectId}/missions
+## Mission resource
 
-Retrieve all missions for a project.
+<ResponseField name="id" type="string">Mission UUID.</ResponseField>
+<ResponseField name="project_id" type="string">Parent project UUID.</ResponseField>
+<ResponseField name="name" type="string">Mission name.</ResponseField>
+<ResponseField name="description" type="string | null">Free-form description.</ResponseField>
+<ResponseField name="sensor_id" type="integer | null">Referenced sensor (standard or custom).</ResponseField>
+<ResponseField name="aircraft_id" type="integer | null">Referenced aircraft.</ResponseField>
+<ResponseField name="flight_plan" type="object | null">Serialized flight plan payload (AOI, parameters, strips, stats, QC). Opaque to the API.</ResponseField>
+<ResponseField name="status" type="string">One of `planned`, `in_progress`, `completed`, `cancelled`.</ResponseField>
+<ResponseField name="mission_date" type="string | null">Planned mission date (`YYYY-MM-DD`).</ResponseField>
+<ResponseField name="local_updated_at" type="string | null">Client-side timestamp used for last-write-wins conflict resolution.</ResponseField>
+<ResponseField name="created_at" type="string">ISO 8601 creation timestamp.</ResponseField>
+<ResponseField name="updated_at" type="string">ISO 8601 last update timestamp.</ResponseField>
+<ResponseField name="deleted_at" type="string | null">Populated only when soft-deleted and still within the retention window.</ResponseField>
 
-```http
-GET https://api.helix.aero/api/v1/projects/{projectId}/missions
-Authorization: Bearer <token>
+---
+
+## GET /projects/\{project\}/missions
+
+List every mission belonging to a project.
+
+<ParamField path="project" type="string" required>Project UUID.</ParamField>
+
+<RequestExample>
+```bash cURL
+curl -H "Authorization: Bearer $TOKEN" \
+  https://api.helix.aero/api/v1/projects/550e8400-e29b-41d4-a716-446655440000/missions
 ```
+</RequestExample>
 
-### Path Parameters
-
-<ParamField path="projectId" type="string" required>
-  Project UUID.
-</ParamField>
-
-### Response `200 OK`
-
-<ResponseField name="data" type="array">
-  Array of mission objects.
-</ResponseField>
-
-<ResponseField name="data[].id" type="string">
-  Mission UUID.
-</ResponseField>
-
-<ResponseField name="data[].project_id" type="string">
-  Parent project UUID.
-</ResponseField>
-
-<ResponseField name="data[].name" type="string">
-  Mission name.
-</ResponseField>
-
-<ResponseField name="data[].flight_plan" type="object | null">
-  Serialized flight plan data (AOI, strips, parameters, statistics). `null` if not yet computed.
-</ResponseField>
-
-<ResponseField name="data[].created_at" type="string">
-  ISO 8601 creation timestamp.
-</ResponseField>
-
-<ResponseField name="data[].updated_at" type="string">
-  ISO 8601 last update timestamp.
-</ResponseField>
-
-```json
+<ResponseExample>
+```json 200 OK
 {
   "data": [
     {
       "id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
       "project_id": "550e8400-e29b-41d4-a716-446655440000",
       "name": "Zone Nord — 120m",
-      "flight_plan": {
-        "sensor": { "type": "camera", "name": "Sony A7R IV" },
-        "parameters": {
-          "altitude_m": 120,
-          "overlap": 80,
-          "sidelap": 70,
-          "heading_deg": 45
-        },
-        "statistics": {
-          "frame_count": 840,
-          "strip_count": 12,
-          "total_distance_km": 12.4,
-          "flight_time_min": 22,
-          "gsd_cm": 2.1,
-          "coverage_ha": 48.5
-        },
-        "aoi": {
-          "type": "Polygon",
-          "coordinates": [[[2.35, 48.85], [2.36, 48.85], [2.36, 48.86], [2.35, 48.86], [2.35, 48.85]]]
-        }
-      },
-      "created_at": "2026-04-01T11:00:00Z",
-      "updated_at": "2026-04-02T09:00:00Z"
+      "sensor_id": 87,
+      "aircraft_id": 4,
+      "flight_plan": { "parameters": { "altitude_m": 120 } },
+      "status": "planned",
+      "mission_date": "2026-06-12",
+      "created_at": "2026-04-01T11:00:00+00:00",
+      "updated_at": "2026-04-02T09:00:00+00:00"
     }
   ]
 }
 ```
+</ResponseExample>
 
 ### Errors
 
-| Status | Message |
+| Status | Meaning |
 |--------|---------|
-| `401` | Missing or expired JWT |
-| `403` | Project does not belong to authenticated user |
-| `404` | Project not found |
+| `401` | Missing or expired JWT. |
+| `403` | Not the owner of the parent project. |
+| `404` | Project not found. |
 
 ---
 
-## POST /projects/{projectId}/missions
+## POST /projects/\{project\}/missions
 
-Create a new mission within a project.
+Create a new mission under a project.
 
-```http
-POST https://api.helix.aero/api/v1/projects/{projectId}/missions
-Authorization: Bearer <token>
-Content-Type: application/json
-```
+<ParamField path="project" type="string" required>Parent project UUID.</ParamField>
 
-### Path Parameters
+<ParamField body="name" type="string" required>Mission name (max 255).</ParamField>
+<ParamField body="description" type="string">Free-form description (max 5000).</ParamField>
+<ParamField body="sensor_id" type="integer">Sensor foreign key.</ParamField>
+<ParamField body="aircraft_id" type="integer">Aircraft foreign key.</ParamField>
+<ParamField body="flight_plan" type="object">Serialized flight plan payload.</ParamField>
+<ParamField body="status" type="string">One of `planned`, `in_progress`, `completed`, `cancelled`.</ParamField>
+<ParamField body="mission_date" type="string">`YYYY-MM-DD` mission date.</ParamField>
+<ParamField body="local_updated_at" type="string">Client-side timestamp for sync.</ParamField>
 
-<ParamField path="projectId" type="string" required>
-  Parent project UUID.
-</ParamField>
-
-### Request Body
-
-<ParamField body="id" type="string">
-  Client-generated UUID for offline-first creation.
-</ParamField>
-
-<ParamField body="name" type="string" required>
-  Mission name (1–255 characters).
-</ParamField>
-
-<ParamField body="flight_plan" type="object">
-  Serialized flight plan. Include the full `.helix` JSON payload when saving a computed mission.
-</ParamField>
-
-<ParamField body="created_at" type="string">
-  Client-side creation timestamp for sync.
-</ParamField>
-
-```json
+<RequestExample>
+```json Body
 {
-  "id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
   "name": "Zone Nord — 120m",
-  "flight_plan": { ... }
+  "sensor_id": 87,
+  "aircraft_id": 4,
+  "flight_plan": {
+    "aoi": { "type": "Polygon", "coordinates": [[[2.35, 48.85], [2.36, 48.85], [2.36, 48.86], [2.35, 48.86], [2.35, 48.85]]] },
+    "parameters": { "altitude_m": 120, "overlap": 80, "sidelap": 70 }
+  },
+  "status": "planned",
+  "mission_date": "2026-06-12"
 }
 ```
-
-### Response `201 Created`
-
-Returns the created mission object (same schema as list response items).
+</RequestExample>
 
 ### Errors
 
-| Status | Message |
+| Status | Meaning |
 |--------|---------|
-| `401` | Missing or expired JWT |
-| `403` | Project does not belong to authenticated user |
-| `404` | Project not found |
-| `422` | Validation errors |
+| `401` | Missing or expired JWT. |
+| `403` | Not the owner of the parent project. |
+| `404` | Project not found. |
+| `422` | Validation failure. |
 
 ---
 
-## GET /projects/{projectId}/missions/{id}
+## GET /projects/\{project\}/missions/\{mission\}
 
 Retrieve a single mission.
 
-```http
-GET https://api.helix.aero/api/v1/projects/{projectId}/missions/{id}
-Authorization: Bearer <token>
-```
-
-### Response `200 OK`
-
-Returns the mission object.
+<ParamField path="project" type="string" required>Project UUID.</ParamField>
+<ParamField path="mission" type="string" required>Mission UUID.</ParamField>
 
 ### Errors
 
-| Status | Message |
+| Status | Meaning |
 |--------|---------|
-| `401` | Missing or expired JWT |
-| `403` | Not authorized |
-| `404` | Mission or project not found |
+| `401` | Missing or expired JWT. |
+| `403` | Not the owner. |
+| `404` | Mission or project not found. |
 
 ---
 
-## PUT /projects/{projectId}/missions/{id}
+## PUT /projects/\{project\}/missions/\{mission\}
 
-Update an existing mission (name, flight plan data, or both).
-
-```http
-PUT https://api.helix.aero/api/v1/projects/{projectId}/missions/{id}
-Authorization: Bearer <token>
-Content-Type: application/json
-```
-
-### Request Body
-
-<ParamField body="name" type="string">
-  New mission name.
-</ParamField>
-
-<ParamField body="flight_plan" type="object">
-  Updated flight plan payload. Replaces the existing flight_plan entirely.
-</ParamField>
-
-<ParamField body="updated_at" type="string">
-  Client-side timestamp for last-write-wins conflict resolution.
-</ParamField>
-
-### Response `200 OK`
-
-Returns the updated mission object.
+Update a mission. Every body field is optional; passing `flight_plan` replaces the stored object entirely.
 
 ### Errors
 
-| Status | Message |
+| Status | Meaning |
 |--------|---------|
-| `401` | Missing or expired JWT |
-| `403` | Not authorized |
-| `404` | Mission or project not found |
-| `422` | Validation errors |
+| `401` | Missing or expired JWT. |
+| `403` | Not the owner of the mission. |
+| `404` | Mission or project not found. |
+| `422` | Validation failure. |
 
 ---
 
-## DELETE /projects/{projectId}/missions/{id}
+## DELETE /projects/\{project\}/missions/\{mission\}
 
-Soft-delete a mission.
+Soft-delete a mission. The row is marked with `deleted_at` and pruned after 7 days by the `Prunable` trait. Propagate the tombstone to other clients via `POST /sync` before the prune window elapses.
 
-```http
-DELETE https://api.helix.aero/api/v1/projects/{projectId}/missions/{id}
-Authorization: Bearer <token>
+<ResponseExample>
+```http 204 No Content
 ```
-
-### Response `204 No Content`
+</ResponseExample>
 
 ### Errors
 
-| Status | Message |
+| Status | Meaning |
 |--------|---------|
-| `401` | Missing or expired JWT |
-| `403` | Not authorized |
-| `404` | Mission or project not found |
+| `401` | Missing or expired JWT. |
+| `403` | Not the owner. |
+| `404` | Mission or project not found. |
 
----
-
-## POST /projects/{projectId}/missions/{missionId}/send-to-fms
-
-Push a mission as a `.helix` JSON payload to the Helix FMS (Flight Management System).
-
-```http
-POST https://api.helix.aero/api/v1/projects/{projectId}/missions/{missionId}/send-to-fms
-Authorization: Bearer <token>
-```
-
-### Response `200 OK`
-
-```json
-{
-  "data": {
-    "status": "accepted",
-    "message": "Mission received by FMS"
-  }
-}
-```
-
-<Note>
-  The FMS endpoint is currently in mock mode and always returns `accepted`. Full FMS integration is planned for a future release.
-</Note>
-
-### Errors
-
-| Status | Message |
-|--------|---------|
-| `401` | Missing or expired JWT |
-| `404` | Mission or project not found |

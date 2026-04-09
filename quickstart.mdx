@@ -1,26 +1,22 @@
 ---
 title: "Quick Start"
-description: "Get Helix Flight Planner installed and create your first mission in under 10 minutes"
+description: "Install Helix Flight Planner and create your first mission in under 10 minutes"
 ---
 
 # Quick Start
 
-Follow these steps to install Helix Flight Planner and create your first aerial survey mission.
+Follow these steps to install Helix Flight Planner and produce your first aerial survey plan.
 
 ## Step 1: Download the App
 
-Visit [app.helix.aero/download](https://app.helix.aero/download) and select your platform.
+Visit [app.helix.aero/download](https://app.helix.aero/download) and pick your platform.
 
 <Tabs>
   <Tab title="Windows">
     Download the **Helix-FlightPlanner-Setup-x64.exe** installer for Windows 10 or later (64-bit).
-
-    ![Download page — Windows selected](/images/quickstart-download-windows.png)
   </Tab>
   <Tab title="macOS">
     Download the **Helix-FlightPlanner-macOS.dmg** disk image for macOS 12 Monterey or later.
-
-    ![Download page — macOS selected](/images/quickstart-download-macos.png)
   </Tab>
 </Tabs>
 
@@ -28,67 +24,96 @@ Visit [app.helix.aero/download](https://app.helix.aero/download) and select your
 
 <Tabs>
   <Tab title="Windows">
-    1. Run the downloaded `.exe` installer.
-    2. Follow the installation wizard (default path: `C:\Program Files\Helix Flight Planner`).
-    3. Launch **Helix Flight Planner** from the Start menu or desktop shortcut.
+    <Steps>
+      <Step title="Run the installer">
+        Launch the downloaded `.exe` and follow the wizard. The default install path is `C:\Program Files\Helix Flight Planner`.
+      </Step>
+      <Step title="Start the app">
+        Open **Helix Flight Planner** from the Start menu or the desktop shortcut. The app opens directly on the login screen.
+      </Step>
+    </Steps>
   </Tab>
   <Tab title="macOS">
-    1. Open the downloaded `.dmg` file.
-    2. Drag **Helix Flight Planner** to your Applications folder.
-    3. Launch the app from Applications or Spotlight.
-
-    <Note>
-      On first launch, macOS may show a security prompt. The app is notarized by Apple — click **Open** to proceed.
-    </Note>
+    <Steps>
+      <Step title="Mount the DMG">
+        Open the downloaded `.dmg` and drag **Helix Flight Planner** into your Applications folder.
+      </Step>
+      <Step title="Launch from Applications">
+        Open the app from Applications or Spotlight. On first launch, macOS may show a Gatekeeper prompt — the build is notarized, so click **Open** to proceed.
+      </Step>
+    </Steps>
   </Tab>
 </Tabs>
 
-## Step 3: Log In
+## Step 3: Log In and Activate
 
-On the login screen, enter your Helix Aero credentials.
+On the login screen, enter your Helix Aero credentials. If you do not have an account, visit [app.helix.aero](https://app.helix.aero) to register or request a trial.
 
-![Login screen](/images/quickstart-login.png)
-
-If you don't have an account yet, visit [app.helix.aero](https://app.helix.aero) to register or request a trial license.
-
-## Step 4: License Activation
-
-License activation happens automatically on your first login. The app sends your machine fingerprint to the Helix Aero licensing server.
-
-- **Success:** A confirmation message appears briefly and you are taken to the dashboard.
-- **Slot limit exceeded:** If your account has reached the maximum number of registered machines, a message appears with a link to manage your machines at [app.helix.aero](https://app.helix.aero).
+Activation happens automatically on first login — the app sends your machine fingerprint to the licensing server and registers a seat.
 
 <Note>
-  Your license allows offline use for up to 7 days. After 7 days without a network connection, the app enters read-only mode until it can re-verify online.
+  Your license allows offline use for up to 7 days. After that, the app re-verifies online before you can keep editing missions.
 </Note>
 
-## Step 5: Create Your First Project
+If the **Slot limit exceeded** message appears, manage your registered machines at [app.helix.aero](https://app.helix.aero).
 
-1. From the **Dashboard**, click **New Project**.
-2. Enter a project name (e.g., "Survey Zone A — April 2026").
-3. Click **Create**. The project opens in the mission planning view.
+## Step 4: First Launch Onboarding
 
-![Dashboard with new project button](/images/quickstart-dashboard.png)
+On first launch, Helix Flight Planner shows a short tooltip overlay that introduces the main workspace: the dashboard, the mission wizard, the 3D globe, the planning panel and the export menu. You can replay it any time from **Help > Onboarding**.
 
-## Step 6: Create a Mission
+## Step 5: Create Your First Mission
 
-1. Inside your project, click **New Mission**.
-2. On the 3D globe, draw your **Area of Interest (AOI)**:
-   - Click to place polygon vertices.
-   - Close the polygon by clicking the first point or pressing Enter.
-3. Select a **sensor** from the catalog panel on the right.
-4. Adjust flight parameters: altitude, overlap, sidelap, heading.
-5. The app immediately computes flight strips and displays them on the globe.
+From the dashboard, click **New Mission**. The mission wizard walks you through six short steps:
 
-![Mission planning view with AOI and flight strips](/images/quickstart-mission.png)
+<Steps>
+  <Step title="Project and name">
+    Give the mission a name and optionally attach it to a project. Missions created without a project appear at the top of the dashboard as "orphan" missions.
+  </Step>
+  <Step title="Location">
+    Search a place by name or pin it on the map. This centers the globe when the mission opens.
+  </Step>
+  <Step title="CRS">
+    Pick the coordinate reference system. The default is WGS84 with automatic UTM zone, and a manual EPSG code is also supported.
+  </Step>
+  <Step title="DEM source">
+    Choose the terrain source: **SRTM 30 m** (default, worldwide), **Copernicus GLO-30** (higher quality in mountainous terrain) or **None** (flat terrain).
+  </Step>
+  <Step title="Sensor">
+    Pick a sensor from the catalog and, if relevant, its focal length.
+  </Step>
+  <Step title="Aircraft">
+    Pick an aircraft type. This seeds default altitude, speed and overlap values for the mission.
+  </Step>
+</Steps>
+
+Click **Create**. The globe opens on your location with the planning panel on the right.
+
+## Step 6: Draw the Area of Interest
+
+On the 3D globe, open the drawing toolbar (left side, under the layer panel):
+
+- Click **Draw** to start a polygon AOI, then click to place each vertex. Close the polygon by clicking the first point or pressing **Enter**.
+- Click **Draw corridor** to draw a linear corridor for strip-mode missions (roads, rivers, pipelines).
+- Click **Recenter** to fly the camera back to the AOI.
+
+As soon as the polygon is closed, flight strips are computed automatically and appear on the globe.
+
+## Step 7: Review and Export
+
+Use the **Parametres** tab of the planning panel on the right to adjust altitude, overlap, sidelap and heading. Open the **Bandes** tab to review or edit individual strips, and the **Resume** tab to see mission statistics and QC indicators.
+
+When you are happy with the plan, click **Export** in the top toolbar and pick a format — KML, PDF, CSV, GPX, XLSX or the native `.helix` container you load locally into the Helix FMS.
 
 ## Next Steps
 
 <CardGroup cols={2}>
   <Card title="Mission Planning Guide" icon="map" href="/guides/mission-planning">
-    Learn about advanced AOI import, QC maps, and mission statistics.
+    Full walkthrough of the planning workflow, QC overlays and strip editing.
+  </Card>
+  <Card title="Sensor Catalog" icon="camera" href="/guides/sensors">
+    Search, filter, grid/table view and custom sensors.
   </Card>
   <Card title="Export Formats" icon="download" href="/guides/export-formats">
-    Export your plan to KML, GPX, PDF, and more.
+    What each export contains and when to use it.
   </Card>
 </CardGroup>
