@@ -1,0 +1,154 @@
+---
+title: "GSD, footprint and frame spacing"
+description: "How Helix computes Ground Sampling Distance, ground footprint and along-track spacing for cameras, LiDAR and pushbroom sensors."
+---
+
+Everything the planner does downstream — strip spacing, frame count, trigger
+rate, QC grids — is driven by two primitives: the **GSD** (Ground Sampling
+Distance) and the **ground footprint** of a single exposure. This page shows
+exactly how each sensor family computes them.
+
+<Info>
+  All sensor math runs on the *effective* altitude above ground, not the
+  raw MSL value you type in — see the note on altitude below for how
+  Helix resolves it.
+</Info>
+
+## Effective altitude vs raw MSL
+
+Before any sensor math runs, the engine resolves the altitude that actually
+matters to the sensor: the height **above the terrain**.
+
+<Steps>
+  <Step title="Flat mode (AMSL)">
+    The planner samples the AOI bounding box on a 20x20 grid (up to 400
+    DEM lookups) and keeps the **maximum** terrain elevation found. The
+    effective AGL becomes `altitudeMsl - maxTerrain`, clamped to a safety
+    floor of 30 m. Using the max — not the mean — guarantees the *worst*
+    point of the AOI still meets the target GSD.
+  </Step>
+  <Step title="Terrain-following modes (iAGL, iAMSL)">
+    `altitudeMsl` is already expressed as a height-above-ground; the engine
+    uses it as-is for GSD and footprint.
+  </Step>
+</Steps>
+
+All formulas below use `H` for this effective above-ground height in metres.
+
+## Frame cameras
+
+The standard photogrammetry GSD formula is used in both axes independently.
+First we compute the image dimensions in pixels from the physical sensor
+size:
+
+```text
+image_width_px  = sensor_width_mm  / pixel_size_um * 1000
+image_height_px = sensor_height_mm / pixel_size_um * 1000
+```
+
+Then GSD in metres and the ground footprint in metres:
+
+```text
+GSD_w (m) = H * sensor_width_mm  / (focal_length_mm * image_width_px)
+GSD_h (m) = H * sensor_height_mm / (focal_length_mm * image_height_px)
+
+footprint_w (m) = GSD_w * image_width_px
+footprint_h (m) = GSD_h * image_height_px
+```
+
+GSD values are persisted in centimetres on `GsdResult`:
+`acrossTrackCm` (width direction) and `alongTrackCm` (height direction).
+
+### Strip and frame spacing
+
+Once the footprint is known, the two spacing values that drive the strip
+grid and the camera trigger rate fall out directly from the user-selected
+overlaps:
+
+```text
+strip_spacing (m) = footprint_w * (1 - sidelap)
+frame_spacing (m) = footprint_h * (1 - forward_overlap)
+```
+
+`sidelap` is the lateral overlap between adjacent flight lines, and
+`forward_overlap` is the between-exposure overlap along each line. Both are
+stored as ratios in `[0, 1]`. A 60% sidelap becomes a `strip_spacing` of
+`footprint_w * 0.4`.
+
+### Back-solving altitude from a target GSD
+
+The same formula is inverted when the user pins a target GSD and wants the
+planner to derive altitude:
+
+```text
+H = target_GSD_m * focal_length_mm * image_width_px / sensor_width_mm
+```
+
+The inversion always uses the **width** (across-track) axis as the
+reference.
+
+## LiDAR sensors
+
+LiDAR replaces the camera footprint with a **swath** — the ground strip
+illuminated by the scanner's full field of view.
+
+```text
+swath (m) = 2 * H * tan( fov_deg * pi / 180 / 2 )
+```
+
+Point density is then pulse repetition rate divided by the swath area swept
+per second (swath width times ground speed):
+
+```text
+density (pts/m^2) = (prr_khz * 1000) / (swath * speed_ms)
+```
+
+<Note>
+  When the sensor catalog records a scan pattern (`zigzag`, `elliptic`,
+  `rotary`, `fiber`), Helix applies a pattern-specific correction to the
+  raw density and exposes an adjusted value downstream. The QC
+  grids always prefer the adjusted value when it is available.
+</Note>
+
+The engine picks between a user-provided FOV override (`fovOverrideDeg`)
+and the catalog FOV at runtime. Strip spacing for LiDAR missions is driven
+by the swath rather than the camera footprint, but uses the same
+`1 - sidelap` rule.
+
+## Pushbroom sensors
+
+Pushbroom sensors produce a continuous scan line, so across-track and
+along-track GSD come from two different formulas:
+
+```text
+across_track_GSD (m) = H * (pixel_size_um / 1e6) / (focal_length_mm / 1e3)
+along_track_GSD  (m) = speed_ms / line_rate_hz
+```
+
+Because the sensor is a single line, sidelap still governs strip spacing
+but forward overlap does not apply directly — instead the planner reports
+an **effective overlap** that only exists when lines fall closer together
+than a pixel is wide:
+
+```text
+effective_overlap (%) =
+    ( 1 - along_track_GSD / across_track_GSD ) * 100,   if along < across
+    0,                                                  otherwise
+```
+
+This is the percentage you see on the pushbroom result card when the
+aircraft is flying slow enough (or the line rate is high enough) to
+over-sample the ground.
+
+<Warning>
+  If `line_rate_hz <= 0` or `speed_ms <= 0`, the pushbroom calculator
+  short-circuits and returns zeros rather than dividing by zero. Check
+  that your speed and line rate are populated before flagging anything as
+  a GSD bug.
+</Warning>
+
+## Related
+
+- [Altitude modes (AMSL, iAMSL, iAGL)](/guides/altitude-modes)
+- [Strip generation and heading](/guides/strip-generation)
+- [Quality control grids](/guides/quality-control)

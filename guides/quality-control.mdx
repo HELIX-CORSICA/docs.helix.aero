@@ -1,0 +1,189 @@
+---
+title: "Quality control grids"
+description: "What each QC layer measures, how cell values are normalized, and how alerts are raised from the six grid types produced by the QC engine."
+---
+
+The QC engine inspects a computed flight plan and produces up to six
+overlay grids that tell you, cell by cell, whether the mission will
+actually deliver what the user asked for.
+
+Each grid is a list of cells `(lat, lon, value)`, where `value` is a
+normalized quality weight in `[0, 1]`:
+
+- `0.0` = bad (below threshold, gap, or outside the physical envelope)
+- `1.0` = good (meets or exceeds the threshold)
+
+## Grid sampling
+
+Before any per-cell metric is computed, the engine decides the grid
+resolution:
+
+<Steps>
+  <Step title="AOI bounding box">
+    The engine walks the AOI polygon once to find its `[minLat, maxLat]`
+    and `[minLon, maxLon]`, then computes the bounding-box width and
+    height in metres via Vincenty.
+  </Step>
+  <Step title="Auto cell size">
+    `cellSizeM = max(20, sqrt(aoiAreaM2 / 50000))`. The 50 000 cap
+    (internal cap) keeps the grid renderable on very large AOIs; the
+    20 m floor keeps small AOIs from producing a grid that is effectively
+    a single cell.
+  </Step>
+  <Step title="Sample loop">
+    The engine walks the bounding box in `cellSizeM`-equivalent lat/lon
+    steps. For each cell centre it runs a ray-casting point-in-polygon
+    test against the AOI and skips anything outside.
+  </Step>
+</Steps>
+
+For every cell that survives the polygon test the engine counts how
+many strip footprints contain the cell centre. A cell is "covered by"
+a strip when:
+
+- its **cross-track** distance to the strip centerline is `<= halfWidth`
+- its **along-track** distance falls within `[0, stripLength * 1.10]`
+  (the 10 % buffer absorbs endpoint rounding)
+
+where `halfWidth` is half the LiDAR swath (LiDAR missions) or half the
+camera ground footprint width (camera missions). The cell's
+`coverageCount` is the integer count of primary + cross + corrective
+strips whose footprint encloses it, and every metric below is derived
+from that single integer.
+
+## Coverage grid
+
+Identifies **gaps** in coverage. The cell value is binary:
+
+```text
+coverageValue = 1.0   if coverageCount > 0
+              = 0.0   otherwise
+```
+
+Any cell with value `0.0` is a hard coverage hole and is flagged as a
+coverage alert. The alert percentage is the fraction of AOI cells that
+have zero coverage.
+
+## GSD grid
+
+Normalizes the computed across-track GSD against the user's
+`thresholds.gsdMaxCm`:
+
+```text
+gsdValue = 1.0                            if gsd <= gsdMax
+         = 0.0                            if gsd >= 2 * gsdMax
+         = 1.0 - (gsd - gsdMax) / gsdMax  otherwise (linear ramp)
+```
+
+So a cell exactly at threshold is `1.0`, a cell at twice the threshold
+is `0.0`, and anything in between interpolates linearly.
+
+<Note>
+  Because GSD is altitude-driven and AMSL missions have a single flight
+  altitude, the GSD grid is usually uniform across the AOI. It's only
+  interesting on iAMSL and iAGL missions where different strips carry
+  different effective above-ground heights — or when the strip's
+  effective AGL diverges from its published MSL due to terrain.
+</Note>
+
+## Sidelap grid
+
+Reports **redundancy** at each cell — how many distinct strips cover it.
+The mapping is an intentional three-level scale:
+
+```text
+sidelapValue = 0.0   if coverageCount == 0   # red, coverage gap
+             = 0.5   if coverageCount == 1   # amber, no sidelap safety
+             = 1.0   if coverageCount >= 2   # green, target sidelap met
+```
+
+<Info>
+  The sidelap grid is **independent** of the configured `sidelapMinPct`.
+  A grid cell either has redundant coverage or it doesn't — the
+  percentage configured on the mission controls where the primary-strip
+  generator places strips, not how a cell-level redundancy metric is
+  measured after the fact.
+</Info>
+
+Cells with value `< 0.5` (i.e. gaps) trigger a sidelap alert whose
+percentage is the fraction of AOI cells without multi-strip coverage.
+
+## HAGL grid
+
+Would measure the cell-by-cell height above ground under the flight
+profile. **Currently always `null`** — it depends on DEM integration
+that will land in a later phase. The alert pipeline handles the null
+case by skipping the HAGL check entirely; nothing downstream assumes
+the grid exists.
+
+## Density grid (LiDAR only)
+
+Only produced when the sensor is a LiDAR. Pulls the best available
+density value:
+
+```text
+density = lidar.adjustedDensityPerM2 ?? lidar.pointDensityPerM2
+```
+
+— i.e. the pattern-adjusted density when the catalog knows the scan
+pattern, falling back to the raw uniform `prr / (swath * speed)` figure
+otherwise. Normalization is linear against the minimum density
+threshold:
+
+```text
+densityValue = 1.0                           if density >= densityMin
+             = 0.0                           if density <= 0
+             = density / densityMin          otherwise
+```
+
+The alert fires when cells drop below 50 % of the threshold.
+
+## MTA grid (LiDAR only)
+
+The Minimum Terrain Avoidance grid uses the **same** normalized value
+as the density grid. Zones with insufficient density are also treated
+as potential MTA violations because a sparse LiDAR return implies the
+scanner is too high (or too fast) for reliable ground detection. As
+with the density grid it is only populated for LiDAR missions.
+
+## Thresholds
+
+All thresholds live on `QcThresholds`:
+
+| Field            | Default     | Used by |
+| ---------------- | ----------- | ------- |
+| `gsdMaxCm`       | `10.0` cm   | GSD grid |
+| `overlapMinPct`  | `0.60`      | (reference only — overlap is enforced at generation time) |
+| `sidelapMinPct`  | `0.30`      | (reference only — sidelap grid is discrete) |
+| `haglMinM`       | `50.0` m    | HAGL grid (when populated) |
+| `densityMinPtM2` | `4.0`       | Density + MTA grids |
+
+Thresholds are persisted with each mission so QC re-runs reproduce the
+same alerts without relying on global defaults.
+
+## Alert pipeline
+
+For every grid the QC engine counts cells with `value < 0.5` (a cell is
+"bad" when it has slipped below the halfway point between green and
+red) and, if the count is positive, emits an alert containing the grid
+type and the fraction of bad cells.
+
+The alerts list is what populates the QC panel in the desktop UI and
+what drives the amber/red dot shown on each strip card when per-strip
+scoring is enabled.
+
+## Per-strip coverage score
+
+As a secondary output, the QC engine returns a coverage score per
+strip computed as `coveredCells / totalCells` over **only** the cells
+whose footprint geometry is enclosed by that specific strip. A strip
+with no cells under it gets `1.0` (benefit of the doubt). This score
+drives corrective-strip generation and the per-strip health badges in
+the strip list.
+
+## Related
+
+- [GSD and footprint](/guides/gsd-and-footprint)
+- [Strip generation](/guides/strip-generation)
+- [Altitude modes](/guides/altitude-modes)
+- [Leading lines](/guides/leading-lines)

@@ -1,0 +1,219 @@
+---
+title: "Leading lines"
+description: "Extensions approche et départ en palier : profil verrouillé à la jonction, évitement de sol en montée uniquement, et comment le moteur garantit le retour à assiette nulle au plus vite."
+---
+
+Une **leading line** est l'extension plate attachée à chaque extrémité
+d'une bande de vol. Elle donne à l'aéronef un couloir de stabilisation
+pour entrer et sortir de la bande à assiette plate — les caméras ne
+peuvent pas capturer d'images exploitables tant que l'aéronef stabilise
+encore depuis un virage ou une montée, il faut donc un segment droit et
+propre d'altitude connue de chaque côté de toute bande.
+
+Les leading lines sont attachées automatiquement par le planificateur
+après le routage des bandes, à partir d'un profil en palier qui suit
+la règle sémantique ci-dessous.
+
+## La règle sémantique
+
+La spec produit pour le profil leading-line est littérale :
+
+> **« Dès la fin de bande, rétablir une assiette nulle, progressivement
+> et conformément à la pente max possible par l'appareil. Pour l'AMSL
+> simple : prolonger la bande au même Z. Pas d'AGL de redescente sur la
+> leading line — AGL de montée uniquement (esquive sol) — avec pour
+> objectif de stabiliser l'assiette à nulle dès que possible. »**
+
+Concrètement :
+
+- Dès la fin de la bande, l'aéronef doit revenir à **assiette nulle**
+  aussi vite que les taux de montée/descente le permettent.
+- En AMSL simple, la ligne prolonge la bande au même Z exactement.
+- La leading line **ne descend jamais sous l'altitude de jonction pour
+  suivre une vallée** — l'AGL n'entre en jeu que comme plancher de
+  montée pour l'évitement de sol.
+- L'objectif de l'aéronef est de stabiliser l'assiette à nulle **dès
+  que possible** après qu'un obstacle est franchi.
+
+En résumé : la leading line est une **ligne plate à l'altitude de
+jonction**, qui ne grimpe que quand un plancher de sécurité terrain
+monte au-dessus, et redescend *vers* l'altitude de jonction aussi vite
+que le taux max de descente le permet une fois l'obstacle passé.
+
+## Résolution de l'altitude de jonction
+
+Chaque côté de chaque bande a une « jonction » — le point où la leading
+line rencontre le corps de bande. L'altitude de ce point est résolue
+dans cet ordre de priorité :
+
+<Steps>
+  <Step title="Résolveur explicite (AMSL / iAMSL)">
+    L'appelant peut passer un callback `junctionAltitudeResolver`. Pour
+    AMSL il retourne l'altitude MSL plate de la bande. Pour iAMSL il
+    retourne l'altitude optimisée par bande. Cela maintient la leading
+    line ancrée exactement à l'altitude de la bande quel que soit ce
+    que fait le terrain sous l'extension.
+  </Step>
+  <Step title="Premier/dernier waypoint de corps (iAGL)">
+    Quand aucun résolveur n'est passé (cas iAGL), l'altitude de jonction
+    vient du premier waypoint de corps (côté approach) ou du dernier
+    (côté departure). La leading line reprend donc continûment là où le
+    profil suiveur s'est arrêté — pas de discontinuité à la jonction.
+  </Step>
+  <Step title="Fallback Strip.altitudeMsl">
+    S'il n'y a pas de waypoints, l'`altitudeMsl` stockée de la bande est
+    utilisée.
+  </Step>
+  <Step title="Zéro">
+    Fallback ultime pour entrée pathologique.
+  </Step>
+</Steps>
+
+## Échantillonnage de la ligne
+
+Le nombre d'échantillons est auto-calculé à partir du même pas basé
+vitesse que celui du calculateur iAGL :
+
+```text
+sample_step (m) = clamp( speed_ms * 0.25, 2.0, 100.0 )   # 4 éch/sec
+n               = max( 2, ceil(leading_m / sample_step) + 1 )
+dt              = sample_step / speed_ms
+max_climb_seg   = max_climb_rate_ms * dt
+max_desc_seg    = max_descent_rate_ms * dt
+```
+
+Les positions sont placées le long de la direction de cap, depuis la
+jonction (le début de la bande pour l'approach, la fin de la bande pour le
+departure) en s'éloignant de `distFromJunction`. Chaque position est
+envoyée au fournisseur de relief pour obtenir son élévation DEM.
+
+Pour le côté approach, la jonction est au dernier index ; pour le
+côté departure elle est au premier. Cet échantillon est le seul dont
+l'altitude est **verrouillée** pendant les passes de clamp.
+
+## Le calcul de profil
+
+Le profil leading-line est structurellement proche du clamp iAGL mais
+avec deux différences critiques : le plancher cible est
+`max(junctionAlt, terrain + AGL)` au lieu de simplement
+`terrain + AGL`, et un échantillon est **épinglé** à l'altitude de
+jonction et ne bouge jamais.
+
+### 1. Plancher cible
+
+```text
+target[i] = max( junction_alt, terrain[i] + flight_height_agl )
+```
+
+C'est la règle « pas d'AGL de redescente sous la jonction » rendue
+concrète : la cible démarre comme une ligne plate à l'altitude de
+jonction, et n'est tirée **vers le haut** que là où le plancher de
+sécurité terrain la dépasse. Le profil n'a pas le droit de passer
+sous cette cible à aucun échantillon.
+
+### 2. Estimation initiale + verrou jonction
+
+```text
+profile = copy(target)
+profile[junction_index] = junction_alt
+```
+
+L'échantillon de jonction est fixé à l'altitude de jonction au départ
+et est **sauté** dans les boucles de clamp afin de ne jamais dériver.
+
+### 3. Clamp aller/retour à point fixe
+
+```text
+for iter in 0..7:
+    # Passe aller
+    for i in 1..n-1 (sauter junction_index):
+        lower = profile[i-1] - max_desc_seg
+        upper = profile[i-1] + max_climb_seg
+        profile[i] = clamp(profile[i], lower, upper)
+        profile[i] = max(profile[i], target[i])       # plancher gagne
+
+    # Passe retour
+    for i in n-2..0 (sauter junction_index):
+        # Pour atteindre profile[i+1] en un segment il faut
+        # profile[i] in [profile[i+1] - max_climb, profile[i+1] + max_desc]
+        lower = profile[i+1] - max_climb_seg
+        upper = profile[i+1] + max_desc_seg
+        profile[i] = clamp(profile[i], lower, upper)
+        profile[i] = max(profile[i], target[i])       # plancher gagne
+
+    if max_delta < 1e-4:
+        break
+```
+
+La passe aller impose la physique du prédécesseur vers l'échantillon
+courant ; la passe retour du successeur vers le courant. Chaque passe
+réapplique le plancher cible après clamp pour que le profil ne tombe
+jamais sous la surface de sécurité terrain *ni* sous l'altitude de
+jonction (le plus haut des deux l'emporte).
+
+La convergence est atteinte normalement en 2–3 itérations ; la boucle
+est plafonnée à 8 en sécurité. L'epsilon vaut `1e-4` m.
+
+<Tip>
+  Parce que l'échantillon de jonction est sauté dans la boucle, le
+  profil *rayonne depuis le point d'ancrage* : les altitudes proches
+  de la bande sont attirées vers l'altitude de jonction, et seule
+  l'extrémité lointaine peut diverger si une colline toute proche
+  impose une montée.
+</Tip>
+
+### Conséquences pratiques
+
+<Steps>
+  <Step title="Pas d'obstacle dans la leading line">
+    `terrain + AGL` ne dépasse jamais `junction_alt`, donc
+    `target[i] == junction_alt` partout. Toute la leading line reste
+    à l'altitude de jonction — une extension parfaitement plate de la
+    bande.
+  </Step>
+  <Step title="Une colline au milieu">
+    `target[i]` se relève là où la colline est. La passe aller
+    propage la montée *depuis* la jonction ; la passe retour
+    garantit que la montée *vers* l'obstacle démarre assez tôt pour
+    la limite physique. Une fois l'obstacle passé, la passe suivante
+    fait redescendre l'altitude vers `junction_alt` à exactement
+    `max_desc_seg` par pas, retrouvant l'altitude de jonction dès que
+    la physique l'autorise. **Pas de plongée en vallée, pas de
+    dépassement.**
+  </Step>
+  <Step title="Relief escarpé partout">
+    `target[i] > junction_alt` pour tous les échantillons. Le profil
+    devient identique à un profil iAGL — le clamp respecte toujours
+    les taux et reste toujours au-dessus du plancher de sécurité.
+  </Step>
+</Steps>
+
+## Attachement au retour sur la bande
+
+Les altitudes résultantes sont enveloppées dans des `StripWaypoint`
+avec leur `position` et leur `terrainMsl`, puis écrites dans les
+champs `approachWaypoints` et `departureWaypoints` de la bande via
+`copyWith`. Le corps de la bande (`waypoints` / `altitudeMsl`) n'est
+**pas** touché — les leading lines sont une extension additive, pas
+une réécriture.
+
+Quand le tri serpentin s'exécute plus tard, les listes approach et
+departure sont à la fois inversées **et** permutées sur les bandes
+d'index impair, pour que « approach » désigne toujours l'entrée
+physique quel que soit l'ordre de vol. C'est la raison pour laquelle
+approach et departure sont deux champs séparés sur `FlightStrip` et
+ne sont pas inlinés aux extrémités de la liste `waypoints`.
+
+## Matrice des modes
+
+| Mode  | Corps de bande           | Source altitude de jonction              | Forme leading line |
+| ----- | ------------------------ | ---------------------------------------- | ------------------ |
+| AMSL  | Plat à `altitudeMsl`     | Explicite : `altitudeMsl`                | Plat + évitement en montée |
+| iAMSL | Plat à médiane par bande | Explicite : `strip.altitudeMsl`           | Plat + évitement en montée |
+| iAGL  | Suiveur dense            | Implicite : premier/dernier waypoint     | Continuation + évitement en montée |
+
+## Voir aussi
+
+- [Modes d'altitude](/guides/altitude-modes)
+- [Génération des bandes](/guides/strip-generation)
+- [Grilles de contrôle qualité](/guides/quality-control)

@@ -1,123 +1,123 @@
 ---
-title: "Configuration des capteurs"
-description: "Gestion des cameras et capteurs LiDAR dans Helix Flight Planner"
+title: "Catalogue capteurs"
+description: "Parcourir, filtrer et gerer les capteurs et aeronefs dans Helix Flight Planner"
 ---
 
-# Configuration des capteurs
+# Catalogue capteurs
 
-Helix Flight Planner inclut un catalogue complet de capteurs et prend en charge les definitions de capteurs personnalises. Le capteur selectionne determine directement le GSD, l'espacement des bandes, la largeur de fauchee et la densite de points de votre mission.
+Helix Flight Planner embarque un riche catalogue de **capteurs** (cameras, LiDAR, pushbroom) et d'**aeronefs** (helicopteres, avions, drones). Ce guide explique comment utiliser le catalogue du point de vue utilisateur — rechercher, filtrer, basculer entre vue grille et vue tableau, et creer vos propres entrees personnalisees.
 
-## Catalogue de capteurs standard
+Pour l'aspect mission (comment un capteur selectionne pilote le calepinage et le GSD) voir le [guide de planification](/guides/mission-planning).
 
-L'application inclut plus de **80 cameras** et **14 capteurs LiDAR** des principaux fabricants, synchronises depuis le serveur Helix Aero. Les capteurs se mettent a jour automatiquement lorsque vous etes connecte a Internet.
+## Ouvrir le catalogue
 
-**Fabricants de cameras supportes :** Sony, Phase One, Hasselblad, DJI, MicaSense, Parrot, Leica, Trimble, et plus encore.
+Ouvrez le **Catalogue** depuis la navigation de gauche. Il contient deux onglets :
 
-**Fabricants de LiDAR supportes :** Velodyne, Ouster, Livox, Riegl, Leica, YellowScan, et plus encore.
+- **Capteurs** — cameras, LiDAR et systemes pushbroom.
+- **Aeronefs** — helicopteres, avions et drones.
 
-Acces au catalogue depuis le panneau **Capteur** dans la vue de planification. Utilisez la barre de recherche ou filtrez par :
-- **Type :** Camera ou LiDAR
-- **Fabricant**
+Un petit indicateur de sync en en-tete indique si votre catalogue est a jour. Il se rafraichit automatiquement a la connexion et a chaque cycle de sync.
 
-## Specifications des cameras
+## Rechercher et filtrer
 
-Lors de la selection d'une camera, Helix Flight Planner utilise les specifications suivantes pour calculer le GSD et l'espacement des bandes :
+Les deux onglets partagent la meme barre de controles :
 
-| Specification | Description | Exemple |
-|---------------|-------------|---------|
-| **Focale (mm)** | Focale de l'objectif | 35 mm |
-| **Largeur capteur (mm)** | Largeur physique du capteur d'image | 35,9 mm |
-| **Hauteur capteur (mm)** | Hauteur physique du capteur d'image | 24 mm |
-| **Taille pixel (µm)** | Taille physique de chaque pixel | 4,51 µm |
-| **Largeur image (px)** | Resolution en pixels dans la largeur | 7952 px |
-| **Hauteur image (px)** | Resolution en pixels dans la hauteur | 5304 px |
+- **Champ de recherche** — correspond aux noms, fabricants et modeles de capteur ou d'aeronef. La requete est reinitialisee au changement d'onglet.
+- **Chips de type** — pour l'onglet capteurs : **Tous**, **Camera**, **LiDAR**, **Pushbroom**. Pour l'onglet aeronefs : **Tous**, **Helicoptere**, **Avion**, **Drone**.
+- **Bascule de vue** — passe entre vue grille et vue tableau.
 
-### Formule du GSD
+Filtres et recherche se combinent — par exemple, `Recherche : "sony" + Type : Camera` affiche uniquement les cameras Sony.
 
-```
-GSD_largeur (cm) = (Altitude_m × Largeur_capteur_mm) / (Focale_mm × Largeur_image_px) × 100
-GSD_hauteur (cm) = (Altitude_m × Hauteur_capteur_mm) / (Focale_mm × Hauteur_image_px) × 100
-```
+## Vue grille vs vue tableau
 
-Le GSD se met a jour en temps reel lorsque vous modifiez l'altitude ou la selection du capteur.
+La bascule de vue (en haut a droite du catalogue) commute entre deux dispositions :
 
-### Espacement des bandes depuis le recouvrement
+<CardGroup cols={2}>
+  <Card title="Vue grille" icon="grip">
+    Une grille responsive de cartes — chaque carte affiche une photo du capteur ou de l'aeronef, son nom, son fabricant et ses specs cles. Ideale pour une navigation visuelle rapide.
+  </Card>
+  <Card title="Vue tableau" icon="table">
+    Un tableau dense et triable — cliquez sur n'importe quel en-tete de colonne pour trier ascendant / descendant. Ideale pour comparer plusieurs elements sur une meme specification (focale, FOV, etc.).
+  </Card>
+</CardGroup>
 
-```
-Espacement_bandes (m) = Emprise_largeur_m × (1 - Recouvrement_lateral / 100)
-Intervalle_prises (m) = Emprise_hauteur_m × (1 - Recouvrement_longitudinal / 100)
-```
+La preference de vue est memorisee entre les sessions.
 
-## Specifications LiDAR
+## Details du capteur
 
-Les capteurs LiDAR sont definis par la geometrie du faisceau et le debit de donnees :
+Cliquez sur une carte (ou une ligne) pour ouvrir la boite de dialogue **Details du capteur**. Elle affiche les specifications completes capturees dans le catalogue :
 
-| Specification | Description | Exemple |
-|---------------|-------------|---------|
-| **Champ de vision (°)** | Angle de vision complet en travers de piste | 120° |
-| **PRR (kHz)** | Frequence de repetition des impulsions | 600 kHz |
-| **Vitesse de balayage (Hz)** | Vitesse de rotation du balayage | 100 Hz |
-| **Divergence du faisceau (mrad)** | Angle de cone de chaque faisceau laser | 0,5 mrad |
+### Cameras
 
-### Largeur de fauchee LiDAR
+| Specification | Exemple |
+|---------------|---------|
+| Focale | 35 mm |
+| Largeur / hauteur capteur | 35,9 x 24 mm |
+| Taille pixel | 4,51 µm |
+| Resolution image | 7952 x 5304 px |
+| Type d'obturateur | Global / rolling |
+| Recouvrement longitudinal recommande | 80 % |
 
-```
-Largeur_fauchee (m) = 2 × Altitude_m × tan(Champ_vision_deg / 2 × π / 180)
-```
+### LiDAR
 
-### Densite de points LiDAR
+| Specification | Exemple |
+|---------------|---------|
+| FOV | 120 deg |
+| Frequence d'impulsion | 600 kHz |
+| Vitesse de balayage | 100 Hz |
+| Divergence du faisceau | 0,5 mrad |
+| Portee maximale | 500 m |
+| Retours multiples | Jusqu'a 5 retours |
 
-```
-Points_par_m2 = (PRR × Vitesse_balayage) / (Vitesse_sol_ms × Largeur_fauchee_m)
-```
+### Pushbroom
 
-## Impact des specifications sur la planification
+| Specification | Exemple |
+|---------------|---------|
+| Longueur de ligne | 12 000 px |
+| Taille pixel | 6,5 µm |
+| FOV | 40 deg |
+| Frequence d'acquisition | 400 Hz |
 
-La selection du capteur a un effet en cascade sur toute la mission :
+La boite de dialogue propose aussi un raccourci **Utiliser pour une nouvelle mission** qui ouvre l'assistant de mission avec le capteur deja selectionne.
 
-```
-Specs capteur + Altitude
-    → GSD (cm/px pour cameras, pts/m² pour LiDAR)
-    → Emprise / largeur de fauchee
-    → Espacement des bandes (controle par le recouvrement lateral)
-    → Nombre de bandes
-    → Nombre de prises / distance totale
-    → Temps de vol estime
-```
+## Standards vs personnalises
 
-Modifier un parametre du capteur ou l'altitude recalcule immediatement toutes les valeurs en aval — aucune action manuelle requise.
+Les capteurs et aeronefs existent en deux categories :
 
-## Capteurs personnalises
-
-Si votre capteur n'est pas dans le catalogue standard, vous pouvez creer un capteur personnalise.
-
-### Creer une camera personnalisee
-
-1. Dans le panneau **Capteur**, cliquez sur **+ Ajouter un capteur personnalise**.
-2. Selectionnez **Camera** comme type de capteur.
-3. Remplissez les champs requis :
-   - Nom du capteur (ex. : "Hasselblad L2D-20c Custom")
-   - Focale (mm)
-   - Largeur et hauteur du capteur (mm)
-   - Taille du pixel (µm) — ou saisissez la resolution en pixels et l'application calcule la taille du pixel
-4. Cliquez sur **Enregistrer**. Le capteur personnalise est disponible immediatement et synchronise avec votre compte.
-
-### Creer un LiDAR personnalise
-
-1. Dans le panneau **Capteur**, cliquez sur **+ Ajouter un capteur personnalise**.
-2. Selectionnez **LiDAR** comme type de capteur.
-3. Remplissez les champs requis :
-   - Nom du capteur
-   - Champ de vision (degres, angle total)
-   - Frequence de repetition des impulsions (kHz)
-   - Vitesse de balayage (Hz)
-   - Divergence du faisceau (mrad)
-4. Cliquez sur **Enregistrer**.
-
-### Modifier et supprimer des capteurs personnalises
-
-Les capteurs personnalises peuvent etre modifies ou supprimes depuis le panneau **Capteur**. Les capteurs du catalogue standard (synchronises depuis le serveur) ne peuvent pas etre modifies. Si vous avez besoin d'une variante, creez un capteur personnalise base sur les specifications standard.
+- **Standards** — curés par Helix Aero. Non modifiables ni supprimables localement ; si une specification est erronee, contactez le support. Les entrees standards sont partagees entre tous les utilisateurs de votre organisation et se mettent a jour automatiquement.
+- **Personnalises** — crees par vous. Ils apparaissent a cote des entrees standards avec un petit badge **Personnalise** et sont limites a votre compte. Ils peuvent etre modifies ou supprimes a tout moment.
 
 <Warning>
-  La suppression d'un capteur personnalise n'affecte pas les missions deja creees avec ce capteur. Les missions existantes conservent les specifications du capteur telles qu'elles etaient au moment de la creation.
+  Supprimer un capteur personnalise n'affecte pas les missions deja creees avec lui. Chaque mission conserve un instantane des specifications du capteur au moment de sa creation.
 </Warning>
+
+## Creer un capteur personnalise
+
+Cliquez sur **Nouveau capteur** en haut du catalogue (ou sur le bouton flottant du panneau capteur dans une mission). Un formulaire s'ouvre :
+
+<Steps>
+  <Step title="Choisir le type de capteur">
+    Camera, LiDAR ou Pushbroom.
+  </Step>
+  <Step title="Renseigner l'identite">
+    Nom, fabricant et modele.
+  </Step>
+  <Step title="Renseigner les specifications techniques">
+    Les champs affiches dependent du type (voir les tableaux de specifications ci-dessus). Les champs requis sont marques ; l'application refuse l'enregistrement tant qu'ils ne sont pas remplis.
+  </Step>
+  <Step title="Enregistrer">
+    Le capteur est enregistre localement et synchronise avec votre compte au prochain cycle de sync. Il est immediatement disponible dans l'assistant de mission.
+  </Step>
+</Steps>
+
+<Tip>
+  Pour les cameras, si vous connaissez la taille de pixel et la resolution image, les dimensions du capteur sont derivees automatiquement. Vous pouvez aussi saisir directement les dimensions et la taille de pixel est calculee.
+</Tip>
+
+## Creer un aeronef personnalise
+
+L'onglet aeronefs supporte le meme flux. Les aeronefs personnalises permettent de definir des valeurs par defaut d'altitude, vitesse et recouvrement qui serviront a initialiser les nouvelles missions. L'etape aeronef de l'assistant liste les aeronefs personnalises a cote du catalogue standard.
+
+## Modifier et supprimer
+
+Seules les entrees personnalisees sont modifiables. Cliquez sur le petit menu de la carte (ou de la ligne) pour acceder a **Modifier** et **Supprimer**. Les entrees standards affichent un cadenas — pour proposer des corrections, contactez le support Helix Aero.

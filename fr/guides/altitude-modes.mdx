@@ -1,0 +1,217 @@
+---
+title: "Modes d'altitude : AMSL, iAMSL, iAGL"
+description: "Exploration approfondie des trois références d'altitude d'Helix, fonctionnement de l'optimiseur médiane-par-bande iAMSL et construction d'un profil suiveur physiquement réalisable en iAGL."
+---
+
+Helix prend en charge trois modes d'altitude pour les missions aéronef
+habité. Les trois utilisent le même pipeline de planification mais
+construisent le profil de vol différemment.
+
+| Mode   | Altitude par bande | Suivi du relief | Densité waypoints |
+| ------ | ------------------ | --------------- | ----------------- |
+| AMSL   | Une valeur MSL plate pour tout le plan | Non | Extrémités seules |
+| iAMSL  | Une valeur MSL plate optimale **par bande** | Statistique | Extrémités seules |
+| iAGL   | Profil dense à altitude variable par bande | Prédictif | 2 à 1000 waypoints |
+
+Le mode `AGL` réservé aux drones est actuellement réservé pour un
+usage futur — utilisez iAGL ou iAMSL pour les missions avion/hélicoptère.
+
+## AMSL — altitude plate au-dessus du niveau moyen de la mer
+
+Le mode le plus simple : chaque bande vole exactement à l'altitude MSL
+saisie. La seule interaction avec le relief a lieu avant le calcul
+GSD, où le planificateur échantillonne le rectangle englobant sur une
+grille 20x20 et soustrait l'élévation terrain **maximale** de cette
+altitude pour obtenir la *hauteur effective au-dessus du sol* qui
+alimente les maths capteur. Cela empêche la GSD d'être sur-estimée
+sur des reliefs élevés.
+
+AMSL est le bon choix en plaine, au-dessus de l'eau, ou quand des
+contraintes réglementaires externes imposent un couloir MSL précis.
+
+<Note>
+  Quand les leading lines sont activées et qu'un fournisseur de relief
+  est disponible, même les bandes AMSL reçoivent des extensions
+  approach/departure conscientes du terrain — voir
+  [Leading lines](/guides/leading-lines).
+</Note>
+
+## iAMSL — une altitude plate optimale par bande
+
+iAMSL (intelligent AMSL) calcule **une** altitude MSL optimale pour
+chaque bande indépendamment. Le corps de la bande reste plat, mais des
+bandes différentes peuvent se situer à des altitudes différentes, donc
+une mission sur relief vallonné n'a plus à grimper pour franchir le
+pire point partout.
+
+L'altitude par bande est dérivée en quatre étapes :
+
+<Steps>
+  <Step title="Échantillonner la ligne médiane">
+    La bande est divisée en `n` échantillons entre son début et sa fin,
+    où `n = clamp(stripLength / step + 1, 2, 1000)`. Le pas
+    d'échantillonnage est le même pas auto-calculé que celui utilisé
+    par iAGL (voir ci-dessous) — quatre échantillons par seconde de
+    vol, bornés à `[2, 100]` m.
+  </Step>
+  <Step title="Appliquer le filtre de tolérance">
+    Les delta d'élévation consécutifs plus petits que la tolérance
+    terrain (défaut 1 m) sont écrasés sur l'échantillon précédent, pour
+    que le profil ignore le bruit DEM sous-tolérance.
+  </Step>
+  <Step title="Prendre la médiane">
+    Les échantillons terrain filtrés sont triés et la **médiane** est
+    utilisée comme élévation terrain de référence. La médiane résiste à
+    une valeur aberrante isolée (un arbre grand, une fosse),
+    contrairement à moyenne ou max.
+  </Step>
+  <Step title="Ajouter la hauteur de vol">
+    L'altitude finale par bande est
+    `flight_altitude_msl = median_terrain_msl + flight_height_agl`.
+  </Step>
+</Steps>
+
+Le résultat est une altitude unique par bande : la bande reste plate à
+cette altitude, et les statistiques et rapports en aval utilisent la
+même valeur.
+
+<Tip>
+  iAMSL minimise la variance d'AGL le long d'une bande sans renoncer
+  aux bénéfices aérodynamiques et photogrammétriques du vol en palier.
+  C'est le choix par défaut pour les reliefs vallonnés doux où un
+  profil iAGL complet ajouterait juste du bruit waypoint sans gain de
+  couverture réel.
+</Tip>
+
+## iAGL — suivi de terrain dense avec contrainte physique
+
+iAGL est le mode lourd. Chaque bande devient une **polyligne dense**
+de waypoints qui épouse le relief à la hauteur de vol AGL configurée,
+avec la garantie qu'aucun couple de waypoints consécutifs ne viole le
+taux max de montée ou de descente de l'aéronef. Pas de spline, pas de
+lissage — la garantie est mathématique.
+
+Voici ce qui se passe par bande, dans l'ordre :
+
+### 1. Pas et lookahead auto
+
+Les deux paramètres dérivent de la vitesse sol ; l'utilisateur **ne
+peut pas** les surcharger (verrouillé par spec produit).
+
+```text
+sample_step (m) = clamp( speed_ms * 0.25, 2.0, 100.0 )   # 4 éch/sec
+lookahead   (m) = speed_ms * ( 50 / max_climb_rate_ms + 5 )
+```
+
+Le terme `50 / maxClimbRate` signifie que les aéronefs lents à monter
+commencent à réagir au terrain plus tôt ; la constante `+5` secondes
+est le temps de réaction pilote + latence de commande.
+
+### 2. Échantillonnage, lookahead, tolérance
+
+<Steps>
+  <Step title="Échantillonner le terrain">
+    `n = clamp(stripLength / step + 1, 2, 1000)` positions waypoint
+    sont placées uniformément entre le début et la fin de la bande. Le
+    DEM est requêté une fois par position.
+  </Step>
+  <Step title="Lookahead avant">
+    Pour chaque échantillon, la valeur terrain est remplacée par le
+    **max** de `terrain[w .. w + lookahead_steps]`. C'est ce qui fait
+    que le profil « connaît » le terrain qui monte devant avant d'y
+    arriver.
+  </Step>
+  <Step title="Filtrage tolérance">
+    Comme iAMSL, les deltas consécutifs plus petits que la tolérance
+    terrain sont écrasés pour ne pas chasser le bruit sous-métrique
+    du DEM.
+  </Step>
+</Steps>
+
+Après ces trois passes, le plancher de sécurité par waypoint vaut
+`raw_alts[w] = filtered_terrain[w] + flight_height_agl` — le profil
+final ne doit jamais descendre en-dessous.
+
+### 3. Clamp aller/retour à point fixe
+
+Le profil physiquement réalisable est obtenu en itérant deux passes
+jusqu'à convergence (en pratique 2–3 itérations dans le pire cas,
+plafonné à 8) :
+
+```text
+# dt et budgets verticaux par segment
+dt              = seg_len / speed_ms
+max_climb_seg   = max_climb_rate_ms * dt
+max_desc_seg    = max_descent_rate_ms * dt
+
+# Passe aller (i-1 -> i)
+for i in 1..n-1:
+    floor_desc = profile[i-1] - max_desc_seg
+    ceil_climb = profile[i-1] + max_climb_seg
+    profile[i] = clamp(profile[i], floor_desc, ceil_climb)
+    profile[i] = max(profile[i], raw_alts[i])        # plancher gagne
+
+# Passe retour (i+1 -> i)
+for i in n-2..0:
+    required  = profile[i+1] - max_climb_seg          # doit pouvoir atteindre i+1
+    profile[i] = max(profile[i], required)
+    profile[i] = max(profile[i], raw_alts[i])         # plancher gagne
+```
+
+Les deux passes sont volontairement asymétriques :
+
+- **Passe aller** : borne l'échantillon *courant* par la physique
+  depuis l'échantillon précédent (impossible de monter ou descendre
+  plus vite que le taux autorisé), puis re-plancher au plancher de
+  sécurité terrain.
+- **Passe retour** : regarde l'échantillon *suivant* et pousse le
+  courant vers le haut s'il n'est pas assez haut pour que l'aéronef
+  atteigne `profile[i+1]` en un segment. C'est ce qui garantit que le
+  profil monte **en anticipation** d'un relief qui s'élève au lieu de
+  percuter un mur.
+
+<Warning>
+  Le plancher terrain `raw_alts[w]` gagne toujours après chaque clamp.
+  Il n'existe aucun scénario où le profil réalisable passe sous le
+  plancher de sécurité — si le taux de montée de l'aéronef est
+  insuffisant pour franchir un obstacle, la passe retour relève toute
+  la rampe d'approche jusqu'à ce qu'il puisse.
+</Warning>
+
+La boucle s'arrête quand `max_delta < 1e-6` entre deux itérations, ou
+au bout de 8 itérations en sécurité. Dans tous les cas pratiques la
+convergence a lieu en 2 ou 3 passes.
+
+### 4. Sortie
+
+Chaque waypoint porte sa position, son altitude MSL et l'élévation du
+terrain, et est attaché à la bande. En mode iAGL le corps de la bande
+n'a pas d'altitude unique — son profil vit entièrement dans la liste
+des waypoints. Le planificateur stocke aussi un profil terrain par
+bande utilisé par les statistiques et les rapports.
+
+## Leading lines selon le mode
+
+Les leading lines (extensions approach/departure) sont attachées
+après le calcul du corps de bande, quel que soit le mode. Leur
+sémantique est détaillée dans [Leading lines](/guides/leading-lines),
+mais en résumé :
+
+- **AMSL** : les leading lines prolongent à l'altitude MSL plate de la
+  bande et ne grimpent que quand le plancher de sécurité terrain monte
+  au-dessus.
+- **iAMSL** : idem, mais l'altitude de jonction est l'altitude MSL
+  optimisée par bande.
+- **iAGL** : l'altitude de jonction est le premier/dernier waypoint du
+  corps, donc la leading line reprend continûment là où le profil
+  suiveur se termine.
+
+Dans les trois cas les taux de montée et descente sont respectés
+exactement de la même manière, via le même clamp à point fixe décrit
+ci-dessus.
+
+## Voir aussi
+
+- [GSD et empreinte](/guides/gsd-and-footprint)
+- [Génération des bandes](/guides/strip-generation)
+- [Leading lines](/guides/leading-lines)

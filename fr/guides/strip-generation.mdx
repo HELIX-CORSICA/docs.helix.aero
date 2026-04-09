@@ -1,0 +1,164 @@
+---
+title: "Génération des bandes"
+description: "Comment Helix transforme un polygone AOI en bandes primaires et transversales : choix du cap, projection locale, découpe, extension des bords et ordre lawnmower."
+---
+
+Le générateur de bandes est le cœur géométrique du planificateur. Il
+prend un polygone AOI (ou une ligne médiane de corridor), une stratégie
+de cap et un espacement bande voulu, et retourne la liste des bandes
+de vol que les modes d'altitude transformeront en plan de vol complet.
+
+## 1. Résolution du polygone effectif
+
+La première étape dépend du type d'AOI :
+
+- **AOI polygone** — le polygone utilisateur est dilaté vers l'extérieur
+  de `bufferM + mechanicalBuffer`, où le buffer mécanique vaut 2,5 % de
+  la diagonale du rectangle englobant. Ce terme mécanique garantit la
+  couverture des bords même quand le buffer utilisateur est nul.
+- **AOI corridor** — la ligne médiane linéaire est gonflée en polygone
+  de la largeur du corridor.
+
+Après cette étape, le reste du pipeline est identique pour les deux
+types d'AOI — tout en aval voit un simple polygone.
+
+## 2. Choix du cap
+
+<Tabs>
+  <Tab title="Polygone">
+    Pour un AOI polygone l'utilisateur peut fixer un cap explicite.
+    Sinon, le planificateur lance une recherche par force brute :
+
+    1. Projeter les sommets du polygone dans un repère plat local XY
+       centré sur le centroïde.
+    2. Pour chaque cap candidat de 0° à 179° par pas de 1°, projeter
+       chaque sommet sur l'axe perpendiculaire à ce cap.
+    3. Enregistrer `spread = maxProj - minProj`.
+    4. Retenir le cap avec le **plus petit** spread — c'est l'axe le
+       long duquel le polygone est le plus étroit, donc celui qui
+       nécessite le moins de bandes parallèles.
+
+    Un terme bonus vent optionnel retranche 0–5 % aux caps dans un
+    cercle de 30° autour de la direction du vent, afin de privilégier
+    les lignes alignées au vent quand le ratio d'aspect du polygone ne
+    désigne pas déjà un vainqueur clair.
+  </Tab>
+  <Tab title="Corridor">
+    Pour un AOI corridor les bandes traversent **perpendiculairement**
+    l'axe de la ligne médiane, donc le cap est simplement
+    `heading = bearing(centerline[0], centerline[-1]) + 90°`. Il n'y a
+    pas de surcharge pour les corridors — la géométrie dicte la
+    direction.
+  </Tab>
+</Tabs>
+
+## 3. Espacement bande à partir du sidelap
+
+Avant toute disposition de bandes, le générateur recalcule l'empreinte
+caméra (ou le fauchage LiDAR) à `input.altitudeMsl` et en dérive :
+
+```text
+strip_spacing (m) = footprint_w * ( 1 - sidelap )
+extension   (m)   = footprint_h * 0.5
+```
+
+La valeur `extension` est une demi-longueur d'empreinte dont chaque
+bande est prolongée **aux deux extrémités** après découpe — cela
+garantit que les prises de bord couvrent au-delà de la frontière du
+polygone pour que les premières et dernières images de chaque bande
+tombent bien dans l'AOI.
+
+## 4. Projection locale + grille + découpe
+
+<Steps>
+  <Step title="Projection en mètres plats">
+    Le polygone est converti dans un repère local (est, nord) centré
+    sur son centroïde. Chaque sommet est placé via distance + azimut
+    de Vincenty depuis le centroïde — l'approximation plate convient à
+    l'échelle de la génération de bandes car une bande traverse
+    rarement plusieurs degrés de latitude.
+  </Step>
+  <Step title="Trouver l'extension perpendiculaire">
+    Chaque sommet projeté est produit scalaire avec le vecteur unitaire
+    perpendiculaire `(sin(cap+90), cos(cap+90))`. Le min et le max
+    donnent `[minPerp, maxPerp]` — la tranche à remplir de bandes.
+  </Step>
+  <Step title="Marcher les offsets">
+    Les offsets démarrent à `minPerp + 0,05 * strip_spacing`, et
+    avancent de `strip_spacing` jusqu'à
+    `maxPerp - 0,05 * strip_spacing`. L'inset de 5 % empêche la
+    première/dernière bande de dégénérer en un point à la limite du
+    polygone.
+  </Step>
+  <Step title="Construire des lignes longues et les découper">
+    Chaque offset devient une ligne « infinie » dans la direction du
+    cap, tronquée à `2 * extentAlong + 4 * strip_spacing` pour rester
+    finie. La ligne est découpée contre le polygone avec Clipper2
+    (`ClipperD.execute(intersection, nonZero)`), avec le polygone
+    comme clip fermé et la ligne comme sujet ouvert. Les chemins
+    ouverts survivants deviennent des segments `(start, end)`.
+  </Step>
+  <Step title="Fallback manuel">
+    Si Clipper2 ne produit rien (cas limite avec géométrie dégénérée),
+    une intersection paramétrique manuelle rayon/arête prend le
+    relais. Elle collecte tous les t le long de la ligne, les trie, et
+    garde les segments dont le milieu est dans le polygone par test
+    ray-casting.
+  </Step>
+</Steps>
+
+Chaque segment découpé devient un `FlightStrip` — mais seulement si
+`length >= strip_spacing`. Les petits fragments produits par la découpe
+en coin sont éliminés pour que le plan n'accumule pas des bandes
+dégénérées de 3 m sur le bord du polygone.
+
+## 5. Extension des bords
+
+Après découpe, chaque bande survivante est prolongée de
+`footprint_h * 0.5` aux deux extrémités le long de son cap sur
+l'ellipsoïde. C'est la garantie de couverture des bords mentionnée
+plus haut : la première et la dernière prise de chaque bande se
+situent à une demi-image en dehors de l'AOI pour qu'aucune empreinte
+ne soit coupée par le polygone.
+
+## 6. Bandes transversales
+
+Quand les bandes transversales sont activées, toute la procédure est
+répétée avec `cap + 90°` et les bandes reçoivent le préfixe de nom `B`.
+Les bandes transversales utilisent le même espacement que la grille
+primaire, et leur cap est verrouillé sur la valeur perpendiculaire.
+
+Les bandes transversales sont un outil QC : elles ajoutent une
+deuxième passe perpendiculaire aux lignes primaires, ce qui élimine le
+biais d'orientation dans l'ajustement de bloc photogrammétrique. Elles
+ne remplacent *pas* un sidelap correct — elles le complètent.
+
+## 7. Ordonnancement serpentin (lawnmower)
+
+L'étape finale s'exécute après le routage de mode d'altitude. Chaque
+bande d'indice impair est inversée : ses points de début et de fin sont
+permutés, les waypoints embarqués (le cas échéant) sont inversés sur
+place, et les leading lines d'approche et de départ sont permutées
+**et** inversées ensemble pour
+que « approach » désigne toujours l'entrée physique quel que soit
+l'ordre de vol. Le drapeau `reversed` de la bande passe à vrai pour
+que les renderers dessinent la flèche de direction correctement.
+
+Le résultat est le motif lawnmower classique — l'aéronef vole `A1`
+ouest-est, `A2` est-ouest, `A3` ouest-est à nouveau, etc. Les bandes
+transversales sont serpentinées indépendamment.
+
+<Note>
+  L'étape serpentine s'exécute **après** le calcul d'altitude iAGL/iAMSL,
+  ce qui est important : le profil d'altitude est calculé sur la bande
+  canonique gauche-droite puis inversé avec la bande. Le clamp
+  physiquement réalisable reste valide parce que le profil est
+  symétrique par inversion.
+</Note>
+
+## Voir aussi
+
+- [GSD et empreinte](/guides/gsd-and-footprint)
+- [Modes d'altitude](/guides/altitude-modes)
+- [Leading lines](/guides/leading-lines)
+- [Grilles de contrôle qualité](/guides/quality-control)

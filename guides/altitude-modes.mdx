@@ -1,0 +1,204 @@
+---
+title: "Altitude modes: AMSL, iAMSL, iAGL"
+description: "Deep dive into the three altitude references Helix supports, how the iAMSL median-per-strip optimiser works, and how iAGL builds a physically-feasible terrain-following profile."
+---
+
+Helix supports three altitude modes for crewed aircraft missions. All
+three use the same planning pipeline but build the flight profile
+differently.
+
+| Mode   | Per-strip altitude | Terrain-following | Waypoint density |
+| ------ | ------------------ | ----------------- | ---------------- |
+| AMSL   | One flat MSL value for the whole plan | No | Endpoints only |
+| iAMSL  | One optimal flat MSL value **per strip** | Statistical | Endpoints only |
+| iAGL   | Dense variable-altitude profile per strip | Predictive | 2 to 1000 waypoints |
+
+The drone-only `AGL` mode is reserved for future use — use iAGL or
+iAMSL for airplane/helicopter missions.
+
+## AMSL — flat altitude above mean sea level
+
+The simplest mode: every strip flies at the entered MSL altitude
+exactly. The only terrain interaction happens before GSD is computed,
+where the planner samples the AOI bounding box on a 20x20 grid and
+subtracts the **maximum** terrain elevation from the MSL altitude to
+obtain the *effective above-ground height* that feeds the sensor math.
+This prevents GSD from being wildly overestimated on elevated terrain.
+
+AMSL is the right choice over flat country, over water, or when external
+regulatory constraints fix a specific MSL corridor.
+
+<Note>
+  When leading lines are enabled and a terrain provider is available,
+  even AMSL strips get terrain-aware approach/departure extensions — see
+  [Leading lines](/guides/leading-lines).
+</Note>
+
+## iAMSL — one optimal flat altitude per strip
+
+iAMSL (intelligent AMSL) computes a **single** best-fit MSL altitude for
+each strip independently. The strip body itself stays flat, but different
+strips can sit at different altitudes, so a mission over rolling terrain no
+longer has to climb to clear the worst point everywhere.
+
+The per-strip altitude is derived in four steps:
+
+<Steps>
+  <Step title="Sample the centerline">
+    The strip is divided into `n` samples between its start and end,
+    where `n = clamp(stripLength / step + 1, 2, 1000)`. The sample step
+    is the same auto-computed step used by iAGL (see below) — four
+    samples per second of flight, clamped to `[2, 100]` m.
+  </Step>
+  <Step title="Apply the tolerance filter">
+    Consecutive elevation deltas smaller than the terrain tolerance
+    (default 1 m) are snapped to the previous sample, so the profile
+    ignores sub-tolerance DEM noise.
+  </Step>
+  <Step title="Take the median">
+    The filtered terrain samples are sorted and the **median** is used as
+    the reference terrain elevation. Median is robust to single outliers
+    (one tall tree, one pit), unlike mean or max.
+  </Step>
+  <Step title="Add the flight height">
+    The final per-strip altitude is
+    `flight_altitude_msl = median_terrain_msl + flight_height_agl`.
+  </Step>
+</Steps>
+
+The result is a single altitude per strip: the strip body stays flat at
+that altitude, and downstream statistics and reports use the same value.
+
+<Tip>
+  iAMSL minimises AGL variance across a strip without giving up the
+  aerodynamic and photogrammetric benefits of level flight. It's the
+  default choice for gentle rolling terrain where a full iAGL profile
+  would just add waypoint noise with no real coverage gain.
+</Tip>
+
+## iAGL — dense terrain-following with physical clamp
+
+iAGL is the heavy-weight mode. Each strip becomes a **dense polyline**
+of waypoints that hugs the terrain at the configured flight height AGL,
+with the guarantee that no two consecutive waypoints ever violate the
+aircraft's maximum climb or descent rate. No spline, no smoothing —
+the guarantee is mathematical.
+
+Here is what happens per strip, in order:
+
+### 1. Auto sample step and lookahead
+
+Both parameters are derived from ground speed; the user does **not**
+override them (locked by product spec).
+
+```text
+sample_step (m) = clamp( speed_ms * 0.25, 2.0, 100.0 )   # 4 samples/sec
+lookahead   (m) = speed_ms * ( 50 / max_climb_rate_ms + 5 )
+```
+
+The `50 / maxClimbRate` term means slow-climbing aircraft start reacting
+to terrain earlier; the constant `+5` seconds is pilot reaction + control
+lag.
+
+### 2. Sample, lookahead, tolerance
+
+<Steps>
+  <Step title="Sample the terrain">
+    `n = clamp(stripLength / step + 1, 2, 1000)` waypoint positions are
+    placed uniformly between the strip's start and end. The DEM is
+    queried once per position.
+  </Step>
+  <Step title="Forward lookahead">
+    For each sample, the terrain value is replaced by the **max** of
+    `terrain[w .. w + lookahead_steps]`. This is what makes the profile
+    "know about" rising ground ahead before it actually gets there.
+  </Step>
+  <Step title="Tolerance snap">
+    Just like iAMSL, consecutive deltas smaller than the terrain
+    tolerance are snapped so the aircraft doesn't chase sub-metre DEM
+    noise.
+  </Step>
+</Steps>
+
+After these three passes the per-waypoint safety floor is
+`raw_alts[w] = filtered_terrain[w] + flight_height_agl` — the final
+profile must never descend below it.
+
+### 3. Fixed-point forward / backward clamp
+
+The physically-feasible profile is obtained by iterating two passes until
+convergence (practically 2–3 iterations on worst-case terrain, capped at
+8):
+
+```text
+# segment dt and per-segment vertical budgets
+dt              = seg_len / speed_ms
+max_climb_seg   = max_climb_rate_ms * dt
+max_desc_seg    = max_descent_rate_ms * dt
+
+# Forward pass (i-1 -> i)
+for i in 1..n-1:
+    floor_desc = profile[i-1] - max_desc_seg
+    ceil_climb = profile[i-1] + max_climb_seg
+    profile[i] = clamp(profile[i], floor_desc, ceil_climb)
+    profile[i] = max(profile[i], raw_alts[i])        # terrain floor wins
+
+# Backward pass (i+1 -> i)
+for i in n-2..0:
+    required  = profile[i+1] - max_climb_seg          # must be able to reach i+1
+    profile[i] = max(profile[i], required)
+    profile[i] = max(profile[i], raw_alts[i])         # terrain floor wins
+```
+
+The two passes are intentionally asymmetric:
+
+- **Forward pass** clamps the *current* sample by physics from the
+  previous sample (can't climb or descend faster than the rate allows),
+  then re-floors to the terrain-safety floor.
+- **Backward pass** looks at the *next* sample and pushes the current one
+  up if it isn't high enough for the aircraft to reach `profile[i+1]` in
+  one segment. This is what guarantees the profile climbs **in advance**
+  of rising terrain instead of hitting a wall.
+
+<Warning>
+  The terrain floor `raw_alts[w]` always wins after each clamp. There is
+  no scenario where the feasible profile dips below the safety floor —
+  if the aircraft's climb rate is insufficient to clear an obstacle, the
+  backward pass will raise the entire leading ramp until it can.
+</Warning>
+
+The loop stops when `max_delta < 1e-6` between two iterations, or after
+8 iterations as a safety cap. In every practical case convergence
+happens in 2 or 3 passes.
+
+### 4. Output
+
+Each waypoint carries its position, MSL altitude and terrain MSL and
+is attached to the strip. In iAGL mode the strip body has no single
+altitude — its profile lives entirely in the waypoint list. The
+planner also stores a per-strip terrain profile used by the statistics
+and reports.
+
+## Leading lines under each mode
+
+Leading lines (approach/departure extensions) are attached after the
+strip body is computed, regardless of mode. Their semantics are covered
+in detail in [Leading lines](/guides/leading-lines), but the short
+version is:
+
+- **AMSL**: leading lines extend at the strip's flat MSL altitude and only
+  climb when the terrain safety floor rises above it.
+- **iAMSL**: same, but the junction altitude is the strip's
+  per-strip-optimised MSL.
+- **iAGL**: the junction altitude is the first/last body waypoint, so the
+  leading line smoothly picks up from wherever the terrain-following
+  profile ended.
+
+In all three cases the climb and descent rates are respected exactly the
+same way, using the same fixed-point clamp described above.
+
+## Related
+
+- [GSD and footprint](/guides/gsd-and-footprint)
+- [Strip generation](/guides/strip-generation)
+- [Leading lines](/guides/leading-lines)

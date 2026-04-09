@@ -1,36 +1,60 @@
 ---
 title: "Helix Flight Planner"
-description: "Logiciel professionnel de planification de missions de releve aerien pour la photogrammetrie et les operations LiDAR"
+description: "Logiciel professionnel de planification de missions de releve aerien pour la photogrammetrie, le LiDAR et les capteurs pushbroom"
 ---
 
 # Helix Flight Planner
 
-Helix Flight Planner est une application desktop professionnelle pour la planification de missions de releve aerien. Concu pour les operateurs de photogrammetrie et LiDAR, il offre un calcul precis du calepinage, une visualisation sur globe 3D, un export multi-format et des cartes de controle qualite — dans une interface moderne et multiplateforme.
+Helix Flight Planner est une application desktop professionnelle pour la planification de missions de releve aerien. Concu pour les operateurs de photogrammetrie, LiDAR et pushbroom, il combine un globe 3D en direct, un calcul precis du calepinage, des modes d'altitude conscients du terrain, des cartes de controle qualite et un export multi-format dans une seule interface multiplateforme.
 
 ## Fonctionnalites principales
 
 <CardGroup cols={2}>
   <Card title="Globe 3D" icon="globe">
-    Planifiez vos missions sur un globe 3D avec imagerie satellitaire, relief et affichage en temps reel des lignes de vol.
+    Planifiez sur un globe 3D Cesium avec imagerie satellitaire, relief global, outils de dessin, panneau de couches, boussole, info curseur et outils de mesure.
   </Card>
   <Card title="Calepinage precis" icon="route">
-    Lignes de vol calculees avec la geodesie de Vincenty pour une precision centimetrique. GSD, recouvrement et emprise mis a jour en temps reel.
+    Lignes de vol calculees avec la geodesie de Vincenty. GSD, fauchee, recouvrement et emprise mis a jour en temps reel.
+  </Card>
+  <Card title="Altitude et terrain" icon="mountain">
+    Modes AMSL, iAMSL et iAGL pilotes par un MNT (SRTM 30 m ou Copernicus GLO-30) pour un suivi du terrain.
+  </Card>
+  <Card title="Controle qualite" icon="chart-bar">
+    Heatmaps de couverture, GSD, recouvrement lateral, HAGL, densite de points et MTA avec alertes de seuil.
+  </Card>
+  <Card title="Editeur de bandes" icon="list">
+    Renommer, inverser, supprimer et reordonner les bandes. Optimiseur un clic pour l'ordre de vol et les bandes correctives.
   </Card>
   <Card title="Export multi-format" icon="file-export">
-    Exportez vers KML, GPX, CSV, GeoJSON, TXT, JSON .helix et rapport PDF en un clic.
+    KML, KMZ, GPX, CSV, GeoJSON, TXT, XLSX, rapport PDF, waypoints drone, vue client HTML et conteneur natif `.helix`.
   </Card>
-  <Card title="Cartes de controle qualite" icon="chart-bar">
-    Carte de couverture, distribution du GSD, recouvrement lateral et alertes de seuil avant chaque vol.
+  <Card title="Catalogue capteurs et aeronefs" icon="camera">
+    Plus de 80 cameras, 14 capteurs LiDAR et une bibliotheque d'aeronefs curés par Helix Aero. Vue grille ou tableau triable, recherche et filtres.
+  </Card>
+  <Card title="Hors ligne et sync" icon="cloud-arrow-up">
+    Mode hors ligne complet avec sauvegarde automatique. Projets, missions et capteurs personnalises se synchronisent a la reconnexion.
   </Card>
 </CardGroup>
 
 ## Capteurs supportes
 
-Helix Flight Planner inclut un catalogue de plus de **80 cameras** et **14 capteurs LiDAR** des principaux fabricants. Vous pouvez egalement definir des capteurs personnalises avec un controle complet des specifications.
+Helix Flight Planner inclut un catalogue de plus de **80 cameras**, **14 capteurs LiDAR** et une bibliotheque de profils d'aeronefs, le tout curé par Helix Aero. Vous pouvez egalement definir des capteurs et aeronefs personnalises avec un controle complet des specifications.
 
-**Planification camera :** focale, dimensions du capteur, taille du pixel, recouvrement longitudinal, recouvrement lateral et GSD a toute altitude.
+- **Cameras** — focale, dimensions du capteur, taille du pixel, recouvrement longitudinal, lateral et GSD a toute altitude.
+- **LiDAR** — FOV, frequence d'impulsion, vitesse de balayage, divergence du faisceau, largeur de fauchee et densite de points.
+- **Pushbroom** — geometrie du capteur ligne et regles d'espacement natives.
 
-**Planification LiDAR :** champ de vision, frequence d'impulsion, vitesse de balayage, divergence du faisceau, largeur de fauchee et densite de points.
+Les principaux fabricants couverts incluent Sony, Phase One, Hasselblad, DJI, MicaSense, Leica, Trimble, PhaseOne iXM, Velodyne, Ouster, Livox, Riegl, YellowScan, etc.
+
+## Modes d'altitude supportes
+
+| Mode | Description |
+|------|-------------|
+| **AMSL** | Altitude absolue au-dessus du niveau moyen de la mer. Planification classique a altitude fixe. |
+| **iAMSL** | Initial AMSL — altitude interpretee par rapport au niveau de la mer sur le MNT. |
+| **iAGL** | Initial AGL — altitude interpretee au-dessus du sol ; les bandes suivent le MNT pour maintenir une garde sol constante. |
+
+La source MNT est choisie dans l'assistant de mission (SRTM 30 m, Copernicus GLO-30 ou aucune pour un terrain plat).
 
 ## Configuration requise
 
@@ -39,22 +63,23 @@ Helix Flight Planner inclut un catalogue de plus de **80 cameras** et **14 capte
 | Windows    | Windows 10 (64 bits) ou superieur |
 | macOS      | macOS 12 Monterey ou superieur |
 | RAM        | 8 Go (16 Go recommandes) |
+| GPU        | Acceleration OpenGL / ANGLE requise pour le globe 3D |
 | Stockage   | 500 Mo d'espace disque disponible |
-| Reseau     | Requis pour la connexion et la synchronisation ; utilisation hors ligne possible apres la premiere activation |
+| Reseau     | Requis pour la connexion, la synchronisation et le telechargement MNT ; utilisation hors ligne apres la premiere activation |
 
 ## Pour commencer
 
 <CardGroup cols={2}>
-  <Card title="Demarrage rapide" icon="rocket" href="/fr/quickstart">
+  <Card title="Demarrage rapide" icon="rocket" href="/quickstart">
     Telechargez, installez et creez votre premiere mission en quelques minutes.
   </Card>
-  <Card title="Planification de mission" icon="map" href="/fr/guides/mission-planning">
+  <Card title="Planification de mission" icon="map" href="/guides/mission-planning">
     Guide complet du flux de planification de mission.
   </Card>
-  <Card title="Formats d'export" icon="download" href="/fr/guides/export-formats">
-    Comprendre tous les formats d'export et quand les utiliser.
+  <Card title="Catalogue capteurs" icon="camera" href="/guides/sensors">
+    Parcourir le catalogue, utiliser les filtres et creer des capteurs personnalises.
   </Card>
-  <Card title="Reference API" icon="code" href="/fr/api-reference/overview">
-    Integrez l'API REST Helix Aero dans vos workflows personnalises.
+  <Card title="Formats d'export" icon="download" href="/guides/export-formats">
+    Comprendre tous les formats d'export et quand les utiliser.
   </Card>
 </CardGroup>

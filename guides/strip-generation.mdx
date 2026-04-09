@@ -1,0 +1,154 @@
+---
+title: "Strip generation"
+description: "How Helix converts an AOI polygon into primary and cross-strips: heading selection, local projection, line clipping, edge extension, and serpentine ordering."
+---
+
+The strip generator is the geometric heart of the planner. It takes an
+AOI polygon (or a corridor centerline), a heading strategy, and a desired
+strip spacing, and returns the list of flight strips the altitude modes
+turn into a full flight plan.
+
+## 1. Resolving the effective polygon
+
+The first step depends on the AOI type:
+
+- **Polygon AOI** — the user polygon is expanded outward by
+  `bufferM + mechanicalBuffer`, where the mechanical buffer is a fixed
+  2.5 % of the AOI's bounding-box diagonal. The mechanical term
+  guarantees edge coverage even when the user-buffer is zero.
+- **Corridor AOI** — the linear centerline is inflated into a polygon of
+  the corridor width.
+
+After this step the rest of the pipeline is identical for both AOI types
+— everything downstream sees a plain polygon.
+
+## 2. Picking the heading
+
+<Tabs>
+  <Tab title="Polygon">
+    For a polygon AOI the user can pin an explicit heading. When they
+    don't, the planner runs a brute-force search:
+
+    1. Project the polygon vertices to a local flat XY frame centred on
+       the polygon centroid.
+    2. For each candidate heading from 0° to 179° in 1° steps, project
+       every vertex onto the axis perpendicular to that heading.
+    3. Record `spread = maxProj - minProj`.
+    4. Pick the heading with the **smallest** spread — that's the axis
+       along which the polygon is narrowest, which means the fewest
+       parallel strips are needed.
+
+    An optional wind-bonus term gives a 0–5 % discount to headings within
+    30° of the wind bearing so aligned flight lines are preferred when the
+    polygon's aspect ratio doesn't already dictate a clear winner.
+  </Tab>
+  <Tab title="Corridor">
+    For a corridor AOI the strips run **perpendicular** to the centerline
+    axis, so the heading is simply
+    `heading = bearing(centerline[0], centerline[-1]) + 90°`. There is no
+    override for corridors — the geometry dictates the direction.
+  </Tab>
+</Tabs>
+
+## 3. Strip spacing from sidelap
+
+Before any strips are laid out the generator recomputes the camera
+footprint (or LiDAR swath) at `input.altitudeMsl` and derives:
+
+```text
+strip_spacing (m) = footprint_w * ( 1 - sidelap )
+extension   (m)   = footprint_h * 0.5
+```
+
+The `extension` value is a half-footprint length that each strip is
+extended by **at both ends** once clipped — this guarantees the edge
+exposures cover beyond the polygon boundary so the first and last frames
+on every line still fall inside the AOI.
+
+## 4. Local projection + grid + clip
+
+<Steps>
+  <Step title="Project to flat metres">
+    The polygon is converted to a local (east, north) frame centred on
+    its centroid. Each vertex is placed via Vincenty distance + bearing
+    from the centroid — flat-earth is acceptable at strip-generation scale
+    because strips almost never span degrees of latitude.
+  </Step>
+  <Step title="Find perpendicular extent">
+    Every projected vertex is dotted against the perpendicular unit
+    vector `(sin(heading+90), cos(heading+90))`. The min and max give
+    `[minPerp, maxPerp]` — the slab that must be filled with strips.
+  </Step>
+  <Step title="Walk the strip offsets">
+    Offsets are placed starting at `minPerp + 0.05 * strip_spacing`,
+    stepping by `strip_spacing` until `maxPerp - 0.05 * strip_spacing`.
+    The 5 % inset keeps the first/last strip from degenerating into a
+    single point right on the polygon edge.
+  </Step>
+  <Step title="Build long lines and clip">
+    Each offset becomes an "infinite" line along the heading direction,
+    truncated to `2 * alongExtent + 4 * strip_spacing` just to keep it
+    finite. The line is clipped against the polygon with Clipper2
+    (`ClipperD.execute(intersection, nonZero)`), using the polygon as a
+    closed clip and the line as an open subject. Any open paths that
+    survive become `(start, end)` segments.
+  </Step>
+  <Step title="Manual fallback">
+    If Clipper2 produces nothing (edge cases with degenerate geometry),
+    a manual parametric ray-vs-polygon-edge intersection takes over. It
+    collects all t-parameters along the line, sorts them, and keeps the
+    segments whose midpoint lies inside the polygon via a ray-casting
+    point-in-polygon test.
+  </Step>
+</Steps>
+
+Each clipped segment becomes a `FlightStrip` — but only if
+`length >= strip_spacing`. Tiny slivers produced by corner clipping are
+discarded so the plan doesn't accumulate degenerate 3 m strips at the
+polygon boundary.
+
+## 5. Edge extension
+
+After clipping, every surviving strip is extended by `footprint_h * 0.5`
+at both ends along its heading on the ellipsoid. This
+is the edge-coverage guarantee mentioned earlier: the first and last
+exposure of each strip sits half a frame outside the AOI so no footprint
+is clipped by the polygon.
+
+## 6. Cross-strips
+
+When cross-strips are enabled, the whole procedure is repeated with
+`heading + 90°` and the strips are tagged with the `B` name prefix.
+Cross-strips use the same spacing as the primary grid, and their
+heading is locked to the perpendicular value.
+
+Cross-strips are a QC tool: they add a second pass perpendicular to the
+primary lines, which eliminates orientation bias in photogrammetry
+block adjustment. They do *not* replace proper sidelap — they supplement it.
+
+## 7. Serpentine (lawnmower) ordering
+
+The final step runs after altitude-mode routing. Every odd-indexed
+strip in the list is reversed: its start and end points swap, any
+embedded waypoints are reversed in place, and the approach / departure
+leading lines are swapped *and* reversed together so "approach" always
+means the physical entry regardless of flight order.
+
+The result is the classic lawnmower pattern — the aircraft flies strip
+`A1` west-to-east, `A2` east-to-west, `A3` west-to-east again, and so on.
+Cross-strips are serpentined independently.
+
+<Note>
+  The serpentine step runs **after** iAGL/iAMSL altitude calculation,
+  which is important: it means the altitude profile is computed on the
+  canonical left-to-right strip and then reversed along with the strip.
+  The physically-feasible clamp remains valid because the profile is
+  symmetric with respect to reversal.
+</Note>
+
+## Related
+
+- [GSD and footprint](/guides/gsd-and-footprint)
+- [Altitude modes](/guides/altitude-modes)
+- [Leading lines](/guides/leading-lines)
+- [Quality control grids](/guides/quality-control)

@@ -34,26 +34,15 @@
                   "guides/export-formats",
                   "guides/sensors"
                 ]
-              }
-            ]
-          },
-          {
-            "tab": "API reference",
-            "groups": [
-              {
-                "group": "Getting started",
-                "pages": [
-                  "api-reference/overview",
-                  "api-reference/authentication"
-                ]
               },
               {
-                "group": "Endpoints",
+                "group": "Concepts",
                 "pages": [
-                  "api-reference/sensors",
-                  "api-reference/projects",
-                  "api-reference/missions",
-                  "api-reference/licenses"
+                  "guides/gsd-and-footprint",
+                  "guides/altitude-modes",
+                  "guides/strip-generation",
+                  "guides/leading-lines",
+                  "guides/quality-control"
                 ]
               }
             ]
@@ -80,16 +69,15 @@
                   "fr/guides/export-formats",
                   "fr/guides/sensors"
                 ]
-              }
-            ]
-          },
-          {
-            "tab": "API reference",
-            "groups": [
+              },
               {
-                "group": "Pour commencer",
+                "group": "Concepts",
                 "pages": [
-                  "fr/api-reference/overview"
+                  "fr/guides/gsd-and-footprint",
+                  "fr/guides/altitude-modes",
+                  "fr/guides/strip-generation",
+                  "fr/guides/leading-lines",
+                  "fr/guides/quality-control"
                 ]
               }
             ]
@@ -136,11 +124,6 @@
       "cursor",
       "vscode"
     ]
-  },
-  "api": {
-    "mdx": {
-      "server": "https://api.helix.aero/api/v1"
-    }
   },
   "footer": {
     "socials": {

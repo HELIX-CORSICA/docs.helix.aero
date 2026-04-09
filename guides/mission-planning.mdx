@@ -5,121 +5,213 @@ description: "Complete walkthrough of the Helix Flight Planner mission planning 
 
 # Mission Planning
 
-This guide covers the complete workflow for planning an aerial survey mission in Helix Flight Planner, from project creation through quality control verification.
+This guide covers the full mission planning workflow in Helix Flight Planner: from the dashboard and mission wizard through AOI drawing, parameter tuning, quality control and export.
 
-## Creating a Project
+## The Dashboard
 
-Projects group related missions together (e.g., all surveys for a single client or geographic area).
+When you open Helix Flight Planner, you land on the **Dashboard**. It lists all of your projects and missions in two columns:
 
-1. From the **Dashboard**, click **New Project**.
-2. Enter a descriptive name (e.g., "Carriere Martin — Juin 2026").
-3. Click **Create**. The project opens immediately.
+- **Orphan missions** at the top — missions created without a parent project (sorted by most recent).
+- **Project folders** below — expandable folders, each holding the missions that belong to that project.
 
-Projects sync automatically to the Helix Aero server when connected. All local changes are preserved offline and pushed on reconnect.
+The dashboard header lets you:
 
-## Defining an Area of Interest (AOI)
+- Toggle between **grid view** (cards) and **list view** (compact rows).
+- Sort by name, creation date or last modification.
+- Filter by status and search missions by name.
+- Open the **New Mission** wizard or create a new project.
 
-The AOI is the polygon that bounds your survey. Helix Flight Planner supports two methods:
+A small sync indicator in the header reflects the current synchronization state of your workspace.
 
-### Drawing on the Globe
+## The Mission Wizard
 
-1. In the mission view, click **Draw AOI** in the toolbar.
-2. Click on the globe to place each vertex of your polygon.
-3. Close the polygon by clicking the first point again, or press **Enter**.
-4. To adjust: drag any vertex to reposition it.
+Click **New Mission** to open the wizard. It has six steps:
 
-### Importing KML or KMZ
+<Steps>
+  <Step title="Project and mission name">
+    Type the mission name and optionally attach it to a project. Missions created without a parent project appear in the orphan list.
+  </Step>
+  <Step title="Location">
+    Search a location by name (geocoding) or click on the map to pin it. Optional — you can also skip this and draw the AOI later.
+  </Step>
+  <Step title="CRS (Coordinate Reference System)">
+    Pick between **WGS84 / UTM auto** (default, zone computed from the pinned location) or a manual **EPSG** code.
+  </Step>
+  <Step title="DEM source">
+    Choose the terrain source: **SRTM 30 m** (default, free, worldwide), **Copernicus GLO-30** (higher quality) or **None** (flat terrain, constant altitude).
+  </Step>
+  <Step title="Sensor">
+    Browse the sensor catalog, select one, and pick a focal length if the sensor has multiple options.
+  </Step>
+  <Step title="Aircraft">
+    Select the aircraft (helicopter, airplane or drone). The aircraft seeds default altitude, cruise speed and overlap for the mission.
+  </Step>
+</Steps>
 
-1. Click **Import AOI** in the toolbar.
-2. Select a `.kml` or `.kmz` file from your computer.
-3. The polygon is loaded onto the globe and the AOI boundary is set automatically.
+Click **Create**. The 3D globe opens on the mission with the planning panel on the right.
+
+## The 3D Globe
+
+Helix Flight Planner uses a Cesium-based 3D globe embedded in the app. The viewer provides:
+
+- **Satellite imagery** and global terrain.
+- **Drawing toolbar** (left, under the layer button) with polygon AOI, corridor AOI and recenter.
+- **Layer panel** (top-left) to toggle flight lines, waypoints, aero chart, GCPs and QC overlays.
+- **Compass overlay** (top-right) showing heading and tilt.
+- **Cursor info** in the status bar showing latitude, longitude and terrain elevation at the cursor.
+- **Measurement tool** for distance, area and elevation profile.
+- **Elevation profile overlay** generated from the DEM along any drawn line or flight strip.
+
+### Defining the AOI
+
+<Steps>
+  <Step title="Draw a polygon">
+    Click **Draw** in the drawing toolbar, click on the globe to place each vertex, and close the polygon by clicking the first point or pressing **Enter**. Drag a vertex to adjust it.
+  </Step>
+  <Step title="Or draw a corridor">
+    Click **Draw corridor** to trace a linear corridor (useful for roads, rivers, pipelines, power lines). The planning engine will generate strips that follow the corridor's centerline.
+  </Step>
+  <Step title="Or import a KML / KMZ">
+    From the dashboard or the mission, you can import an existing KML or KMZ file. The polygon loads straight onto the globe.
+  </Step>
+</Steps>
 
 <Tip>
-  For large survey areas, importing a pre-defined KML from a GIS tool is faster and more precise than drawing manually.
+  For large or precise survey areas, importing a KML produced in a GIS tool is faster than drawing manually.
 </Tip>
 
-## Selecting a Sensor
+## The Planning Panel
 
-The sensor defines the camera or LiDAR system mounted on your aircraft. It directly affects strip spacing, GSD, swath width, and point density calculations.
+The planning panel on the right of the mission view is organized into tabs:
 
-1. Click the **Sensor** panel on the right side of the mission view.
-2. Browse the catalog: use the search bar or filter by type (Camera / LiDAR) and manufacturer.
-3. Click a sensor to select it. Flight strips recalculate immediately.
+| Tab | Purpose |
+|-----|---------|
+| **Parametres** | Altitude mode, altitude value, speed, heading, forward overlap, sidelap. |
+| **Bandes** | Strip list and strip editor: rename, reverse, delete, reorder, run optimizer, add corrective strips. |
+| **DEM** | DEM source, terrain cache state, elevation profile controls. |
+| **Resume** | Mission statistics and QC summary ready for review or export. |
 
-To use a custom sensor, click **+ Add Custom Sensor** at the bottom of the catalog. See the [Sensor Configuration guide](/guides/sensors) for details.
+(Planning and globe state also surface contextual panels such as the QC alert banner and the elevation profile overlay.)
 
-## Configuring Flight Parameters
+### Altitude Modes
 
-With an AOI and sensor selected, adjust the following parameters in the parameter panel:
+Helix Flight Planner supports three altitude modes, switchable from the **Parametres** tab:
+
+| Mode | Meaning |
+|------|---------|
+| **AMSL** | Absolute altitude above Mean Sea Level. Strips fly at a constant MSL altitude. |
+| **iAMSL** | Initial AMSL — the typed altitude is interpreted as an MSL target computed at the mission's initial elevation. |
+| **iAGL** | Initial AGL — the typed altitude is interpreted as height above ground level; strips follow the DEM to maintain constant terrain clearance. |
+
+iAGL and iAMSL require a DEM source (SRTM or Copernicus) to be configured in the DEM tab. See the engine documentation for the detailed algorithm behind each mode.
+
+### Flight Parameters
 
 | Parameter | Description |
 |-----------|-------------|
-| **Altitude (m AGL)** | Flight altitude above ground level. Higher altitude = larger GSD, fewer strips. |
-| **Forward Overlap (%)** | Overlap between consecutive frames along a strip. Typically 70–85% for photogrammetry. |
-| **Sidelap (%)** | Overlap between adjacent strips. Typically 60–70% for photogrammetry. |
-| **Heading (°)** | Strip orientation in degrees. 0° = North-South strips. |
+| **Altitude** | Target altitude (interpretation depends on the selected altitude mode). |
+| **Target GSD** | Alternative: type a desired GSD and the app back-calculates the altitude. |
+| **Speed** | Aircraft ground speed, used for flight time estimation and LiDAR point density. |
+| **Heading** | Primary strip orientation in degrees. 0 = North-South. |
+| **Forward overlap** | Overlap between consecutive frames along a strip (70-85% for photogrammetry). |
+| **Sidelap** | Overlap between adjacent strips (60-70% for photogrammetry). |
 
-All parameters update the strip layout in real time — no Calculate button needed.
+All parameters recalculate strips in real time — no "Calculate" button.
 
-### Understanding GSD
+## Reviewing Flight Strips
 
-**Ground Sample Distance (GSD)** is the pixel size in centimeters on the ground. It determines the resolution of your orthophoto or point cloud.
+Once the AOI and parameters are set, strips appear on the globe. The layer panel lets you toggle:
 
-```
-GSD (cm) = (Altitude × Sensor Width) / (Focal Length × Image Width)
-```
+- **Flight lines** — strip centerlines.
+- **Waypoints** — the ordered waypoints that will be flown.
+- **Aero chart** — local aeronautical chart overlay.
+- **GCPs** — imported ground control points (when present).
 
-- Increasing altitude increases GSD (lower resolution).
-- Decreasing altitude decreases GSD (higher resolution, more strips).
+### The Strip Editor (Bandes tab)
 
-The GSD display updates instantly as you change altitude. You can also enter a **target GSD** to back-calculate the required altitude.
+Open the **Bandes** tab in the planning panel to work on individual strips. Each strip can be:
 
-## Reviewing Flight Strips on the Globe
+- **Renamed** to a custom label.
+- **Reversed** (flip start and end).
+- **Deleted**.
+- **Reordered** by drag and drop.
 
-Once parameters are set, flight strips appear as colored lines on the 3D globe. The strip overlay shows:
+Two one-click tools are available at the top of the tab:
 
-- **Strip centerlines** — the actual flight paths
-- **Camera footprints** — ground coverage of each frame
-- **LiDAR swath** — the coverage band for LiDAR sensors
+- **Optimizer** — reorders all primary and cross strips to minimize dead-leg distance.
+- **Corrective strips** — adds extra strips over QC gaps detected by the coverage engine.
 
-Use the layer toggle panel (top-left of the globe) to show or hide individual overlays.
+## Quality Control Overlays
 
-## Mission Statistics
+Once a plan is computed, the QC engine evaluates it on a grid over the AOI. QC toggles appear in the layer panel as soon as results are available.
 
-The statistics panel (bottom of the parameter pane) shows computed values for the current plan:
+| Overlay | What it shows |
+|---------|---------------|
+| **Coverage** | Cells covered by at least one frame. Red cells mark gaps. |
+| **GSD** | Effective GSD per cell (color-coded) — varies with terrain on iAGL missions. |
+| **Sidelap** | Actual achieved sidelap per cell, accounting for strip geometry. |
+| **HAGL** | Height above ground level per cell, to verify terrain clearance. |
+| **Density** (LiDAR only) | Point density per square meter. |
+| **MTA** (LiDAR only) | Multiple-Time-Around ambiguity risk zones. |
 
-| Statistic | Description |
-|-----------|-------------|
-| **Frame Count** | Total number of photos or LiDAR scan lines |
-| **Strip Count** | Number of parallel flight passes |
-| **Total Distance (km)** | Sum of all flight line lengths |
-| **Estimated Flight Time** | Calculated from distance and a default cruise speed |
-| **GSD (cm/px)** | Effective ground resolution at the configured altitude |
-| **Coverage Area (ha)** | Total area covered by the AOI polygon |
-
-## Quality Control Maps
-
-Before committing to a mission, verify coverage quality using the QC overlay maps. Select a map type from the **QC** panel:
-
-### Coverage Map
-Shows which cells in a grid over the AOI are covered by at least one frame. Red cells indicate gaps in coverage.
-
-### GSD Distribution Map
-Color-codes each grid cell by the effective GSD at the expected flight altitude. Useful for terrain-following missions where altitude varies.
-
-### Sidelap Distribution Map
-Shows the actual sidelap percentage achieved per grid cell, accounting for strip geometry. Identifies areas with insufficient lateral overlap.
-
-### QC Threshold Alerts
+### QC Alerts
 
 The app monitors QC values against configurable thresholds. When a value falls below the minimum:
 
 - A **yellow alert banner** appears at the top of the mission view.
-- The affected cells turn red on the QC map.
+- The affected cells turn red on the corresponding QC overlay.
 
-Common alerts:
-- **Coverage gap detected** — one or more cells have zero frames
-- **GSD exceeds threshold** — altitude too high for target resolution
-- **Sidelap below minimum** — strip spacing too wide
+Typical alerts:
+- **Coverage gap detected** — at least one cell has zero frames.
+- **GSD exceeds threshold** — altitude is too high for the target resolution.
+- **Sidelap below minimum** — strip spacing too wide.
+- **HAGL out of range** — strips too low or too high above the terrain.
 
-Adjust flight parameters until all alerts are resolved before exporting.
+Adjust parameters, run the optimizer, or add corrective strips until the banner clears.
+
+## Elevation Profile
+
+From the measurement tool or from any strip, you can open the **Elevation profile overlay**. It plots terrain elevation along the selected line from the DEM, together with the planned flight altitude, so you can visually verify terrain clearance before exporting.
+
+## Mission Summary (Resume tab)
+
+The **Resume** tab shows the final computed values for the mission:
+
+| Statistic | Description |
+|-----------|-------------|
+| Frame count | Total number of photos or LiDAR scan lines |
+| Strip count | Number of parallel flight passes |
+| Total distance | Sum of all flight line lengths |
+| Flight time (est.) | Computed from distance and aircraft speed |
+| GSD | Effective GSD at the configured altitude |
+| Coverage area | AOI polygon area in hectares |
+
+This is the tab you review right before export.
+
+## Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl+N` | New mission |
+| `Ctrl+S` | Save (manual save; auto-save also runs in the background) |
+| `Ctrl+Z` / `Ctrl+Y` | Undo / redo on the flight plan |
+| `Ctrl+C` / `Ctrl+V` | Copy / paste the AOI polygon |
+| `Ctrl+E` | Open the export menu |
+| `Ctrl + =` / `Ctrl + -` | Zoom the globe in / out |
+| `Space` | Toggle top-down / free view |
+| `F` | Recenter on the AOI |
+| `M` | Start a distance measurement |
+| `Delete` | Delete the selected element |
+| `Escape` | Cancel the current action (drawing, measuring, modal) |
+| `Tab` | Move between input fields in forms |
+
+## Offline, Auto-save and Sync
+
+- **Auto-save** runs in the background after every significant edit — your work is persisted locally so nothing is lost.
+- **Offline mode** lets you keep planning when disconnected. All projects, missions and custom sensors remain available.
+- **Sync** reconciles your workspace as soon as a connection is available; conflicts are resolved per mission.
+- The license check re-verifies online within 7 days; beyond that, the app enters read-only mode until connectivity is restored.
+
+## Export
+
+When the mission is ready, click **Export** in the top toolbar to pick a format. See [Export Formats](/guides/export-formats) for a full description of each output.

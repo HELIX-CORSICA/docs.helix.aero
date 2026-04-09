@@ -1,0 +1,160 @@
+---
+title: "GSD, empreinte et cadence de prise"
+description: "Comment Helix calcule la distance d'échantillonnage au sol, l'empreinte au sol et l'espacement des prises pour les capteurs caméra, LiDAR et pushbroom."
+---
+
+Tout ce que le planificateur fait en aval — l'espacement des bandes, le
+nombre d'images, la cadence de déclenchement, les grilles QC — dérive de
+deux primitives : la **GSD** (Ground Sampling Distance) et l'**empreinte
+au sol** d'une prise unique. Cette page montre exactement comment chaque
+famille de capteur les calcule.
+
+<Info>
+  Tous les calculs capteur tournent sur la hauteur *effective* au-dessus
+  du sol, pas la valeur MSL brute saisie — voir la note ci-dessous pour
+  savoir comment Helix la résout.
+</Info>
+
+## Altitude effective vs MSL brute
+
+Avant tout calcul capteur, le moteur résout l'altitude qui compte
+vraiment pour le capteur : la hauteur **au-dessus du relief**.
+
+<Steps>
+  <Step title="Mode plat (AMSL)">
+    Le planificateur échantillonne le rectangle englobant de l'AOI sur
+    une grille 20x20 (jusqu'à 400 requêtes DEM) et retient l'élévation
+    terrain **maximale**. L'AGL effective devient
+    `altitudeMsl - maxTerrain`, plafonnée à un plancher de sécurité de
+    30 m. Utiliser le max — et pas la moyenne — garantit que le *pire*
+    point de l'AOI atteint toujours la GSD visée.
+  </Step>
+  <Step title="Modes suiveurs (iAGL, iAMSL)">
+    `altitudeMsl` est déjà exprimée comme hauteur-sol ; le moteur
+    l'utilise telle quelle pour la GSD et l'empreinte.
+  </Step>
+</Steps>
+
+Les formules ci-dessous notent cette hauteur au-dessus du sol effective
+`H`, en mètres.
+
+## Caméras à image complète
+
+La formule photogrammétrique standard de GSD est appliquée indépendamment
+sur les deux axes. On calcule d'abord les dimensions de l'image en pixels
+à partir des dimensions physiques du capteur :
+
+```text
+image_width_px  = sensor_width_mm  / pixel_size_um * 1000
+image_height_px = sensor_height_mm / pixel_size_um * 1000
+```
+
+Puis la GSD en mètres et l'empreinte au sol en mètres :
+
+```text
+GSD_w (m) = H * sensor_width_mm  / (focal_length_mm * image_width_px)
+GSD_h (m) = H * sensor_height_mm / (focal_length_mm * image_height_px)
+
+footprint_w (m) = GSD_w * image_width_px
+footprint_h (m) = GSD_h * image_height_px
+```
+
+Les valeurs de GSD sont stockées en centimètres sur `GsdResult` :
+`acrossTrackCm` (direction largeur) et `alongTrackCm` (direction hauteur).
+
+### Espacement bandes et prises
+
+Une fois l'empreinte connue, les deux espacements qui gouvernent la
+grille de bandes et la cadence de prise se déduisent directement des
+recouvrements choisis par l'utilisateur :
+
+```text
+strip_spacing (m) = footprint_w * (1 - sidelap)
+frame_spacing (m) = footprint_h * (1 - forward_overlap)
+```
+
+`sidelap` est le recouvrement latéral entre bandes adjacentes, et
+`forward_overlap` le recouvrement entre prises le long d'une bande.
+Les deux sont stockés comme ratios dans `[0, 1]`. Un sidelap de 60 %
+donne un `strip_spacing` de `footprint_w * 0.4`.
+
+### Inversion altitude à partir d'une GSD cible
+
+La même formule est inversée quand l'utilisateur fixe une GSD cible et
+veut que le planificateur en déduise l'altitude :
+
+```text
+H = target_GSD_m * focal_length_mm * image_width_px / sensor_width_mm
+```
+
+L'inversion utilise toujours l'axe **largeur** (cross-track) comme
+référence.
+
+## Capteurs LiDAR
+
+Le LiDAR remplace l'empreinte caméra par un **fauchage** (swath) — la
+bande au sol illuminée par le plein champ de vue du scanner.
+
+```text
+swath (m) = 2 * H * tan( fov_deg * pi / 180 / 2 )
+```
+
+La densité de points est le taux de répétition d'impulsions divisé par
+la surface balayée par seconde (fauchage × vitesse sol) :
+
+```text
+density (pts/m^2) = (prr_khz * 1000) / (swath * speed_ms)
+```
+
+<Note>
+  Lorsque le catalogue capteur connaît un motif de balayage (`zigzag`,
+  `elliptic`, `rotary`, `fiber`), Helix applique une correction
+  spécifique à la densité brute et expose une valeur ajustée en aval.
+  Les grilles QC préfèrent toujours la valeur ajustée lorsqu'elle est
+  disponible.
+</Note>
+
+Le planificateur arbitre à l'exécution entre un FOV saisi par
+l'utilisateur et le FOV catalogue. L'espacement bande pour les missions
+LiDAR est gouverné par le fauchage plutôt que par l'empreinte caméra,
+mais utilise la même règle `1 - sidelap`.
+
+## Capteurs pushbroom
+
+Les pushbroom produisent une ligne de balayage continue — la GSD
+cross-track et along-track proviennent donc de deux formules
+différentes :
+
+```text
+across_track_GSD (m) = H * (pixel_size_um / 1e6) / (focal_length_mm / 1e3)
+along_track_GSD  (m) = speed_ms / line_rate_hz
+```
+
+Comme le capteur est une ligne unique, le sidelap gouverne toujours
+l'espacement bande mais le forward overlap ne s'applique pas
+directement ; le planificateur reporte à la place un **recouvrement
+effectif** qui n'existe que lorsque les lignes tombent plus proches
+qu'un pixel :
+
+```text
+effective_overlap (%) =
+    ( 1 - along_track_GSD / across_track_GSD ) * 100,   si along < across
+    0,                                                  sinon
+```
+
+C'est le pourcentage affiché sur la carte de résultat pushbroom quand
+l'aéronef vole assez lentement (ou que le line rate est assez élevé)
+pour sur-échantillonner le sol.
+
+<Warning>
+  Si `line_rate_hz <= 0` ou `speed_ms <= 0`, le calculateur pushbroom
+  court-circuite et retourne des zéros plutôt que diviser par zéro.
+  Vérifiez que vitesse et line rate sont renseignés avant de crier au
+  bug GSD.
+</Warning>
+
+## Voir aussi
+
+- [Modes d'altitude (AMSL, iAMSL, iAGL)](/guides/altitude-modes)
+- [Génération des bandes et cap](/guides/strip-generation)
+- [Grilles de contrôle qualité](/guides/quality-control)

@@ -1,0 +1,211 @@
+---
+title: "Leading lines"
+description: "Level-flight approach and departure extensions: junction-locked profile, climb-only terrain avoidance, and how the engine guarantees the aircraft returns to zero attitude as soon as possible."
+---
+
+A **leading line** is the flat extension attached at each end of a flight
+strip. It gives the aircraft a stabilisation runway to enter and exit the
+band at level attitude — cameras can't capture usable imagery while the
+aircraft is still settling from a turn or a climb, so you need a clean
+straight-in segment of known altitude at both sides of every strip.
+
+Leading lines are attached automatically by the planner after strip
+routing, using a level-flight profile that obeys the semantic rule
+below.
+
+## The semantic rule
+
+The product spec for the leading-line profile is literal:
+
+> **"Dès la fin de bande, rétablir une assiette nulle, progressivement et
+> conformément à la pente max possible par l'appareil. Pour l'AMSL
+> simple : prolonger la bande au même Z. Pas d'AGL de redescente sur la
+> leading line — AGL de montée uniquement (esquive sol) — avec pour
+> objectif de stabiliser l'assiette à nulle dès que possible."**
+
+Translated:
+
+- As soon as the strip ends, the aircraft must return to **level
+  attitude** as fast as the climb/descent rates allow.
+- In plain AMSL mode the line extends at exactly the strip's altitude.
+- The leading line **never descends below the junction altitude to follow
+  a valley** — AGL only comes into play as a climb floor for terrain
+  avoidance.
+- The aircraft's objective is to stabilise at zero attitude **as soon as
+  possible** after an obstacle is cleared.
+
+In short: the leading line is a **flat line at the junction altitude**,
+climbing *only* when a terrain safety floor rises above it, and
+descending *back* to the junction altitude as fast as the max descent
+rate allows once the obstacle is past.
+
+## Junction altitude resolution
+
+Each side of each strip has a "junction" — the point where the leading
+line meets the strip body. The altitude at that junction is resolved in
+this priority order:
+
+<Steps>
+  <Step title="Explicit resolver (AMSL / iAMSL)">
+    The caller may pass a `junctionAltitudeResolver` callback. For AMSL
+    the resolver returns the strip's flat MSL altitude. For iAMSL it
+    returns the per-strip optimised altitude. This keeps the leading line
+    anchored at exactly the band's altitude regardless of what the
+    terrain does under the extension.
+  </Step>
+  <Step title="First/last body waypoint (iAGL)">
+    When no resolver is passed (the iAGL path), the junction altitude
+    comes from the first body waypoint (for the approach side) or the
+    last (for the departure side). This means the leading line smoothly
+    picks up from wherever the terrain-following profile ended — no step
+    discontinuity at the junction.
+  </Step>
+  <Step title="Strip.altitudeMsl fallback">
+    If there are no waypoints, the strip's stored `altitudeMsl` is used.
+  </Step>
+  <Step title="Zero">
+    Last-resort fallback for pathological input.
+  </Step>
+</Steps>
+
+## Sampling the line
+
+Sample count is auto-computed from the same speed-based step iAGL uses:
+
+```text
+sample_step (m) = clamp( speed_ms * 0.25, 2.0, 100.0 )   # 4 samples/sec
+n               = max( 2, ceil(leading_m / sample_step) + 1 )
+dt              = sample_step / speed_ms
+max_climb_seg   = max_climb_rate_ms * dt
+max_desc_seg    = max_descent_rate_ms * dt
+```
+
+Sample positions are laid along the heading direction starting at the
+strip junction (strip start for the approach side, strip end for the
+departure side) and walking outward. Each position is fed to the
+terrain provider to obtain its DEM elevation.
+
+For the approach side, the junction sits at the last sample index; for
+the departure side it sits at the first. That junction sample is the
+one whose altitude is **locked** during the clamp passes.
+
+## The profile computation
+
+The leading-line profile is structurally similar to the iAGL clamp
+but with two critical differences: the target altitude floor is
+`max(junctionAlt, terrain + AGL)` instead of just `terrain + AGL`, and
+one sample is **pinned** to the junction altitude and never moves.
+
+### 1. Target floor
+
+```text
+target[i] = max( junction_alt, terrain[i] + flight_height_agl )
+```
+
+This is the "no AGL descent below junction" rule made concrete: the
+target starts as a flat line at the junction altitude, and is only
+pulled **up** where the terrain safety floor exceeds it. The profile is
+not allowed to dive under this target at any sample.
+
+### 2. Initial guess + junction lock
+
+```text
+profile = copy(target)
+profile[junction_index] = junction_alt
+```
+
+The junction sample is fixed to the junction altitude at the start and
+is **skipped** inside the clamp loops so it never drifts.
+
+### 3. Forward/backward clamp to a fixed point
+
+```text
+for iter in 0..7:
+    # Forward pass
+    for i in 1..n-1 (skip junction_index):
+        lower = profile[i-1] - max_desc_seg
+        upper = profile[i-1] + max_climb_seg
+        profile[i] = clamp(profile[i], lower, upper)
+        profile[i] = max(profile[i], target[i])       # floor wins
+
+    # Backward pass
+    for i in n-2..0 (skip junction_index):
+        # To reach profile[i+1] in one segment we need
+        # profile[i] in [profile[i+1] - max_climb, profile[i+1] + max_desc]
+        lower = profile[i+1] - max_climb_seg
+        upper = profile[i+1] + max_desc_seg
+        profile[i] = clamp(profile[i], lower, upper)
+        profile[i] = max(profile[i], target[i])       # floor wins
+
+    if max_delta < 1e-4:
+        break
+```
+
+The forward pass enforces physics from predecessor to current sample;
+the backward pass from successor to current sample. Each pass re-applies
+the target floor after clamping so the profile never falls below the
+terrain-safety surface *or* below the junction altitude (whichever is
+higher at that sample).
+
+Convergence is normally reached in 2–3 iterations; the loop is capped at
+8 as a safety net. The epsilon is `1e-4` m.
+
+<Tip>
+  Because the junction sample is skipped inside the loop, the profile
+  *radiates outward* from the junction anchor: altitudes closer to the
+  band are pulled toward the junction altitude, and only the far end
+  of the leading line can diverge if a nearby hill forces a climb.
+</Tip>
+
+### Practical outcomes
+
+<Steps>
+  <Step title="No obstacles in the leading line">
+    `terrain + AGL` never exceeds `junction_alt`, so
+    `target[i] == junction_alt` everywhere. The entire leading line sits
+    at the junction altitude — a perfect flat extension of the strip.
+  </Step>
+  <Step title="Single hill in the middle">
+    `target[i]` bumps up where the hill is. The forward pass propagates
+    climb *from* the junction; the backward pass ensures the climb
+    *into* the obstacle starts early enough for the physical rate
+    limit. Once past the hill, the next clamp pass drives the altitude
+    back down toward `junction_alt` at exactly `max_desc_seg` per step,
+    hitting the junction altitude again as soon as physics allows. **No
+    valley-dive, no over-shoot.**
+  </Step>
+  <Step title="Steep terrain everywhere">
+    `target[i] > junction_alt` for every sample. The profile becomes
+    identical to an iAGL profile — the clamp still respects rate limits
+    and always stays above the safety floor.
+  </Step>
+</Steps>
+
+## Attachment back to the strip
+
+The resulting altitudes are wrapped into `StripWaypoint` objects with
+their `position` and `terrainMsl`, then written into the strip's
+`approachWaypoints` and `departureWaypoints` fields via `copyWith`. The
+strip body (`waypoints` / `altitudeMsl`) is **not** touched — leading
+lines are an additive extension, not a rewrite.
+
+When serpentine ordering runs later, the approach and departure lists
+are both reversed **and swapped** on odd-index strips, so "approach"
+always denotes the physical entry regardless of flight order. This is
+why the approach and departure slots exist as separate fields on
+`FlightStrip` rather than being inlined at the ends of the `waypoints`
+list.
+
+## Mode matrix
+
+| Mode  | Strip body               | Junction altitude source                    | Leading line shape |
+| ----- | ------------------------ | ------------------------------------------- | ------------------ |
+| AMSL  | Flat at `altitudeMsl`    | Explicit: `altitudeMsl`                     | Flat + climb-only terrain avoidance |
+| iAMSL | Flat at per-strip median | Explicit: `strip.altitudeMsl` (per strip)   | Flat + climb-only terrain avoidance |
+| iAGL  | Dense terrain-follow     | Implicit: first/last body waypoint          | Smooth continuation + climb-only avoidance |
+
+## Related
+
+- [Altitude modes](/guides/altitude-modes)
+- [Strip generation](/guides/strip-generation)
+- [Quality control grids](/guides/quality-control)

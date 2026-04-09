@@ -5,121 +5,213 @@ description: "Guide complet du flux de planification de mission avec Helix Fligh
 
 # Planification de mission
 
-Ce guide couvre l'integralite du flux de planification d'une mission de releve aerien dans Helix Flight Planner, de la creation du projet jusqu'a la verification du controle qualite.
+Ce guide couvre l'ensemble du flux de planification dans Helix Flight Planner : du tableau de bord et de l'assistant de mission jusqu'au trace de la zone, au reglage des parametres, au controle qualite et a l'export.
 
-## Creer un projet
+## Le tableau de bord
 
-Les projets regroupent les missions associees (ex. : tous les releves pour un client ou une zone geographique donnee).
+A l'ouverture de Helix Flight Planner, vous arrivez sur le **tableau de bord**. Il liste tous vos projets et missions en deux sections :
 
-1. Depuis le **Tableau de bord**, cliquez sur **Nouveau projet**.
-2. Saisissez un nom descriptif (ex. : "Carriere Martin — Juin 2026").
-3. Cliquez sur **Creer**. Le projet s'ouvre immediatement.
+- **Missions orphelines** en haut — missions creees sans projet parent (triees du plus recent au plus ancien).
+- **Dossiers de projet** en dessous — dossiers deroulants contenant les missions rattachees a chaque projet.
 
-Les projets se synchronisent automatiquement avec le serveur Helix Aero lorsqu'une connexion est disponible. Toutes les modifications locales sont conservees hors ligne et envoyees a la reconnexion.
+L'en-tete du tableau de bord permet de :
 
-## Definir l'emprise (AOI)
+- Basculer entre **vue grille** (cartes) et **vue liste** (lignes compactes).
+- Trier par nom, date de creation ou derniere modification.
+- Filtrer par statut et rechercher les missions par nom.
+- Ouvrir l'assistant **Nouvelle mission** ou creer un nouveau projet.
 
-L'emprise est le polygone qui delimite votre zone de releve. Helix Flight Planner propose deux methodes :
+Un petit indicateur de synchronisation dans l'en-tete reflete l'etat actuel de synchronisation de votre espace de travail.
 
-### Dessin sur le globe
+## L'assistant de mission
 
-1. Dans la vue mission, cliquez sur **Dessiner l'emprise** dans la barre d'outils.
-2. Cliquez sur le globe pour placer chaque sommet du polygone.
-3. Fermez le polygone en cliquant sur le premier point ou en appuyant sur **Entree**.
-4. Pour ajuster : faites glisser un sommet pour le repositionner.
+Cliquez sur **Nouvelle mission** pour ouvrir l'assistant. Il comporte six etapes :
 
-### Import KML ou KMZ
+<Steps>
+  <Step title="Projet et nom de mission">
+    Saisissez le nom de la mission et, optionnellement, rattachez-la a un projet. Les missions creees sans projet parent apparaissent dans la liste orpheline.
+  </Step>
+  <Step title="Localisation">
+    Recherchez un lieu par nom (geocodage) ou cliquez sur la carte pour le pointer. Optionnel — vous pouvez aussi le faire plus tard.
+  </Step>
+  <Step title="CRS (systeme de reference)">
+    Choisissez entre **WGS84 / UTM auto** (par defaut, zone calculee depuis la localisation) ou un code **EPSG** manuel.
+  </Step>
+  <Step title="Source MNT">
+    Choisissez la source terrain : **SRTM 30 m** (par defaut, gratuite, mondiale), **Copernicus GLO-30** (meilleure qualite) ou **Aucune** (terrain plat, altitude constante).
+  </Step>
+  <Step title="Capteur">
+    Parcourez le catalogue, selectionnez un capteur et choisissez une focale si plusieurs sont disponibles.
+  </Step>
+  <Step title="Aeronef">
+    Selectionnez l'aeronef (helicoptere, avion ou drone). L'aeronef initialise l'altitude, la vitesse de croisiere et le recouvrement par defaut.
+  </Step>
+</Steps>
 
-1. Cliquez sur **Importer l'emprise** dans la barre d'outils.
-2. Selectionnez un fichier `.kml` ou `.kmz` depuis votre ordinateur.
-3. Le polygone est charge sur le globe et l'emprise est definie automatiquement.
+Cliquez sur **Creer**. Le globe 3D s'ouvre sur la mission avec le panneau de planification a droite.
+
+## Le globe 3D
+
+Helix Flight Planner utilise un globe 3D Cesium integre a l'application. Le viewer offre :
+
+- **Imagerie satellitaire** et relief mondial.
+- **Barre d'outils de dessin** (a gauche, sous le bouton des couches) avec polygone, corridor et recentrage.
+- **Panneau de couches** (en haut a gauche) pour afficher/masquer les lignes de vol, waypoints, carte aero, GCP et overlays QC.
+- **Boussole** (en haut a droite) indiquant le cap et l'inclinaison.
+- **Info curseur** dans la barre de statut : latitude, longitude et altitude du terrain sous le curseur.
+- **Outil de mesure** pour les distances, surfaces et profils d'elevation.
+- **Overlay profil d'elevation** genere depuis le MNT le long de n'importe quelle ligne ou bande.
+
+### Definir la zone d'interet
+
+<Steps>
+  <Step title="Tracer un polygone">
+    Cliquez sur **Dessiner** dans la barre d'outils, cliquez sur le globe pour placer chaque sommet, et fermez le polygone en cliquant sur le premier point ou en appuyant sur **Entree**. Faites glisser un sommet pour l'ajuster.
+  </Step>
+  <Step title="Ou tracer un corridor">
+    Cliquez sur **Dessiner corridor** pour tracer un corridor lineaire (routes, rivieres, pipelines, lignes electriques). Le moteur genere des bandes qui suivent l'axe central du corridor.
+  </Step>
+  <Step title="Ou importer un KML / KMZ">
+    Depuis le tableau de bord ou la mission, vous pouvez importer un fichier KML ou KMZ existant. Le polygone se charge directement sur le globe.
+  </Step>
+</Steps>
 
 <Tip>
-  Pour les grandes zones de releve, l'import d'un KML pre-defini depuis un outil SIG est plus rapide et plus precis qu'un dessin manuel.
+  Pour les zones larges ou precises, importer un KML produit dans un outil SIG est plus rapide qu'un trace manuel.
 </Tip>
 
-## Selectionner un capteur
+## Le panneau de planification
 
-Le capteur definit la camera ou le systeme LiDAR monte sur l'aeronef. Il influe directement sur l'espacement des bandes, le GSD, la largeur de fauchee et la densite de points.
+Le panneau de planification a droite de la vue mission est organise en onglets :
 
-1. Cliquez sur le panneau **Capteur** a droite de la vue mission.
-2. Parcourez le catalogue : utilisez la barre de recherche ou filtrez par type (Camera / LiDAR) et fabricant.
-3. Cliquez sur un capteur pour le selectionner. Le calepinage se recalcule immediatement.
+| Onglet | Role |
+|--------|------|
+| **Parametres** | Mode et valeur d'altitude, vitesse, cap, recouvrement longitudinal et lateral. |
+| **Bandes** | Liste et editeur des bandes : renommer, inverser, supprimer, reordonner, optimiseur, bandes correctives. |
+| **DEM** | Source MNT, etat du cache terrain, controles du profil d'elevation. |
+| **Resume** | Statistiques de mission et synthese QC pour la revision et l'export. |
 
-Pour utiliser un capteur personnalise, cliquez sur **+ Ajouter un capteur personnalise** en bas du catalogue. Consultez le [guide de configuration des capteurs](/fr/guides/sensors) pour les details.
+(La planification et l'etat du globe font aussi apparaitre des panneaux contextuels comme la banniere d'alerte QC et l'overlay profil d'elevation.)
 
-## Configurer les parametres de vol
+### Modes d'altitude
 
-Une fois l'emprise et le capteur definis, ajustez les parametres suivants dans le panneau de configuration :
+Helix Flight Planner supporte trois modes d'altitude, commutables depuis l'onglet **Parametres** :
+
+| Mode | Signification |
+|------|---------------|
+| **AMSL** | Altitude absolue au-dessus du niveau moyen de la mer. Les bandes volent a une altitude MSL constante. |
+| **iAMSL** | Initial AMSL — l'altitude saisie est interpretee comme une cible MSL calculee a l'elevation initiale de la mission. |
+| **iAGL** | Initial AGL — l'altitude saisie est interpretee comme une hauteur au-dessus du sol ; les bandes suivent le MNT pour maintenir une garde sol constante. |
+
+iAGL et iAMSL necessitent une source MNT configuree dans l'onglet DEM. Voir la documentation moteur pour l'algorithme detaille.
+
+### Parametres de vol
 
 | Parametre | Description |
 |-----------|-------------|
-| **Altitude (m sol)** | Altitude de vol au-dessus du sol. Une altitude plus elevee = GSD plus grand, moins de bandes. |
-| **Recouvrement longitudinal (%)** | Recouvrement entre les prises de vue consecutives le long d'une bande. Generalement 70–85 % en photogrammetrie. |
-| **Recouvrement lateral (%)** | Recouvrement entre les bandes adjacentes. Generalement 60–70 % en photogrammetrie. |
-| **Cap (°)** | Orientation des bandes en degres. 0° = bandes Nord-Sud. |
+| **Altitude** | Altitude cible (son interpretation depend du mode d'altitude choisi). |
+| **GSD cible** | Alternative : saisissez un GSD souhaite et l'altitude est calculee en retour. |
+| **Vitesse** | Vitesse sol de l'aeronef, utilisee pour l'estimation du temps de vol et la densite LiDAR. |
+| **Cap** | Orientation principale des bandes en degres. 0 = Nord-Sud. |
+| **Recouvrement longitudinal** | Chevauchement entre images consecutives (70-85 % en photogrammetrie). |
+| **Recouvrement lateral** | Chevauchement entre bandes voisines (60-70 % en photogrammetrie). |
 
-Tous les parametres mettent a jour le calepinage en temps reel — aucun bouton de calcul n'est necessaire.
+Tous les parametres recalculent les bandes en temps reel — pas de bouton "Calculer".
 
-### Comprendre le GSD
+## Reviser les bandes
 
-Le **GSD (Ground Sample Distance)** est la taille d'un pixel en centimetres au sol. Il determine la resolution de l'orthophoto ou du nuage de points.
+Une fois la zone et les parametres definis, les bandes apparaissent sur le globe. Le panneau de couches permet de basculer :
 
-```
-GSD (cm) = (Altitude × Largeur capteur) / (Focale × Largeur image)
-```
+- **Lignes de vol** — axes des bandes.
+- **Waypoints** — points de cheminement ordonnes a survoler.
+- **Carte aero** — overlay de carte aeronautique locale.
+- **GCP** — points de controle importes (si presents).
 
-- Augmenter l'altitude augmente le GSD (resolution plus faible).
-- Diminuer l'altitude reduit le GSD (resolution plus elevee, plus de bandes).
+### L'editeur de bandes (onglet Bandes)
 
-L'affichage du GSD se met a jour instantanement lorsque vous modifiez l'altitude. Vous pouvez egalement saisir un **GSD cible** pour calculer l'altitude requise en retour.
+Ouvrez l'onglet **Bandes** pour travailler sur les bandes individuelles. Chaque bande peut etre :
 
-## Visualiser les lignes de vol sur le globe
+- **Renommee** avec une etiquette personnalisee.
+- **Inversee** (echange debut / fin).
+- **Supprimee**.
+- **Reordonnee** par glisser-deposer.
 
-Une fois les parametres definis, les lignes de vol apparaissent sous forme de lignes colorees sur le globe 3D. L'affichage des bandes comprend :
+Deux outils un clic sont disponibles en haut de l'onglet :
 
-- **Axes de bandes** — les trajets de vol reels
-- **Emprises camera** — la couverture au sol de chaque prise de vue
-- **Fauchee LiDAR** — la bande de couverture pour les capteurs LiDAR
+- **Optimiseur** — reordonne les bandes primaires et croisees pour minimiser les deplacements a vide.
+- **Bandes correctives** — ajoute des bandes supplementaires sur les trous de couverture detectes par le moteur QC.
 
-Utilisez le panneau de couches (haut gauche du globe) pour afficher ou masquer les couches individuelles.
+## Overlays de controle qualite
 
-## Statistiques de mission
+Une fois le plan calcule, le moteur QC l'evalue sur une grille couvrant la zone. Les bascules QC apparaissent dans le panneau de couches des que les resultats sont disponibles.
 
-Le panneau de statistiques (bas du panneau de configuration) affiche les valeurs calculees pour le plan actuel :
+| Overlay | Ce qu'il montre |
+|---------|-----------------|
+| **Couverture** | Cellules couvertes par au moins une image. Les cellules rouges marquent les trous. |
+| **GSD** | GSD effectif par cellule (code couleur) — varie avec le terrain en iAGL. |
+| **Laterale** | Recouvrement lateral effectif par cellule, tenant compte de la geometrie des bandes. |
+| **HAGL** | Hauteur au-dessus du sol par cellule, pour verifier la garde terrain. |
+| **Densite** (LiDAR) | Densite de points par metre carre. |
+| **MTA** (LiDAR) | Zones a risque d'ambiguite Multiple-Time-Around. |
+
+### Alertes QC
+
+L'application surveille les valeurs QC par rapport a des seuils configurables. Quand une valeur passe sous le minimum :
+
+- Une **banniere d'alerte jaune** apparait en haut de la vue mission.
+- Les cellules concernees passent au rouge sur l'overlay QC correspondant.
+
+Alertes typiques :
+- **Trou de couverture detecte** — au moins une cellule sans image.
+- **GSD depasse le seuil** — altitude trop elevee pour la resolution cible.
+- **Laterale sous le minimum** — espacement des bandes trop large.
+- **HAGL hors plage** — bandes trop basses ou trop hautes par rapport au terrain.
+
+Ajustez les parametres, lancez l'optimiseur ou ajoutez des bandes correctives jusqu'a ce que la banniere disparaisse.
+
+## Profil d'elevation
+
+Depuis l'outil de mesure ou depuis n'importe quelle bande, vous pouvez ouvrir l'**overlay profil d'elevation**. Il trace l'elevation du terrain depuis le MNT ainsi que l'altitude de vol planifiee, pour verifier visuellement la garde terrain avant l'export.
+
+## Resume de mission (onglet Resume)
+
+L'onglet **Resume** affiche les valeurs finales calculees pour la mission :
 
 | Statistique | Description |
 |-------------|-------------|
-| **Nombre de prises de vue** | Nombre total de photos ou de lignes de balayage LiDAR |
-| **Nombre de bandes** | Nombre de passages de vol paralleles |
-| **Distance totale (km)** | Somme de toutes les longueurs de bandes |
-| **Temps de vol estime** | Calcule a partir de la distance et d'une vitesse de croisiere par defaut |
-| **GSD (cm/px)** | Resolution effective au sol a l'altitude configuree |
-| **Surface couverte (ha)** | Surface totale couverte par le polygone d'emprise |
+| Nombre d'images | Nombre total de photos ou de lignes de balayage LiDAR |
+| Nombre de bandes | Nombre de passages paralleles |
+| Distance totale | Somme des longueurs de toutes les lignes de vol |
+| Temps de vol estime | Calcule depuis la distance et la vitesse aeronef |
+| GSD | GSD effectif a l'altitude configuree |
+| Surface couverte | Surface du polygone AOI en hectares |
 
-## Cartes de controle qualite
+C'est l'onglet a consulter juste avant l'export.
 
-Avant de valider une mission, verifiez la qualite de la couverture via les cartes QC. Selectionnez un type de carte dans le panneau **QC** :
+## Raccourcis clavier
 
-### Carte de couverture
-Montre quelles cellules d'une grille sur l'emprise sont couvertes par au moins une prise de vue. Les cellules rouges indiquent des lacunes de couverture.
+| Raccourci | Action |
+|-----------|--------|
+| `Ctrl+N` | Nouvelle mission |
+| `Ctrl+S` | Sauvegarder (la sauvegarde automatique tourne aussi en arriere-plan) |
+| `Ctrl+Z` / `Ctrl+Y` | Annuler / refaire |
+| `Ctrl+C` / `Ctrl+V` | Copier / coller le polygone AOI |
+| `Ctrl+E` | Ouvrir le menu d'export |
+| `Ctrl + =` / `Ctrl + -` | Zoom avant / arriere |
+| `Espace` | Basculer vue zenithale / vue libre |
+| `F` | Recentrer sur l'AOI |
+| `M` | Demarrer une mesure de distance |
+| `Suppr` | Supprimer l'element selectionne |
+| `Echap` | Annuler l'action en cours (dessin, mesure, modale) |
+| `Tab` | Naviguer entre les champs d'un formulaire |
 
-### Carte de distribution du GSD
-Code couleur chaque cellule de la grille selon le GSD effectif a l'altitude de vol prevue. Utile pour les missions de suivi de terrain avec altitude variable.
+## Hors ligne, sauvegarde automatique et synchronisation
 
-### Carte de recouvrement lateral
-Montre le pourcentage de recouvrement lateral effectif atteint par cellule, compte tenu de la geometrie du calepinage. Identifie les zones avec un recouvrement insuffisant.
+- La **sauvegarde automatique** tourne en arriere-plan apres chaque modification significative — le travail est persiste localement pour que rien ne soit perdu.
+- Le **mode hors ligne** permet de continuer a planifier deconnecte. Projets, missions et capteurs personnalises restent accessibles.
+- La **synchronisation** reconcilie votre espace de travail des qu'une connexion est disponible ; les conflits sont resolus par mission.
+- La verification de licence se re-execute en ligne sous 7 jours ; au-dela, l'application passe en lecture seule jusqu'au retour de la connectivite.
 
-### Alertes de seuil QC
+## Export
 
-L'application surveille les valeurs QC par rapport aux seuils configurables. Lorsqu'une valeur passe en dessous du minimum :
-
-- Une **banniere d'alerte jaune** apparait en haut de la vue mission.
-- Les cellules concernees passent en rouge sur la carte QC.
-
-Alertes courantes :
-- **Lacune de couverture detectee** — une ou plusieurs cellules n'ont aucune prise de vue
-- **GSD depasse le seuil** — altitude trop elevee pour la resolution cible
-- **Recouvrement lateral insuffisant** — espacement des bandes trop important
-
-Ajustez les parametres de vol jusqu'a ce que toutes les alertes soient resolues avant d'exporter.
+Quand la mission est prete, cliquez sur **Exporter** dans la barre superieure pour choisir un format. Voir [Formats d'export](/guides/export-formats) pour la description complete de chaque sortie.

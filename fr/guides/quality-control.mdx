@@ -1,0 +1,195 @@
+---
+title: "Grilles de contrôle qualité"
+description: "Ce que mesure chaque couche QC, comment les valeurs de cellule sont normalisées, et comment les alertes sont émises à partir des six types de grilles produites par le moteur QC."
+---
+
+Le moteur QC inspecte un plan de vol calculé et produit jusqu'à six
+grilles d'overlay qui vous disent, cellule par cellule, si la mission
+livrera réellement ce que l'utilisateur a demandé.
+
+Chaque grille est une liste de cellules `(lat, lon, value)`, où
+`value` est un poids qualité normalisé dans `[0, 1]` :
+
+- `0.0` = mauvais (sous le seuil, trou, ou hors enveloppe physique)
+- `1.0` = bon (au-dessus ou égal au seuil)
+
+## Échantillonnage de grille
+
+Avant tout calcul de métrique par cellule, le moteur décide la
+résolution de la grille :
+
+<Steps>
+  <Step title="Rectangle englobant AOI">
+    Le moteur parcourt le polygone AOI une fois pour trouver
+    `[minLat, maxLat]` et `[minLon, maxLon]`, puis calcule la largeur
+    et la hauteur du rectangle en mètres via Vincenty.
+  </Step>
+  <Step title="Taille de cellule auto">
+    `cellSizeM = max(20, sqrt(aoiAreaM2 / 50000))`. Le plafond
+    50 000 (plafond interne) garde la grille affichable sur de très
+    grandes AOI ; le plancher de 20 m évite que les petites AOI
+    produisent une grille réduite à une seule cellule.
+  </Step>
+  <Step title="Boucle d'échantillonnage">
+    Le moteur parcourt le rectangle englobant avec des pas lat/lon
+    équivalents à `cellSizeM`. Pour chaque centre de cellule il lance
+    un test ray-casting point-dans-polygone contre l'AOI et ignore
+    tout ce qui est dehors.
+  </Step>
+</Steps>
+
+Pour chaque cellule qui survit au test polygone, le moteur compte
+combien d'empreintes de bande contiennent son centre. Une cellule est
+« couverte par » une bande quand :
+
+- sa distance **cross-track** à la ligne médiane est `<= halfWidth`
+- sa distance **along-track** tombe dans `[0, stripLength * 1.10]`
+  (le buffer 10 % absorbe l'arrondi aux extrémités)
+
+où `halfWidth` est la moitié du fauchage LiDAR (missions LiDAR) ou la
+moitié de la largeur d'empreinte caméra au sol (missions caméra). Le
+`coverageCount` de la cellule est le nombre entier de bandes
+primaires + transversales + correctives dont l'empreinte l'englobe, et
+chaque métrique ci-dessous dérive de cet unique entier.
+
+## Grille couverture
+
+Identifie les **trous** de couverture. La valeur de cellule est
+binaire :
+
+```text
+coverageValue = 1.0   si coverageCount > 0
+              = 0.0   sinon
+```
+
+Toute cellule de valeur `0.0` est un trou de couverture dur et est
+signalée comme alerte. Le pourcentage d'alerte est la fraction de
+cellules AOI à couverture zéro.
+
+## Grille GSD
+
+Normalise la GSD cross-track calculée par rapport au
+`thresholds.gsdMaxCm` utilisateur :
+
+```text
+gsdValue = 1.0                            si gsd <= gsdMax
+         = 0.0                            si gsd >= 2 * gsdMax
+         = 1.0 - (gsd - gsdMax) / gsdMax  sinon (rampe linéaire)
+```
+
+Une cellule exactement au seuil vaut `1.0`, une cellule au double du
+seuil vaut `0.0`, et l'intervalle est interpolé linéairement.
+
+<Note>
+  Parce que la GSD dépend de l'altitude et que les missions AMSL ont
+  une altitude unique, la grille GSD est en général uniforme sur
+  l'AOI. Elle n'est intéressante que sur des missions iAMSL et iAGL où
+  les bandes portent des hauteurs effectives au-dessus du sol
+  différentes — ou quand l'AGL effective d'une bande diverge de son
+  MSL publié à cause du relief.
+</Note>
+
+## Grille sidelap
+
+Indique la **redondance** à chaque cellule — combien de bandes
+distinctes la couvrent. La cartographie est une échelle intentionnelle
+à trois niveaux :
+
+```text
+sidelapValue = 0.0   si coverageCount == 0   # rouge, trou de couverture
+             = 0.5   si coverageCount == 1   # ambre, pas de sécurité sidelap
+             = 1.0   si coverageCount >= 2   # vert, sidelap cible atteint
+```
+
+<Info>
+  La grille sidelap est **indépendante** du `sidelapMinPct` configuré.
+  Une cellule a ou n'a pas de couverture redondante — le pourcentage
+  configuré contrôle où le générateur de bandes primaires place les
+  bandes, pas la manière dont une métrique de redondance au niveau
+  cellule est mesurée après coup.
+</Info>
+
+Les cellules à valeur `< 0.5` (les trous) déclenchent une alerte
+sidelap dont le pourcentage est la fraction de cellules AOI sans
+couverture multi-bandes.
+
+## Grille HAGL
+
+Mesurerait, cellule par cellule, la hauteur au-dessus du sol sous le
+profil de vol. **Actuellement toujours `null`** — elle dépend d'une
+intégration DEM qui arrivera dans une phase ultérieure. Le pipeline
+d'alertes gère le cas null en sautant complètement le check HAGL ;
+rien en aval ne suppose que la grille existe.
+
+## Grille densité (LiDAR seulement)
+
+Produite seulement quand le capteur est un LiDAR. Tire la meilleure
+valeur de densité disponible :
+
+```text
+density = adjusted_density ?? raw_density
+```
+
+— la densité ajustée au motif quand le catalogue connaît le motif, en
+fallback la densité uniforme `prr / (swath * speed)` brute sinon. La
+normalisation est linéaire par rapport au seuil minimum de densité :
+
+```text
+densityValue = 1.0                           si density >= densityMin
+             = 0.0                           si density <= 0
+             = density / densityMin          sinon
+```
+
+L'alerte se déclenche quand des cellules tombent sous 50 % du seuil.
+
+## Grille MTA (LiDAR seulement)
+
+La grille Minimum Terrain Avoidance utilise la **même** valeur
+normalisée que la grille densité. Les zones à densité insuffisante
+sont aussi traitées comme des violations MTA potentielles car un
+retour LiDAR épars implique que le scanner est trop haut (ou trop
+rapide) pour une détection sol fiable. Comme la grille densité, elle
+n'est peuplée que pour les missions LiDAR.
+
+## Seuils
+
+Tous les seuils vivent sur `QcThresholds` :
+
+| Champ            | Défaut       | Utilisé par |
+| ---------------- | ------------ | ----------- |
+| `gsdMaxCm`       | `10,0` cm    | Grille GSD |
+| `overlapMinPct`  | `0,60`       | (référence — l'overlap est appliqué à la génération) |
+| `sidelapMinPct`  | `0,30`       | (référence — la grille sidelap est discrète) |
+| `haglMinM`       | `50,0` m     | Grille HAGL (quand peuplée) |
+| `densityMinPtM2` | `4,0`        | Grilles densité + MTA |
+
+Les seuils sont persistés avec chaque mission, pour que les re-runs
+QC reproduisent les mêmes alertes sans dépendre des défauts globaux.
+
+## Pipeline d'alertes
+
+Pour chaque grille le moteur QC compte les cellules à `value < 0.5`
+(une cellule est « mauvaise » quand elle est passée sous le point
+milieu entre vert et rouge) et, si le compte est positif, émet une
+alerte contenant le type de grille et la fraction de cellules
+mauvaises.
+
+La liste d'alertes alimente le panneau QC dans l'UI desktop et pilote
+la pastille ambre/rouge affichée sur chaque carte bande quand le
+score par bande est activé.
+
+## Score de couverture par bande
+
+Comme sortie secondaire, le moteur QC retourne un score de couverture
+par bande calculé en `coveredCells / totalCells` **uniquement** sur
+les cellules dont la géométrie d'empreinte est englobée par cette
+bande spécifique. Une bande sans cellule dessous reçoit `1.0` (bénéfice
+du doute). Ce score pilote la génération de bandes correctives et les
+badges de santé par bande dans la liste des bandes.
+
+## Voir aussi
+
+- [GSD et empreinte](/guides/gsd-and-footprint)
+- [Génération des bandes](/guides/strip-generation)
+- [Modes d'altitude](/guides/altitude-modes)
+- [Leading lines](/guides/leading-lines)

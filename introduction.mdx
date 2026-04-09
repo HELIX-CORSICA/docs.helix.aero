@@ -1,36 +1,60 @@
 ---
 title: "Helix Flight Planner"
-description: "Professional aerial survey mission planning software for photogrammetry and LiDAR operations"
+description: "Professional aerial survey mission planning software for photogrammetry, LiDAR and pushbroom operations"
 ---
 
 # Helix Flight Planner
 
-Helix Flight Planner is a professional desktop application for planning aerial survey missions. Designed for photogrammetry and LiDAR operators, it provides accurate flight strip computation, 3D globe visualization, multi-format export, and quality control maps — all in a modern, cross-platform interface.
+Helix Flight Planner is a professional desktop application for planning aerial survey missions. Designed for photogrammetry, LiDAR and pushbroom operators, it combines a live 3D globe, accurate strip computation, terrain-aware altitude modes, quality control overlays and multi-format export in a single, cross-platform interface.
 
 ## Key Features
 
 <CardGroup cols={2}>
   <Card title="3D Globe Visualization" icon="globe">
-    Plan missions on a live 3D globe with satellite imagery, terrain, and real-time flight line overlays.
+    Plan missions on a Cesium-based 3D globe with satellite imagery, global terrain, drawing tools, layer panel, compass, cursor info and measurement tools.
   </Card>
   <Card title="Accurate Strip Computation" icon="route">
-    Flight strips calculated with Vincenty geodesy for sub-meter accuracy. GSD, overlap, and sidelap update in real time.
+    Flight strips calculated with Vincenty geodesy. GSD, swath, overlap and sidelap update in real time as you change parameters.
+  </Card>
+  <Card title="Terrain-Aware Altitude" icon="mountain">
+    AMSL, iAMSL and iAGL altitude modes driven by a DEM (SRTM 30 m or Copernicus GLO-30) for terrain-following planning.
+  </Card>
+  <Card title="Quality Control Overlays" icon="chart-bar">
+    Coverage, GSD, sidelap, HAGL, point density and MTA heatmaps with threshold alerts before you fly.
+  </Card>
+  <Card title="Strip Editor" icon="list">
+    Rename, reverse, delete and reorder strips. One-click optimizer for flight order and corrective strips.
   </Card>
   <Card title="Multi-Format Export" icon="file-export">
-    Export to KML, GPX, CSV, GeoJSON, TXT, .helix JSON, and PDF mission reports with a single click.
+    KML, KMZ, GPX, CSV, GeoJSON, TXT, XLSX, PDF report, drone waypoints, client HTML view and native `.helix` container.
   </Card>
-  <Card title="Quality Control Maps" icon="chart-bar">
-    Coverage gap maps, GSD distribution, sidelap grids, and threshold alerts before you fly.
+  <Card title="Sensor & Aircraft Catalog" icon="camera">
+    80+ cameras, 14+ LiDAR sensors and an aircraft catalog, synced from Helix Aero. Grid or sortable table view, search and filters.
+  </Card>
+  <Card title="Offline & Sync" icon="cloud-arrow-up">
+    Full offline mode with auto-save. Projects, missions and custom sensors sync to Helix Aero when you reconnect.
   </Card>
 </CardGroup>
 
 ## Supported Sensors
 
-Helix Flight Planner ships with a catalog of 80+ cameras and 14+ LiDAR sensors from leading manufacturers. You can also define custom sensors with full specification control.
+Helix Flight Planner ships with a catalog of **80+ cameras**, **14+ LiDAR sensors** and a library of aircraft profiles, all curated by Helix Aero. You can also define custom sensors and aircraft with full specification control.
 
-**Camera planning:** focal length, sensor dimensions, pixel size, forward overlap, sidelap, and GSD at any altitude.
+- **Cameras** — focal length, sensor dimensions, pixel size, forward overlap, sidelap and GSD at any altitude.
+- **LiDAR** — FOV, pulse repetition rate, scan rate, beam divergence, swath width and point density.
+- **Pushbroom** — line sensor geometry and native strip spacing rules.
 
-**LiDAR planning:** FOV, pulse repetition rate, scan rate, beam divergence, swath width, and point density.
+Major manufacturers covered include Sony, Phase One, Hasselblad, DJI, MicaSense, Leica, Trimble, PhaseOne iXM, Velodyne, Ouster, Livox, Riegl, YellowScan and more.
+
+## Supported Altitude Modes
+
+| Mode | Description |
+|------|-------------|
+| **AMSL** | Absolute altitude above Mean Sea Level. Classic fixed-altitude planning. |
+| **iAMSL** | Initial AMSL — altitude interpreted relative to mean sea level on the DEM. |
+| **iAGL** | Initial AGL — altitude interpreted above ground level, strips follow the DEM to maintain constant terrain clearance. |
+
+The DEM source is selected per mission in the wizard (SRTM 30 m, Copernicus GLO-30, or none for flat terrain).
 
 ## System Requirements
 
@@ -39,22 +63,23 @@ Helix Flight Planner ships with a catalog of 80+ cameras and 14+ LiDAR sensors f
 | Windows  | Windows 10 (64-bit) or later |
 | macOS    | macOS 12 Monterey or later |
 | RAM      | 8 GB (16 GB recommended) |
+| GPU      | Hardware-accelerated OpenGL/ANGLE for the 3D globe |
 | Storage  | 500 MB available disk space |
-| Network  | Required for login and sync; offline use after first activation |
+| Network  | Required for login, sync and DEM download; offline use after first activation |
 
 ## Getting Started
 
 <CardGroup cols={2}>
   <Card title="Quick Start" icon="rocket" href="/quickstart">
-    Download, install, and create your first mission in minutes.
+    Download, install and create your first mission in minutes.
   </Card>
   <Card title="Mission Planning Guide" icon="map" href="/guides/mission-planning">
     Complete walkthrough of the mission planning workflow.
   </Card>
+  <Card title="Sensor Catalog" icon="camera" href="/guides/sensors">
+    Browse the catalog, use filters and create custom sensors.
+  </Card>
   <Card title="Export Formats" icon="download" href="/guides/export-formats">
     Understand all supported export formats and when to use each.
-  </Card>
-  <Card title="API Reference" icon="code" href="/api-reference/overview">
-    Integrate with the Helix Aero REST API for custom workflows.
   </Card>
 </CardGroup>
