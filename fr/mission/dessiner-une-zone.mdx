@@ -1,0 +1,112 @@
+---
+title: "Dessiner une zone, un corridor ou un point de décollage"
+description: "Utiliser la barre d'outils de dessin pour tracer les éléments d'un vol."
+---
+
+# Dessiner une zone, un corridor ou un point de décollage
+
+Tout ce que vous tracez sur le globe — zone de couverture, corridor, point de décollage, obstruction, waypoint isolé — passe par la **barre d'outils de dessin**, la colonne verticale à gauche du globe. Chaque tracé crée un élément à l'intérieur du **vol actif** : sans vol créé ou sélectionné, la barre entière est grisée et affiche l'infobulle *« Créez ou sélectionnez un vol pour activer les outils de dessin »*.
+
+<CardGroup cols={2}>
+  <Card title="Point de décollage" icon="plane-takeoff">
+    Un clic pose le point de départ du vol (drone/hélicoptère), ou ouvre la sélection d'aéroports (avion).
+  </Card>
+  <Card title="Zone de couverture" icon="hexagon">
+    Un polygone fermé délimitant la surface à photographier ou scanner.
+  </Card>
+  <Card title="Corridor" icon="route">
+    Une ligne à largeur fixe pour survoler routes, rivières, pipelines ou lignes électriques.
+  </Card>
+  <Card title="Obstruction" icon="ban">
+    Une zone d'exclusion (no-fly) que le moteur contourne automatiquement lors du calcul.
+  </Card>
+</CardGroup>
+
+## La barre d'outils
+
+De haut en bas, la barre regroupe :
+
+| Outil | Rôle |
+|---|---|
+| **Point de décollage** | Pose le point de départ du vol. |
+| **Waypoint** (raccourci `w`) | Pose un point de cheminement isolé, sans surface de couverture associée. |
+| **Polygone** | Trace une zone de couverture. |
+| **Corridor** | Trace un corridor à largeur fixe. |
+| **Obstruction** (raccourci `o`) | Trace une zone d'exclusion. |
+| **Découpe d'AOI** (raccourci `s`) | Trace une ou plusieurs lignes de coupe pour scinder la zone active en plusieurs vols. |
+| **Recentrer** | Recadre la caméra sur l'ensemble des éléments du vol actif. |
+
+<Note>
+  Un seul outil peut être actif à la fois : en armer un désarme automatiquement tout autre outil de dessin ainsi que tout outil de mesure (distance, surface) en cours. Appuyez sur **Échap** à tout moment pour désarmer l'outil actif et annuler le tracé en cours.
+</Note>
+
+<Warning>
+  La **découpe d'AOI** est indisponible (icône grisée) dès que la zone active est une trajectoire figée (wayline) — il faut d'abord restaurer le polygone éditable de la zone avant de pouvoir la scinder.
+</Warning>
+
+## Tracer un polygone, un corridor ou une obstruction
+
+Le polygone, le corridor et l'obstruction partagent la même mécanique de tracé sur le globe :
+
+<Steps>
+  <Step title="Premier sommet — double-clic">
+    Un simple clic sur le globe ne démarre rien : il faut un **double-clic** délibéré pour poser le premier sommet. Ce geste évite de lancer un tracé par erreur en cliquant sur le globe pour naviguer ou sélectionner un élément existant.
+  </Step>
+  <Step title="Sommets suivants — clic simple">
+    Chaque clic simple ajoute un nouveau sommet. Un segment élastique relie le dernier sommet posé à la position du curseur, pour prévisualiser la forme en direct.
+  </Step>
+  <Step title="Fermer la forme">
+    Cliquez sur le **premier sommet** posé, ou faites un **double-clic** n'importe où : la forme se ferme et l'élément est créé. Le corridor et la découpe d'AOI n'exigent que **2 sommets minimum** ; le polygone et l'obstruction en exigent **3**.
+  </Step>
+  <Step title="Annuler le dernier sommet — clic droit">
+    Un clic droit retire le dernier sommet posé (répétable pour revenir en arrière pas à pas), sans quitter le mode de tracé.
+  </Step>
+</Steps>
+
+<Warning>
+  Si le contour tracé se recoupe lui-même (un « nœud papillon »), son remplissage et son contour passent en **rouge** et la fermeture est refusée tant que la forme reste auto-intersectante — retirez le ou les derniers sommets (clic droit) pour corriger le tracé avant de pouvoir le fermer. Cette vérification ne concerne que le **polygone** et l'**obstruction** (contours fermés) ; le **corridor**, dont l'axe est une ligne ouverte, n'y est pas soumis et peut se croiser lui-même sans que sa fermeture soit bloquée.
+</Warning>
+
+## Spécificités par outil
+
+### Point de décollage
+
+- **Drone ou hélicoptère** : un simple clic sur le globe pose le point de décollage ; l'outil se désarme automatiquement après la pose (un seul clic = un seul point posé). Recliquez l'outil pour en poser un autre.
+- **Avion** : cliquer sur l'outil ouvre directement la fenêtre **Aéroports décollage / atterrissage** au lieu de poser un point sur le globe — les avions décollent et atterrissent sur un aérodrome, pas un point de terrain arbitraire :
+  - Recherchez l'aéroport de décollage par indicatif **OACI** ou par nom dans le champ de recherche (résultats affichés au fil de la frappe).
+  - Cochez **« Atterrissage identique au décollage »** pour un vol aller-retour classique, ou recherchez un second aéroport d'atterrissage distinct pour un vol point-à-point.
+  - Cette bascule automatique du cap ne concerne que le vol **point-à-point** (aéroports distincts) : une fois les deux aéroports choisis, le **cap de balayage** des bandes est automatiquement aligné sur le cap géodésique décollage → atterrissage (visible dans l'encart de résumé de la fenêtre) ; il reste réglable manuellement ensuite dans l'onglet Paramètres, qui écrasera alors cet alignement automatique. En **aller-retour** (« Atterrissage identique au décollage » coché), décollage et atterrissage sont le même point : il n'y a pas de cap géodésique à en déduire, donc rien n'est écrasé automatiquement — le cap de balayage reste au choix de l'opérateur (valeur par défaut ou réglage manuel dans l'onglet Paramètres).
+
+### Corridor
+
+- **2 sommets minimum** — un simple aller entre deux points suffit à définir l'axe.
+- La **largeur** par défaut est de **200 m** ; elle se règle ensuite dans l'onglet Paramètres du panneau de droite (curseur **Largeur corridor**, de 0 à 2000 m).
+
+### Obstruction
+
+Une fois le contour fermé (3 sommets minimum, sans auto-intersection), une fenêtre s'ouvre pour finaliser la zone d'exclusion :
+
+- **Nom** — pré-rempli (`Obstruction 1`, `Obstruction 2`, …), modifiable.
+- **Marge appliquée** — distance d'évitement supplémentaire en mètres, réglable de **0 à 500 m**.
+
+<Note>
+  Le planificateur ajoute toujours **+0,5 m** de marge de sécurité inhérente au-delà de la valeur saisie — une marge à 0 m préserve donc ce filet minimum plutôt que de coller exactement au contour tracé.
+</Note>
+
+### Waypoint isolé
+
+- Se pose en **double-clic** direct sur le globe (pas de fermeture de forme — chaque double-clic pose un point).
+- L'outil **reste actif** après la pose : vous pouvez enchaîner plusieurs waypoints à la suite, chacun inséré après le précédent dans l'ordre du vol. Recliquez l'outil (ou appuyez sur `w`) pour le désarmer.
+
+### Découpe d'AOI
+
+Contrairement aux autres outils, chaque ligne de coupe fermée (double-clic ou clic final) ne se referme pas immédiatement sur la zone : elle reste visible en tireté orange et l'outil reste actif, ce qui permet de tracer **plusieurs lignes de coupe** dans la même session. Une petite barre en haut du globe indique le nombre de lignes tracées, avec deux actions :
+
+- **Valider** (ou `Entrée`) — applique les coupes et scinde la zone active en autant de vols que nécessaire.
+- **Annuler** (ou `Échap`) — abandonne toute la session sans modifier la zone.
+
+## Recentrer et lire la surface en direct
+
+Le bouton **Recentrer**, en bas de la barre d'outils, recadre la caméra sur l'ensemble des éléments du vol actif (tous types confondus, avec une marge autour), pratique pour retrouver la zone après avoir navigué ailleurs sur le globe.
+
+La barre de statut en bas du globe affiche en continu la **surface** de la zone active (en m², ha ou km² selon l'échelle) : la valeur s'actualise dès qu'un polygone est fermé ou qu'un sommet est déplacé par la suite.

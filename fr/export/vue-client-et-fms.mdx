@@ -1,0 +1,105 @@
+---
+title: "Vue client HTML et envoi vers FMS"
+description: "Partager un plan de vol à un client, ou le publier vers le FMS de cockpit."
+---
+
+Cette page détaille deux destinations de la fenêtre **Export** qui ne produisent pas un fichier de plan de vol classique : **Exporter une vue client**, qui livre un mini-visualiseur 3D autonome à un destinataire externe, et **Envoyer vers FMS**, qui publie directement la mission sur le portail Helix pour la tablette pilote. Pour le reste des destinations (`.helix`, KML/KMZ, DJI Pilot 2) et le fonctionnement général de la fenêtre d'export, voir [Vue d'ensemble de l'export](/fr/export/vue-densemble).
+
+<CardGroup cols={2}>
+  <Card title="Vue client HTML" icon="globe">
+    Un fichier `.html` autonome avec un mini globe 3D (satellite + relief), l'AOI, les bandes et les statistiques du vol — ouvrable en double-clic, sans installer Helix Flight Planner ni créer de compte.
+  </Card>
+  <Card title="Envoyer vers FMS" icon="send">
+    Publie l'état actuel de la mission sur le portail Helix pour qu'elle apparaisse sur la tablette pilote, dans le FMS de cockpit — réservé aux missions avion/hélicoptère (pas drone).
+  </Card>
+</CardGroup>
+
+## Vue client HTML
+
+### Ce que contient le fichier
+
+Le fichier produit est une page web autonome embarquant un mini-visualiseur 3D (CesiumJS) avec :
+
+- un **fond satellite** et un **relief 3D** (terrain) ;
+- la **zone d'intérêt** (AOI) de chaque vol inclus, trous éventuels compris ;
+- les **bandes de vol** (principales, croisées, correctives, transits), les **virages** et les **lignes d'approche/sortie** (avion/hélicoptère) ;
+- les points de **décollage** et d'**atterrissage** ;
+- un panneau avec la **distance** totale, la **durée** de vol, le **nombre de bandes** et le **nombre de photos** ;
+- une **légende** des couleurs (bandes/transits en vert, virages en orange, lignes d'approche en blanc).
+
+<Tip>
+  Si plusieurs vols sont inclus dans l'export, un sélecteur de vols apparaît en haut du panneau : cliquer sur un nom de vol recharge la scène et recentre la caméra sur ce vol.
+</Tip>
+
+### Générer l'export
+
+<Steps>
+  <Step title="Ouvrir la fenêtre Export">
+    Bouton **Export** de la barre du globe (actif dès qu'au moins un vol de la mission a un plan calculé), puis **Exporter une vue client**.
+  </Step>
+  <Step title="Choisir les vols à inclure">
+    La fenêtre de sélection des vols s'ouvre directement, avec **tous les vols exportables déjà cochés** — décochez ceux que vous ne voulez pas transmettre au destinataire. Seuls les vols possédant au moins un élément calculé apparaissent dans la liste.
+  </Step>
+  <Step title="Confirmer l'export">
+    Cliquez sur **Exporter**. Un sélecteur de fichier natif s'ouvre pour choisir l'emplacement et le nom du fichier `.html` — un seul fichier est toujours écrit, quel que soit le nombre de vols cochés. Le nom proposé par défaut est `<nom-du-vol>-client.html` s'il n'y a qu'un seul vol coché, ou `<nom-de-la-mission>-client.html` au-delà.
+  </Step>
+</Steps>
+
+Si aucun vol de la mission n'a de plan calculé, la fenêtre l'indique et rien n'est cochable. Si un vol coché n'a en réalité aucun résultat exploitable au moment de l'export, l'opération s'arrête avec un message identifiant le vol en cause.
+
+### Ouverture par le destinataire
+
+Le destinataire ouvre le fichier `.html` en **double-clic**, dans son navigateur habituel — aucune installation de Helix Flight Planner et aucun compte Helix Aero ne sont nécessaires.
+
+<Note>
+  Le fichier est autonome (toute la géométrie du plan est intégrée dedans), mais son **affichage 3D nécessite une connexion Internet** à l'ouverture : le moteur de rendu et les fonds de carte (imagerie satellite + relief) sont chargés depuis des services externes au moment de l'ouverture, pas embarqués dans le fichier. Sans connexion, la page reste utilisable mais le globe peut rester vide ; un message discret en bas à droite signale alors que la carte ou le relief n'a pas pu être chargé.
+</Note>
+
+## Envoyer vers FMS
+
+### Ce que fait cette action
+
+**Envoyer vers FMS** ne passe par aucun écran intermédiaire : un seul clic déclenche, dans l'ordre :
+
+1. la **synchronisation** de l'état courant de la mission (paramètres, zones, résultat) vers le portail Helix, pour être sûr que ce qui est publié correspond bien à vos derniers changements ;
+2. la **publication** d'une nouvelle version numérotée de la mission sur le portail ;
+3. le **basculement de visibilité** qui rend cette version consultable sur la tablette pilote, dans le FMS de cockpit.
+
+En cas de succès, un message confirme le **numéro de version** publiée et la **taille** envoyée — la mission est alors visible sur la tablette pilote.
+
+<Warning>
+  Le FMS Helix est un **FMS de cockpit**, destiné aux missions **avion / hélicoptère** (pilotées à bord). Si la mission ne contient aucune zone habitée (uniquement des vols drone), l'envoi échoue et l'application invite à exporter vers **DJI Pilot 2** (KMZ WPML) à la place — voir [Envoyer vers DJI Pilot 2](/fr/export/vue-densemble#envoyer-vers-dji-pilot-2).
+</Warning>
+
+### Prérequis
+
+- Être connecté à votre compte Helix Aero (le portail) sur ce poste.
+- La mission doit avoir **au moins un vol avec un plan calculé** — sinon l'envoi est refusé avant même de contacter le portail.
+- La mission doit être **synchronisée sur le portail** au moins une fois au préalable (une mission jamais synchronisée n'existe pas encore côté portail).
+- Contenir au moins un vol **avion ou hélicoptère** (pas uniquement drone).
+- Votre licence doit **inclure la publication FMS**.
+
+### Messages d'erreur
+
+Si l'un des prérequis n'est pas rempli, ou si le portail refuse la publication, un message dédié s'affiche à la place de la confirmation :
+
+| Message affiché | Signification |
+|---|---|
+| *Calculez d'abord le plan de vol avant de l'envoyer au FMS.* | Aucun résultat calculé sur la mission — lancez d'abord un calcul. |
+| *Votre licence ne permet pas la publication FMS.* | Votre licence ne couvre pas cette fonctionnalité. |
+| *La mission doit être publiée d'abord.* | Le portail exige un état publié préalable que l'envoi en cours n'a pas satisfait. |
+| *Mission drone uniquement — le FMS Helix est un FMS de cockpit. Exportez vers DJI Pilot 2 (KMZ WPML) à la place.* | La mission ne contient aucun vol avion/hélicoptère, seulement des vols drone. |
+| *Mission introuvable sur le portail — synchronisez d'abord (Paramètres → Synchronisation).* | La mission n'a encore jamais été synchronisée avec le portail. |
+| *Synchronisation impossible : …* | La synchronisation préalable à la publication a échoué (réseau, portail injoignable…) ; le détail de l'erreur suit. |
+| *Échec de l'envoi au FMS : …* | Toute autre erreur (par exemple une session portail expirée) ; le détail brut renvoyé par le portail suit. |
+
+<Tip>
+  La plupart de ces messages indiquent une action simple à faire avant de réessayer : calculer la mission, vous reconnecter, ou lancer une synchronisation manuelle depuis **Paramètres → Synchronisation**.
+</Tip>
+
+## Voir aussi
+
+- [Vue d'ensemble de l'export](/fr/export/vue-densemble)
+- [Formats d'export](/fr/guides/export-formats)
+- [Synchronisation entre appareils et mode hors-ligne](/fr/compte/synchronisation)
+- [Alertes de sécurité et blocage à l'export](/fr/qc/alertes-securite-et-validation)

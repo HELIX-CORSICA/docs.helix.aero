@@ -1,0 +1,103 @@
+---
+title: "Alertes de sécurité et blocage à l'export"
+description: "Collision terrain, couverture incomplète et verrouillage de l'export."
+---
+
+Après chaque calcul de trajectoire, Helix Flight Planner surveille en continu trois choses : la couverture réelle de la zone, la garde au sol le long du plan, et (pour un avion en iAGL) la qualité du suivi de terrain. Selon la gravité du problème détecté, l'app se contente d'un simple avertissement ou verrouille carrément l'export tant que vous n'avez pas explicitement reconnu le risque.
+
+<CardGroup cols={2}>
+  <Card title="Couverture incomplète" icon="gauge">
+    Notification orange dès que la couverture réelle de la zone descend sous ~99,5 %. Non bloquante.
+  </Card>
+  <Card title="Collision terrain" icon="mountain">
+    Garde au sol sous 2 m : alerte critique, bandes/transits en rouge sur le globe, export verrouillé.
+  </Card>
+  <Card title="Suivi de terrain avion (iAGL)" icon="plane">
+    Écart AGL trop important ou performances par défaut : alerte qualité, non bloquante.
+  </Card>
+  <Card title="Verrouillage de l'export" icon="lock">
+    Un problème de sécurité affiche un écran de confirmation à cocher avant de pouvoir continuer.
+  </Card>
+</CardGroup>
+
+## Couverture incomplète de la zone
+
+Après chaque calcul, Helix compare l'empreinte réellement couverte par les bandes de vol à la surface de la zone. Ce ruban de calcul est construit avec une demi-largeur **constante** (la moitié de la fauchée travers-vol du capteur), alors que la couche d'empreinte affichée sur le globe utilise, elle, une demi-largeur **variable** par échantillon, dérivée de l'AGL réel sous chaque bande. Sur un terrain plat les deux rubans coïncident ; sur un relief marqué, le pourcentage de couverture affiché peut donc s'écarter légèrement de ce que suggère visuellement l'empreinte affichée sur le globe. Si la couverture passe sous **99,5 %**, une notification orange apparaît :
+
+> **Couverture incomplète (XX.X %)**
+> Les valeurs de recouvrement ne permettent pas une couverture complète de la zone. Veuillez ajouter un buffer ou augmenter le recouvrement pour assurer la couverture.
+
+Cette alerte est **non bloquante** — elle reste une simple notification qui n'empêche ni le calcul ni l'export. Elle sert d'indicateur : recouvrement latéral/frontal insuffisant, buffer manquant, ou géométrie de zone qui laisse des coins non balayés.
+
+<Note>
+  Les **obstructions** déclarées sur la zone sont exclues du calcul de couverture : leur emprise est retirée à la fois du numérateur (surface couverte) et du dénominateur (surface totale de la zone), puisqu'il est normal — et légal — de ne pas les survoler. Elles ne font donc jamais chuter artificiellement le pourcentage affiché.
+</Note>
+
+## Collision avec le relief : garde au sol insuffisante
+
+Une fois la trajectoire calculée, Helix échantillonne le modèle de terrain sous chaque bande de vol, sous chaque virage et sous chaque transit reliant deux éléments du vol (y compris un élément non sélectionné dans le panneau) pour en déduire la garde au sol minimale réellement atteinte.
+
+| Garde au sol | Sévérité | Ce qui se passe |
+|---|---|---|
+| **< 2 m** | 🔴 Critique — « Collision terrain détectée ! » | Bandes/transits concernés colorés en **rouge** sur le globe, champ **Altitude** du panneau Paramètres bordé de rouge (sur l'élément actif concerné), **export verrouillé**. |
+| **2 – 50 m** | 🟠 Avertissement — « Marge faible » | Simple notification, aucune colorisation, export toujours possible. |
+| **≥ 50 m** | — | Aucune alerte. |
+
+<Note>
+  Quand la garde au sol descend sous zéro, le message précise directement l'écart (« Trajectoire X m sous le relief. ») ; entre 0 et 2 m il indique la garde minimale atteinte (« Clearance min X m — touche le relief. »).
+</Note>
+
+Chaque alerte critique liste les éléments et les transits concernés, du pire au moins grave, ce qui permet de :
+
+- teinter en rouge, sur le globe, uniquement les bandes/virages/transits réellement en cause (les autres éléments du vol restent normaux) ;
+- afficher un lien **« Voir la zone concernée »** (ou **« Voir le transit concerné »** si la collision touche uniquement un transit inter-éléments) dans la notification — cliquer recadre la caméra directement sur l'endroit problématique et sélectionne l'élément correspondant.
+
+<Tip>
+  Réglages → **Alertes viewer** permet de masquer la notification « Marge faible » (`Afficher les avertissements (marge faible)`) si elle est trop bavarde sur vos missions habituelles. Le contrôle équivalent pour l'alerte critique « Collision terrain » est verrouillé sur cet écran (case cochée et grisée en permanence) : il n'existe aucun moyen de la masquer, ni depuis les réglages ni depuis le tiroir de notifications (elle n'y est pas dismissible individuellement) — elle disparaît d'elle-même uniquement quand le problème de collision est résolu.
+</Tip>
+
+## Suivi de terrain avion en iAGL
+
+Sur un **avion** en mode altitude **iAGL** (hauteur-sol suivie le long de la bande), le solveur garantit toujours la garde au sol par construction — il ne peut donc jamais déclencher l'alerte critique ci-dessus pour cette raison. En revanche, deux situations dégradent la qualité du plan sans jamais le rendre dangereux, et remontent une alerte **qualité** (non bloquante), intitulée **« Suivi de terrain AGL »** :
+
+- **performances avion incomplètes** — une ou plusieurs valeurs (vitesse de croisière, taux de montée, taux de descente) manquent dans la fiche appareil et une valeur par défaut a été utilisée pour le calcul ;
+- **écart AGL important** — la hauteur-sol réellement volée s'écarte de plus de **30 m** de la hauteur-sol cible à un endroit du relief (GSD non uniforme sur cette portion).
+
+Cette alerte n'affecte ni la colorisation des bandes ni le champ Altitude — elle est réservée aux avions en iAGL et se retrouve, comme toute alerte non bloquante, dans le bandeau d'information de la fenêtre d'export (voir plus bas).
+
+## Verrouillage de l'export selon la sévérité
+
+L'export (`.helix`, KML, KMZ/WPML, FMS…) applique le même système d'alertes que le globe, avec un traitement différent selon la sévérité la plus grave détectée sur le vol actif :
+
+<Steps>
+  <Step title="🔴 Sécurité — export verrouillé">
+    Si une collision terrain est active sur le vol, ouvrir la fenêtre **Exporter** affiche d'abord un écran de confirmation listant chaque problème détecté, avec une case à cocher obligatoire **« Je comprends les risques et souhaite exporter malgré tout. »**. Le bouton **Continuer malgré tout** reste désactivé tant que la case n'est pas cochée ; **Annuler** referme la fenêtre sans rien exporter.
+  </Step>
+  <Step title="Après confirmation">
+    Une fois la case cochée et « Continuer malgré tout » cliqué, l'écran normal de sélection du format d'export s'affiche. La confirmation n'est valable que pour cette ouverture de la fenêtre : refermer puis rouvrir Exporter redemande la case à cocher si le problème est toujours présent.
+  </Step>
+  <Step title="🟠 Qualité / 🔵 Information — bandeau non bloquant">
+    Si la sévérité la plus grave du vol est une simple alerte qualité (ex. suivi de terrain iAGL) ou informative, la fenêtre d'export affiche un bandeau récapitulatif (« Attention » ou « Informations sur le vol ») au-dessus du choix de format, mais n'empêche à aucun moment l'export.
+  </Step>
+</Steps>
+
+## Le bandeau « Plan invalide »
+
+Indépendamment du système d'alertes ci-dessus, un bandeau rouge-orangé peut apparaître en haut du globe : **« Plan invalide »**. Il signale que le moteur de calcul n'est pas parvenu à produire une trajectoire du tout — les bandes de vol restent vides plutôt que d'afficher un plan incohérent. C'est le cas par exemple lorsqu'un drone en AGL strict ne peut pas respecter à la fois la pente maximale autorisée et la garde au sol requise (message type : « la pente max ne permet pas au drone de garder l'AGL au-dessus du terrain »). Le message affiché précise la contrainte en cause ; la marche à suivre est d'assouplir la pente maximale ou d'augmenter l'altitude de vol avant de relancer le calcul.
+
+## Centre de notifications
+
+Toutes les alertes non bloquantes (couverture, marge faible, espace aérien, erreurs de synchronisation…) passent par le même centre de notifications, accessible via la cloche en haut de l'écran :
+
+- une nouvelle notification apparaît brièvement en incrustation temporaire au centre du globe, puis disparaît automatiquement après quelques secondes ;
+- elle reste ensuite disponible dans le **tiroir de notifications** (clic sur la cloche), triée de la plus grave à la plus récente, avec un badge indiquant le nombre de notifications actives ;
+- un lien **« Tout effacer »** vide toutes les notifications qui peuvent l'être (les alertes critiques permanentes comme la collision terrain ne sont pas dismissibles individuellement — elles disparaissent d'elles-mêmes quand le problème est résolu) ;
+- toute notification liée à une collision terrain propose son propre bouton **« Voir la zone concernée »** / **« Voir le transit concerné »**, identique à celui du globe.
+
+## Voir aussi
+
+- [Régler la couverture : capteur, altitude/GSD et recouvrement](/fr/planification/couverture-et-capteur)
+- [Choisir le mode d'altitude](/fr/planification/mode-altitude)
+- [Modèles numériques de terrain (MNT/DEM)](/fr/planification/terrain-mnt)
+- [Édition multiple, attributs et validation de la mission](/fr/planification/edition-multiple-et-validation)
+- [Formats d'export](/fr/guides/export-formats)

@@ -1,0 +1,78 @@
+---
+title: "Modèles numériques de terrain (MNT/DEM)"
+description: "Consulter les sources de terrain utilisées et pré-télécharger une zone."
+---
+
+# Modèles numériques de terrain (MNT/DEM)
+
+Une icône **montagne** dans la barre du haut, en mode mission, ouvre le panneau **Modèles numériques de terrain** : il liste les sources d'élévation que le moteur de calcul consulte pour dériver l'altitude du relief (waypoints, garde au sol, couverture, contrôle qualité, profil altimétrique), et propose un bouton pour mettre en cache le terrain de votre zone avant de lancer un calcul.
+
+<CardGroup cols={2}>
+  <Card title="GLO 30 — source globale" icon="globe">
+    Le MNT mondial de référence du moteur de calcul, à 30 m de résolution. Toujours actif, non désactivable.
+  </Card>
+  <Card title="Pré-télécharger AOI" icon="download">
+    Met en cache les tuiles de terrain qui couvrent le polygone tracé, avant de lancer un calcul.
+  </Card>
+</CardGroup>
+
+## Ouvrir le panneau
+
+L'icône en forme de montagne, dans le groupe de droite de la barre du haut (à côté des notifications), n'apparaît qu'en mode mission — une fois un vol ouvert. Cliquez dessus pour ouvrir le panneau **Modèles numériques de terrain**.
+
+## GLO 30 : la source globale, toujours active
+
+En haut de la liste **DEM actifs**, une ligne verrouillée (icône cadenas) affiche :
+
+| Colonne | Valeur |
+|---|---|
+| Nom | **GLO 30** |
+| Couverture | Mondiale |
+| Résolution | 30 m |
+| État | **Toujours actif** |
+
+GLO 30 est le MNT mondial de référence (Copernicus GLO-30) que le moteur de calcul utilise comme source d'élévation faisant autorité, partout où le terrain intervient : altitude des bandes en mode AGL/iAGL/FGL, garde au sol, couverture, contrôle qualité, profil altimétrique — y compris en mode AMSL, où le terrain reste consulté pour évaluer la garde au sol même si l'altitude de vol elle-même est constante.
+
+<Note>
+  Cette ligne est en lecture seule : impossible de la désactiver, de changer sa résolution ou de la supprimer. C'est un choix délibéré — le moteur de calcul a besoin d'une source de terrain systématiquement disponible et cohérente pour garantir des résultats fiables.
+</Note>
+
+## Sources DEM additionnelles (lecture seule)
+
+Si votre installation contient déjà d'autres sources de terrain enregistrées, elles s'affichent sous la ligne GLO 30, chacune avec :
+
+| Colonne | Valeur |
+|---|---|
+| Nom et chemin | Le nom donné à la source et son chemin d'origine |
+| Résolution | Un badge `~X m` si l'information est connue |
+| État | **Actif** (vert) ou **Inactif** (gris) selon qu'elle est utilisée dans les calculs |
+
+<Warning>
+  Ce panneau n'offre actuellement aucun bouton pour importer un nouveau MNT personnalisé — seule la source globale GLO 30 apparaît par défaut. Si des sources additionnelles sont listées ici, elles proviennent d'un import antérieur ; cette page ne documente pas d'action pour en ajouter, car la fonctionnalité n'est pas accessible depuis l'interface actuelle.
+</Warning>
+
+## Pré-télécharger la zone (AOI)
+
+En bas du panneau, le bouton **Pré-télécharger AOI** met en cache les tuiles de terrain qui couvrent l'emprise (bounding box) du polygone de la zone active, avant de lancer un calcul — utile pour éviter les temps d'attente réseau au premier calcul sur une grande zone, ou pour préparer une zone à l'avance si la connexion sera limitée sur le terrain.
+
+<Steps>
+  <Step title="Tracer un polygone suffisamment détaillé">
+    Le bouton reste désactivé tant que la zone active n'a pas au moins **10 sommets** ; un message **« Dessinez un polygone (≥ 10 sommets) »** s'affiche en dessous tant que ce n'est pas le cas.
+  </Step>
+  <Step title="Cliquer sur Pré-télécharger AOI">
+    Le bouton passe en état **« Téléchargement… »** pendant l'opération.
+  </Step>
+  <Step title="Attendre la confirmation">
+    Un message **« ✓ Tuiles DEM mises en cache »** confirme la réussite (affiché quelques secondes). En cas d'échec réseau, le message devient **« Échec du pré-téléchargement »**.
+  </Step>
+</Steps>
+
+<Tip>
+  Une connexion internet active est nécessaire pour ce pré-téléchargement — c'est elle qui alimente le cache local en tuiles de terrain.
+</Tip>
+
+## Voir aussi
+
+- [Choisir le mode d'altitude](/fr/planification/mode-altitude)
+- [Mesurer des distances et lire le profil altimétrique](/fr/globe/mesure-et-profil-altimetrique)
+- [Dessiner une zone, un corridor ou un point de décollage](/fr/mission/dessiner-une-zone)

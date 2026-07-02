@@ -1,0 +1,117 @@
+---
+title: "Choisir le mode d'altitude"
+description: "AMSL, AGL/FGL et iAGL : comment l'altitude planifiée suit (ou non) le terrain."
+---
+
+# Choisir le mode d'altitude
+
+Dans l'onglet **Paramètres** du panneau de droite, le groupe **Vol** affiche un sélecteur **Mode** à trois positions : il pilote la façon dont l'altitude de vol de la zone active se comporte par rapport au relief. Les trois options proposées **changent selon le type d'aéronef** sélectionné pour le vol — un drone n'a pas les mêmes contraintes physiques qu'un avion ou un hélicoptère, et le sélecteur s'adapte en conséquence.
+
+| Position | Drone | Avion / Hélicoptère |
+| --- | --- | --- |
+| 1 | **AMSL** — altitude constante | **AMSL** — altitude constante |
+| 2 | **AGL** — suivi de terrain strict | **FGL** — hauteur ajoutée à une référence terrain |
+| 3 | **iAGL** — suivi de terrain intelligent | **iAGL** — enveloppe lissée sous contrainte physique |
+
+<Tip>
+  Survolez chaque bouton du sélecteur pour afficher une infobulle qui rappelle son comportement exact — pratique pour trancher rapidement sans quitter le panneau.
+</Tip>
+
+## AMSL — altitude constante au-dessus du niveau de la mer
+
+Disponible pour tout type d'aéronef. Chaque bande de la zone vole exactement à l'altitude MSL saisie, quel que soit le relief survolé — la garde au sol varie donc d'un bout à l'autre de la zone selon les creux et les bosses du terrain.
+
+C'est le choix le plus simple, adapté à un terrain plat, une zone au-dessus de l'eau, ou une contrainte réglementaire qui impose un plafond MSL fixe.
+
+## AGL — suivi de terrain strict (drone uniquement)
+
+Réservé au drone. Chaque waypoint de la bande est positionné exactement à la hauteur consigne au-dessus du sol : le drone monte et descend pour épouser fidèlement chaque variation de relief, sans lissage. C'est le mode le plus précis en termes de garde au sol, au prix de trajectoires plus saccadées sur un terrain accidenté.
+
+<Note>
+  Cette option n'apparaît pas pour un avion ou un hélicoptère : un suivi de terrain strict, waypoint par waypoint, imposerait des taux de montée/descente que l'appareil ne peut pas physiquement tenir. Utilisez **FGL** ou **iAGL** à la place.
+</Note>
+
+## FGL — hauteur ajoutée à une référence terrain (avion / hélicoptère)
+
+FGL (*From Ground Level*) remplace AGL pour les aéronefs habités. La hauteur saisie n'est pas ajoutée au terrain waypoint par waypoint : elle est ajoutée à **une seule référence de terrain pour toute la zone**, ce qui produit une altitude AMSL constante — la bande reste plate, comme en AMSL, mais l'altitude qui en résulte est dérivée du relief plutôt que saisie directement.
+
+### Référence terrain : Min / Moyen / Max
+
+Quand FGL est sélectionné, un second réglage **Référence** apparaît juste en dessous, avec trois choix :
+
+| Référence | Altitude résultante | Usage recommandé |
+| --- | --- | --- |
+| **Min** | Point le plus **bas** de la zone + hauteur consigne | Garde au sol maximale au-dessus du point le plus bas — l'appareil passe haut au-dessus des sommets |
+| **Moyen** | Altitude **moyenne** de la zone + hauteur consigne | Compromis recommandé sur un relief modéré |
+| **Max** | Point le plus **haut** de la zone + hauteur consigne | Le plus sûr sur un relief accidenté — l'appareil dégage tous les sommets avec la marge consigne |
+
+Un bouton **i** à côté du libellé « Référence » ouvre une fenêtre avec un schéma pour chacune des trois références : un profil de terrain, la ligne verte en tirets qui matérialise la référence choisie, et la ligne blanche pointillée qui matérialise l'altitude de vol qui en résulte — la même hauteur consigne, mais positionnée différemment selon la référence.
+
+<Steps>
+  <Step title="Choisir la référence">
+    Sélectionnez Min, Moyen ou Max selon le relief de la zone et la marge de sécurité voulue.
+  </Step>
+  <Step title="Consulter les schémas si besoin">
+    Cliquez le bouton **i** pour visualiser où se situe chaque référence par rapport au terrain avant de trancher.
+  </Step>
+  <Step title="Saisir la hauteur consigne">
+    L'altitude AMSL effective de la zone est recalculée automatiquement à partir de la référence choisie et de la hauteur saisie.
+  </Step>
+</Steps>
+
+### Lier les bandes
+
+Une case à cocher **Lier les bandes** apparaît sous le sélecteur de référence (uniquement en FGL) :
+
+- **Cochée (par défaut)** — toutes les bandes de la zone partagent **une seule** altitude AMSL, dérivée de la référence terrain de toute la zone. Le ruban de vol reste parfaitement plat d'une bande à l'autre.
+- **Décochée** — chaque bande dérive sa **propre** altitude à partir de sa seule portion de terrain sous-jacent. Chaque bande optimise sa propre garde au sol, mais l'altitude peut alors faire un palier visible d'une bande à la suivante.
+
+<Tip>
+  Laissez la case cochée pour un rendu photogrammétrique homogène (altitude uniforme). Décochez-la seulement si les bandes couvrent des zones de relief très différentes et que vous préférez optimiser la garde au sol bande par bande plutôt que garder un plan parfaitement plat.
+</Tip>
+
+## iAGL — suivi de terrain intelligent
+
+iAGL se comporte différemment selon l'aéronef :
+
+- **Drone** — se comporte comme **AGL strict** : le drone reste à la consigne au-dessus du sol partout, exactement comme le mode AGL décrit plus haut.
+- **Avion** — construit une **enveloppe lissée** : le profil suit les grandes lignes du relief sans réagir à chaque aspérité, et respecte à tout moment les taux de montée et de descente réels de l'appareil (issus de sa fiche catalogue). Le plancher de garde au sol n'est jamais violé — si le relief impose une montée trop raide pour la vitesse et le taux de montée de l'appareil, le profil anticipe et relève sa trajectoire en amont plutôt que de risquer une collision.
+- **Hélicoptère** — suit également le relief sous contrainte de taux de montée/descente de l'appareil, sans le réglage de préréglage décrit ci-dessous (propre à l'avion).
+
+### Préréglage de suivi de terrain (avion uniquement)
+
+Quand un **avion** est sélectionné et que le mode est **iAGL**, une ligne **Suivi terrain** apparaît avec deux préréglages :
+
+| Préréglage | Fenêtre d'anticipation | Marge sur le taux de montée/descente | Usage |
+| --- | --- | --- | --- |
+| **Lisse** (par défaut) | 18 secondes de vol | 40 % du taux max de l'appareil | Profil doux, confortable, qui absorbe les variations de relief sur une plus longue distance |
+| **Réactif** | 12 secondes de vol | 60 % du taux max de l'appareil | Colle davantage au relief, avec des transitions plus marquées mais toujours dans l'enveloppe de l'appareil |
+
+Dans les deux cas, l'appareil ne vole **jamais** à la limite absolue de ses capacités : la marge (40 % ou 60 % du taux catalogue) est une sécurité qui laisse de la marge de manœuvre à tout moment.
+
+<Note>
+  Passer un avion en iAGL alors que la tolérance AGL était encore réglée sur une valeur typique drone (10 m ou moins) la fait automatiquement remonter à 25 m — un suivi de terrain aussi serré n'est pas réaliste pour un aéronef à voilure fixe.
+</Note>
+
+## Tolérance AGL
+
+Le champ **Tolérance AGL** (groupe **Terrain**, visible uniquement en mode AGL ou iAGL — il disparaît en AMSL/FGL puisque l'altitude y est plate par construction) règle la finesse avec laquelle le profil de vol épouse le relief :
+
+- Une tolérance **basse** colle au plus près à chaque variation de terrain, au prix de davantage de points d'altitude le long de la bande.
+- Une tolérance **haute** lisse le profil : les ondulations de terrain plus petites que la tolérance sont ignorées, pour un profil plus doux avec moins de changements d'altitude.
+
+Les bornes du champ changent selon l'aéronef :
+
+| Aéronef | Plage | Pas |
+| --- | --- | --- |
+| Drone / Hélicoptère | 1 – 30 m | 0,5 m |
+| Avion | 5 – 500 m | 5 m |
+
+<Note>
+  Sur une trajectoire **figée** (une zone convertie en waypoints modifiables individuellement après génération — voir [Modifier une zone après le tracé](/fr/mission/editer-une-zone)), le panneau Paramètres bascule vers l'édition de l'altitude **waypoint par waypoint** pour cette zone seule, et ce curseur global ne s'affiche plus le temps de cette édition. En revanche, si vous sélectionnez **plusieurs éléments à la fois** — y compris une trajectoire figée parmi eux — le champ Tolérance AGL réapparaît dans le panneau d'édition multiple et s'applique alors à toute la sélection.
+</Note>
+
+## Voir aussi
+
+- [Modifier une zone après le tracé](/fr/mission/editer-une-zone)
+- [Dessiner une zone, un corridor ou un point de décollage](/fr/mission/dessiner-une-zone)

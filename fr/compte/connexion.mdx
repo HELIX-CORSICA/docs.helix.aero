@@ -1,0 +1,87 @@
+---
+title: "Connexion et première utilisation"
+description: "Se connecter à son compte Helix Aero et configurer l'application au premier lancement."
+---
+
+Helix Flight Planner s'ouvre toujours sur un écran de démarrage qui tente de retrouver votre session, puis sur l'écran de connexion si aucune session valide n'est disponible. Cette page décrit les deux écrans, la case **Se souvenir de moi**, et l'assistant de configuration affiché une seule fois.
+
+## L'écran de connexion
+
+<Steps>
+  <Step title="Adresse email">
+    Saisissez l'adresse email de votre compte Helix Aero.
+  </Step>
+  <Step title="Mot de passe">
+    Saisissez votre mot de passe. Une icône en forme d'œil, à droite du champ, permet d'afficher ou de masquer le mot de passe en clair pour vérifier votre saisie.
+  </Step>
+  <Step title="Se souvenir de moi">
+    Cochez ou décochez cette option selon que vous souhaitez rester connecté sur ce poste (voir la section dédiée ci-dessous).
+  </Step>
+  <Step title="Connexion">
+    Cliquez sur le bouton de connexion. Celui-ci se désactive brièvement (son libellé passe à "Chargement…") pendant la vérification de vos identifiants ; les champs email et mot de passe restent modifiables.
+  </Step>
+</Steps>
+
+En cas de succès, l'application vérifie ensuite votre licence pour ce poste (activation de siège) avant d'ouvrir le tableau de bord. Un bandeau en bas du formulaire rappelle qu'en vous connectant, vous acceptez les conditions d'utilisation d'Helix.
+
+### Messages d'erreur
+
+Si la connexion échoue, un message orange apparaît sous le formulaire. Le message est adapté à la cause réelle plutôt que d'afficher une erreur technique brute :
+
+| Situation | Message affiché |
+|---|---|
+| Email ou mot de passe incorrect | Identifiants invalides. |
+| Plus aucun siège machine disponible pour votre licence | Limite de postes atteinte. Aucun siège machine disponible — libérez un poste depuis le portail ou contactez votre administrateur. |
+| Serveur Helix injoignable (pas de réseau, DNS, timeout, panne serveur) | Impossible de joindre le serveur. |
+| Ce poste n'a encore jamais été activé et aucune connexion Internet n'est disponible | Connexion Internet requise pour activer ce poste. Connectez-vous une première fois en ligne pour enregistrer la machine sur votre licence. |
+| Le compte n'a pas de licence active valide pour ce poste | Licence non validée pour ce poste. Vérifiez que votre compte dispose d'une licence active, puis réessayez. |
+| Toute autre cause imprévue | Échec de la connexion. Réessayez. |
+
+<Tip>
+  Un message de "limite de postes atteinte" ou de "licence non validée" ne signifie pas que votre mot de passe est faux — vos identifiants sont corrects, c'est l'activation de la licence sur ce poste précis qui a été refusée. Gérez vos machines enregistrées depuis le portail Helix Aero.
+</Tip>
+
+## Se souvenir de moi
+
+La case **Se souvenir de moi**, cochée par défaut, contrôle si votre session survit à la fermeture de l'application :
+
+- **Cochée** — votre session est mémorisée de façon sécurisée dans le coffre à identifiants de votre système d'exploitation (Gestionnaire d'identifiants Windows, Trousseau macOS, etc.). Au prochain lancement, l'application vous reconnecte automatiquement sans redemander votre mot de passe.
+- **Décochée** — la session reste uniquement en mémoire le temps de cette utilisation. Si une session mémorisée existait déjà sur ce poste, elle est effacée du coffre du système au moment de la connexion. Au prochain lancement, l'écran de connexion réapparaît.
+
+<Note>
+  Cette option est utile sur un poste partagé ou temporaire : décochez-la pour ne laisser aucune trace de session persistante sur la machine.
+</Note>
+
+## Reconnexion automatique au démarrage
+
+Au lancement, Helix Flight Planner affiche toujours un écran de démarrage (splash) avant d'ouvrir le tableau de bord ou l'écran de connexion. Pendant cet affichage, l'application :
+
+1. Recherche une session mémorisée sur ce poste (voir "Se souvenir de moi" ci-dessus).
+2. Si une session est trouvée, la revalide auprès du serveur de licence Helix Aero — ou, si aucune connexion Internet n'est disponible, via un cache de vérification hors ligne pour une durée de grâce limitée.
+3. Réactive le siège machine de ce poste pour la session en cours.
+
+Si ces étapes réussissent, vous êtes redirigé directement vers le tableau de bord (ou vers l'assistant de première utilisation si celui-ci n'a pas encore été complété, voir ci-dessous) sans ressaisir vos identifiants. Si la session ne peut pas être revalidée (siège machine libéré depuis le portail, licence expirée ou révoquée, ou aucune session mémorisée), vous êtes renvoyé vers l'écran de connexion.
+
+<Warning>
+  L'utilisation hors ligne au-delà de la fenêtre de grâce nécessite de vous reconnecter en ligne au moins une fois pour revalider votre licence.
+</Warning>
+
+## Assistant de première utilisation
+
+Votre toute première connexion (remplir le formulaire ci-dessus et valider) vous conduit directement au tableau de bord, sans assistant. C'est seulement au lancement suivant de l'application — via l'écran de démarrage et sa reconnexion automatique décrite ci-dessus — qu'un court assistant de configuration s'affiche à la place du tableau de bord, tant qu'il n'a pas encore été complété. Il ne propose que deux choix, appliqués **en direct** pendant que vous les sélectionnez :
+
+<Steps>
+  <Step title="Thème de l'interface">
+    Choisissez **Sombre** ou **Clair**. L'aperçu de chaque carte reflète immédiatement le thème sélectionné dans toute l'application.
+  </Step>
+  <Step title="Langue">
+    Choisissez **Français** (par défaut) ou **English**. Le changement de langue s'applique instantanément à toute l'interface.
+  </Step>
+  <Step title="Commencer">
+    Cliquez sur **Commencer** pour valider vos choix et entrer dans le tableau de bord.
+  </Step>
+</Steps>
+
+<Tip>
+  Ces deux réglages restent modifiables à tout moment depuis les **Réglages** de l'application. Cet assistant ne s'affiche qu'une seule fois : aux lancements suivants, vous arrivez directement sur le tableau de bord (ou l'écran de connexion si la session n'a pas pu être retrouvée).
+</Tip>

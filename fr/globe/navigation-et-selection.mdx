@@ -1,0 +1,129 @@
+---
+title: "Naviguer et sélectionner sur le globe"
+description: "Contrôles caméra, sélection multiple, boussole et informations en direct."
+---
+
+Le globe 3D est l'espace de travail principal de Helix Flight Planner : toute la navigation caméra se fait à la souris, sans mode dédié à activer. Cette page couvre les gestes de déplacement, les repères visuels en surimpression (boussole, carte de métriques, barre de statut) et la sélection des éléments posés sur le globe (bandes de vol, waypoints, décollages, GCP).
+
+<CardGroup cols={2}>
+  <Card title="Orbite au pivot ancré" icon="mouse-pointer-2">
+    Glisser avec le bouton gauche fait tourner la caméra autour du point du sol situé sous le curseur au moment du clic — ce point reste sous la souris pendant tout le glisser.
+  </Card>
+  <Card title="Sélection multiple" icon="mouse-pointer-click">
+    Ctrl-clic pour ajouter/retirer un élément à la sélection, Maj-clic pour sélectionner une plage — sans jamais interrompre la navigation caméra.
+  </Card>
+</CardGroup>
+
+## Se déplacer à la souris
+
+Chaque geste de caméra s'ancre sur un **pivot** : le point du sol (terrain ou modèle 3D) situé sous le curseur au moment où vous appuyez sur le bouton. La caméra tourne, glisse ou bascule autour de ce point plutôt que de son propre centre, ce qui évite de perdre le repère visuel en cours de manœuvre.
+
+| Geste | Effet |
+|---|---|
+| **Glisser bouton gauche** | Orbite autour du point ancré sous le curseur : la caméra tourne en gardant ce point sous la souris. L'inclinaison (pitch) ne change pas — seule la position tourne. |
+| **Glisser bouton droit** | Translation latérale dans le plan du point visé, sans rotation — la vue glisse comme si vous poussiez le sol. |
+| **Glisser bouton molette** (clic central maintenu) | Inclinaison : bascule la caméra autour du point ancré, pour passer d'une vue de dessus à une vue rasante ou inversement. |
+| **Molette** (défiler) | Zoom avant/arrière **vers le point survolé** : le point sous le curseur reste fixe à l'écran pendant que la distance caméra-sol change. Le pas de zoom s'adapte à l'altitude courante (grands pas en vue lointaine, pas fins près du sol). |
+
+<Tip>
+  Maintenir **Ctrl** ou **Maj** pendant un de ces glissers ne change pas le comportement de la caméra — ces touches restent disponibles pour la sélection multiple (voir plus bas), vous pouvez donc naviguer sans jamais relâcher un modificateur de sélection.
+</Tip>
+
+<Note>
+  Un glisser rapide relâché en pleine vitesse (orbite ou translation) continue sur son élan avec une décélération progressive, comme un lancer — inutile de freiner le geste juste avant de relâcher le bouton.
+</Note>
+
+La caméra ne descend jamais sous le relief : un plancher anti-collision la fait automatiquement remonter (ou basculer, en inclinaison) si un geste tenterait de la faire passer sous le terrain.
+
+## Recentrer rapidement la caméra
+
+Deux raccourcis évitent de re-naviguer manuellement vers un point :
+
+- **Double-clic dans le vide** (sur le terrain, pas sur un élément) — recentre la caméra sur le point cliqué **sans changer le niveau de zoom** : la distance caméra-sol et l'orientation restent identiques, seul le point visé se déplace au centre de l'écran.
+- **Clic sur la boussole** (coin bas-droit) — bascule la caméra à la **verticale, cap au nord**, au-dessus du point actuellement au centre de l'écran, en conservant la même distance au sol.
+
+<Note>
+  Le double-clic de recentrage est désactivé pendant un tracé (polygone, corridor…) ou une mesure en cours, ainsi que lorsqu'il vise une poignée déplaçable ou une arête modifiable d'une zone — dans ces cas le double-clic sert à l'édition, pas à la navigation.
+</Note>
+
+## La boussole
+
+En bas à droite du globe, une rose des vents affiche le **cap courant** de la caméra : l'aiguille orange tourne avec le cap, et le repère **N** (nord) reste toujours en rouge en haut du cadran quel que soit l'angle. Cliquer sur la boussole recentre la vue au nord, à la verticale (voir ci-dessus).
+
+<Note>
+  Quand un des calques de contrôle qualité (GSD, densité, recouvrement) est actif, sa légende s'affiche aussi au coin bas-droit et la boussole se décale automatiquement à sa gauche pour rester visible.
+</Note>
+
+## La carte de métriques du vol actif
+
+À gauche de la boussole, une petite carte affiche la **durée** et la **distance totale** du vol actif (dès qu'il a un résultat calculé) :
+
+- Cliquer sur la ligne **Durée** bascule son format entre l'affichage chronomètre (`HH:MM:SS`) et l'affichage lisible (`1 h 12 min 30 s`).
+- Cliquer sur la ligne **Distance** bascule entre kilomètres et mètres.
+- La carte se **déplace par glisser-déposer** n'importe où dans la fenêtre du globe ; elle évite automatiquement de chevaucher les barres, panneaux et autres éléments d'interface au passage.
+
+## La barre de statut
+
+Une bande fine occupe le bas du globe et affiche, de gauche à droite :
+
+| Repère | Contenu |
+|---|---|
+| **Zoom** | Niveau de zoom façon carte web (convention Google Maps/Mapbox), déduit de l'altitude de la caméra. |
+| **UTM** | Fuseau UTM et code EPSG correspondant à la zone survolée (dérivés du centroïde du polygone actif). |
+| **Surface** | Surface de la zone active (km², hectares ou m² selon la taille). |
+| **Lat / Lon** | Latitude/longitude (WGS84) du point du sol sous le curseur. |
+| **AMSL** | Altitude du terrain sous le curseur au-dessus du niveau moyen de la mer (issue du modèle numérique de terrain). |
+| **HAE** | Hauteur au-dessus de l'ellipsoïde WGS84 au même point (AMSL + ondulation du géoïde). Affiche « — » si l'ondulation n'a pas pu être calculée pour ce point. |
+| **Vue** | Altitude de la caméra elle-même (hauteur brute au-dessus de l'ellipsoïde WGS84, non corrigée du relief sous la caméra ou sous le point visé — en vue orthographique cette valeur reflète plutôt l'emprise au sol visible). |
+| **Durée / Distance** | Durée et distance totales du vol actif (n'apparaissent que si un résultat est disponible). |
+
+Le badge de validation de la mission (erreurs/avertissements de calcul) est ancré à l'extrémité droite de la même barre.
+
+## Sélectionner des éléments sur le globe
+
+Un simple clic sur un élément posé sur le globe — une **bande de vol**, un **waypoint**, un **point de décollage** ou un **GCP** — le sélectionne. Le comportement dépend du modificateur tenu :
+
+| Clic | Effet |
+|---|---|
+| **Clic simple** | Remplace la sélection courante par l'élément cliqué (et l'active dans le panneau de planification). |
+| **Ctrl-clic** | Ajoute ou retire l'élément cliqué de la sélection multiple, sans changer l'élément actif. |
+| **Maj-clic** | Sélectionne toute la plage entre le dernier élément sélectionné et l'élément cliqué, dans l'ordre du vol actif. |
+
+<Note>
+  Cliquer sur une zone vide du globe (sans rien sous le curseur) ne désélectionne **rien** — la sélection courante est conservée. Pour vider la sélection, sélectionnez un autre élément ou utilisez les contrôles dédiés du panneau latéral.
+</Note>
+
+<Note>
+  Sur le globe, seul **Ctrl-clic** bascule la sélection multiple — sur Mac, **Cmd-clic ne fait pas la même chose** : il retombe dans le cas « clic simple » et remplace la sélection. Cmd n'est reconnu comme équivalent de Ctrl que pour les raccourcis clavier (**Ctrl+C**/**Cmd+C**, **Alt+V**, voir plus bas), pas pour les clics sur les éléments du globe.
+</Note>
+
+### Menu contextuel (clic droit)
+
+Le clic droit sur une poignée du globe ouvre un menu contextuel selon ce qui est visé :
+
+| Cible du clic droit | Entrées du menu |
+|---|---|
+| Waypoint d'une bande calculée | **Supprimer le waypoint** (retire ce point de la trajectoire) et **Supprimer la bande** (retire toute la bande). |
+| Waypoint posé isolément (hors bande calculée) | **Supprimer le waypoint**. |
+| Point de décollage | **Paramètres du décollage** (l'active et ouvre l'onglet Paramètres du panneau latéral) et **Supprimer le décollage**. |
+| Sommet d'un polygone ou d'un corridor modifiable | **Supprimer le sommet** (grisé si la zone est déjà au nombre minimal de sommets). |
+
+## Copier-coller les attributs (Alt+V)
+
+Pour reporter les réglages d'un élément (altitude, vitesse, recouvrements, virages…) sur un ou plusieurs autres sans les recréer à la main :
+
+<Steps>
+  <Step title="Copier la source">
+    Sélectionnez l'élément qui porte les réglages à dupliquer, puis appuyez sur **Ctrl+C** (ou **Cmd+C**).
+  </Step>
+  <Step title="Sélectionner la ou les cibles">
+    Cliquez l'élément destinataire, ou construisez une sélection multiple (Ctrl-clic / Maj-clic) pour appliquer le collage à plusieurs éléments d'un coup.
+  </Step>
+  <Step title="Coller les attributs">
+    Appuyez sur **Alt+V**. Une fenêtre **Coller les attributs** liste, en cases à cocher, les réglages communs à la source et aux cibles — décochez ceux que vous ne voulez pas reporter, puis validez.
+  </Step>
+</Steps>
+
+<Tip>
+  Le même raccourci fonctionne au niveau du **vol** : copiez un vol (Ctrl+C avec une ligne de vol sélectionnée), sélectionnez le ou les vols destinataires, puis Alt+V ouvre **Coller les attributs du vol**. Voir [Créer et organiser les vols](/fr/mission/vols-et-appareils) pour la sélection des vols.
+</Tip>

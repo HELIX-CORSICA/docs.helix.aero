@@ -1,85 +1,61 @@
 ---
-title: "Helix Flight Planner"
-description: "Logiciel professionnel de planification de missions de releve aerien pour la photogrammetrie, le LiDAR et les capteurs pushbroom"
+title: "Introduction"
+description: "Présentation générale de Helix Flight Planner et de son fonctionnement."
 ---
 
-# Helix Flight Planner
+# Introduction
 
-Helix Flight Planner est une application desktop professionnelle pour la planification de missions de releve aerien. Concu pour les operateurs de photogrammetrie, LiDAR et pushbroom, il combine un globe 3D en direct, un calcul precis du calepinage, des modes d'altitude conscients du terrain, des cartes de controle qualite et un export multi-format dans une seule interface multiplateforme.
+Helix Flight Planner est une application desktop **Windows** de planification de vol pour le relevé aérien. Elle s'adresse aux opérateurs drone, avion et hélicoptère qui préparent des missions de **photogrammétrie**, de **LiDAR** ou de capteurs **pushbroom** : tracer la zone à survoler, régler les paramètres de vol, vérifier la couverture, puis exporter un plan prêt à charger dans le FMS ou l'application de vol de l'aéronef.
 
-## Fonctionnalites principales
+Cette page présente la structure générale de l'application avant d'entrer dans le détail de chaque écran — voir les guides listés en bas de page pour les étapes concrètes.
+
+## Deux espaces de travail
+
+Une fois connecté, l'application s'organise autour de deux écrans principaux.
 
 <CardGroup cols={2}>
-  <Card title="Globe 3D" icon="globe">
-    Planifiez sur un globe 3D Cesium avec imagerie satellitaire, relief global, outils de dessin, panneau de couches, boussole, info curseur et outils de mesure.
+  <Card title="Tableau de bord" icon="layout-grid">
+    Écran d'accueil après connexion. Il liste toutes vos missions (recherche, tri, vue grille ou liste) et donne accès à deux catalogues : **Capteurs** et **Appareils** (aéronefs). C'est aussi ici que vous créez une nouvelle mission ou importez un fichier `.helix`.
   </Card>
-  <Card title="Calepinage precis" icon="route">
-    Lignes de vol calculees avec la geodesie de Vincenty. GSD, fauchee, recouvrement et emprise mis a jour en temps reel.
-  </Card>
-  <Card title="Altitude et terrain" icon="mountain">
-    Modes AMSL, iAMSL et iAGL pilotes par un MNT (SRTM 30 m ou Copernicus GLO-30) pour un suivi du terrain.
-  </Card>
-  <Card title="Controle qualite" icon="chart-bar">
-    Heatmaps de couverture, GSD, recouvrement lateral, HAGL, densite de points et MTA avec alertes de seuil.
-  </Card>
-  <Card title="Editeur de bandes" icon="list">
-    Renommer, inverser, supprimer et reordonner les bandes. Optimiseur un clic pour l'ordre de vol et les bandes correctives.
-  </Card>
-  <Card title="Export multi-format" icon="file-export">
-    KML, KMZ, GPX, CSV, GeoJSON, TXT, XLSX, rapport PDF, waypoints drone, vue client HTML et conteneur natif `.helix`.
-  </Card>
-  <Card title="Catalogue capteurs et aeronefs" icon="camera">
-    Plus de 80 cameras, 14 capteurs LiDAR et une bibliotheque d'aeronefs curés par Helix Aero. Vue grille ou tableau triable, recherche et filtres.
-  </Card>
-  <Card title="Hors ligne et sync" icon="cloud-arrow-up">
-    Mode hors ligne complet avec sauvegarde automatique. Projets, missions et capteurs personnalises se synchronisent a la reconnexion.
+  <Card title="Éditeur de mission" icon="globe">
+    Ouvert en cliquant sur une mission. Un globe 3D (Cesium) occupe le centre de l'écran : vous y tracez les zones à survoler, réglez les paramètres de vol dans le panneau latéral, suivez la couverture et lancez l'export du plan.
   </Card>
 </CardGroup>
 
-## Capteurs supportes
+Dans le tableau de bord, l'onglet **Missions** affiche vos plans de vol ; les onglets **Capteurs** et **Appareils** ouvrent les catalogues de capteurs (caméras, LiDAR, pushbroom) et d'aéronefs que vous utilisez pour configurer vos missions.
 
-Helix Flight Planner inclut un catalogue de plus de **80 cameras**, **14 capteurs LiDAR** et une bibliotheque de profils d'aeronefs, le tout curé par Helix Aero. Vous pouvez egalement definir des capteurs et aeronefs personnalises avec un controle complet des specifications.
+Dans l'éditeur de mission, chaque mission peut contenir plusieurs **vols** — un vol correspond à un aéronef et un capteur donnés, avec sa ou ses zones à survoler (polygone ou corridor). Le globe 3D, la barre d'outils de dessin, le panneau de paramètres et la barre d'export sont les points d'entrée que vous retrouverez dans les guides suivants.
 
-- **Cameras** — focale, dimensions du capteur, taille du pixel, recouvrement longitudinal, lateral et GSD a toute altitude.
-- **LiDAR** — FOV, frequence d'impulsion, vitesse de balayage, divergence du faisceau, largeur de fauchee et densite de points.
-- **Pushbroom** — geometrie du capteur ligne et regles d'espacement natives.
+## Compte et licence
 
-Les principaux fabricants couverts incluent Sony, Phase One, Hasselblad, DJI, MicaSense, Leica, Trimble, PhaseOne iXM, Velodyne, Ouster, Livox, Riegl, YellowScan, etc.
+Helix Flight Planner nécessite un **compte Helix Aero** pour se connecter. La licence est rattachée à la machine : à la connexion, l'application enregistre ce poste auprès du serveur de licence (dans la limite du nombre de postes inclus dans votre abonnement).
 
-## Modes d'altitude supportes
+<CardGroup cols={2}>
+  <Card title="Synchronisation automatique" icon="cloud">
+    Vos missions, vos capteurs et aéronefs personnalisés se synchronisent automatiquement avec le cloud Helix Aero. Vous retrouvez votre espace de travail à l'identique en vous connectant depuis un autre poste.
+  </Card>
+  <Card title="Mode hors ligne" icon="wifi-off">
+    Une fois activée, l'application reste utilisable sans connexion internet pendant **7 jours**. Passé ce délai, une reconnexion est nécessaire pour continuer à travailler.
+  </Card>
+</CardGroup>
 
-| Mode | Description |
-|------|-------------|
-| **AMSL** | Altitude absolue au-dessus du niveau moyen de la mer. Planification classique a altitude fixe. |
-| **iAMSL** | Initial AMSL — altitude interpretee par rapport au niveau de la mer sur le MNT. |
-| **iAGL** | Initial AGL — altitude interpretee au-dessus du sol ; les bandes suivent le MNT pour maintenir une garde sol constante. |
-
-La source MNT est choisie dans l'assistant de mission (SRTM 30 m, Copernicus GLO-30 ou aucune pour un terrain plat).
-
-## Configuration requise
-
-| Plateforme | Minimum |
-|------------|---------|
-| Windows    | Windows 10 (64 bits) ou superieur |
-| macOS      | macOS 12 Monterey ou superieur |
-| RAM        | 8 Go (16 Go recommandes) |
-| GPU        | Acceleration OpenGL / ANGLE requise pour le globe 3D |
-| Stockage   | 500 Mo d'espace disque disponible |
-| Reseau     | Requis pour la connexion, la synchronisation et le telechargement MNT ; utilisation hors ligne apres la premiere activation |
+<Note>
+  Le réseau reste nécessaire pour la connexion initiale, la synchronisation et certains services en ligne (météo, NOTAM, imagerie/relief). Le mode hors ligne couvre la poursuite du travail de planification, pas l'ensemble des fonctionnalités.
+</Note>
 
 ## Pour commencer
 
 <CardGroup cols={2}>
-  <Card title="Demarrage rapide" icon="rocket" href="/quickstart">
-    Telechargez, installez et creez votre premiere mission en quelques minutes.
+  <Card title="Démarrage rapide" icon="rocket" href="/fr/quickstart">
+    Installez l'application et créez votre première mission.
   </Card>
-  <Card title="Planification de mission" icon="map" href="/guides/mission-planning">
-    Guide complet du flux de planification de mission.
+  <Card title="Planification de mission" icon="map" href="/fr/guides/mission-planning">
+    Le flux complet : tableau de bord, tracé de zone, paramètres, export.
   </Card>
-  <Card title="Catalogue capteurs" icon="camera" href="/guides/sensors">
-    Parcourir le catalogue, utiliser les filtres et creer des capteurs personnalises.
+  <Card title="Catalogue capteurs" icon="camera" href="/fr/guides/sensors">
+    Parcourir le catalogue de capteurs et d'aéronefs, ou en créer des personnalisés.
   </Card>
-  <Card title="Formats d'export" icon="download" href="/guides/export-formats">
-    Comprendre tous les formats d'export et quand les utiliser.
+  <Card title="Formats d'export" icon="download" href="/fr/guides/export-formats">
+    Les formats disponibles et dans quel cas les utiliser.
   </Card>
 </CardGroup>

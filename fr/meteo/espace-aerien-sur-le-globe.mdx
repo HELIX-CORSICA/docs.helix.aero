@@ -1,0 +1,124 @@
+---
+title: "Espaces aériens, aéroports et NOTAM sur le globe 3D"
+description: "Couches et fond de carte aéronautique, et alertes d'intersection avec une zone réglementée."
+---
+
+En plus des cartes météo et de la recherche NOTAM par aérodrome, le globe 3D affiche directement le contexte aéronautique autour de votre mission : NOTAM géolocalisés, aérodromes du monde entier, et un fond de carte aéronautique complet (espaces contrôlés, zones réglementées, frontières). Le planificateur surveille aussi en continu si votre zone de vol recoupe un espace réglementé, et vous prévient automatiquement.
+
+<CardGroup cols={2}>
+  <Card title="Couche NOTAM" icon="triangle-alert">
+    Polygones ou cercles colorés selon la sévérité, plaqués sur le relief autour de votre mission.
+  </Card>
+  <Card title="Couche Aéroports" icon="plane">
+    Icônes + étiquettes ICAO pour les aérodromes du monde entier, avec une densité qui s'adapte au zoom.
+  </Card>
+  <Card title="Fond « Aéronautique »" icon="map">
+    Espaces aériens colorés par type, frontières et grandes villes — avec info-bulle au clic.
+  </Card>
+  <Card title="Alerte d'intersection" icon="bell">
+    Notification automatique dès que votre zone recoupe un espace réglementé.
+  </Card>
+</CardGroup>
+
+## La couche NOTAM sur le globe
+
+Il n'y a pas d'interrupteur **NOTAM** dédié et cliquable dans le panneau **Couches** (voir [Fond de carte et calques](/fr/globe/calques-et-fond-de-carte)) : l'affichage des NOTAM est piloté automatiquement par le fond **Aéronautique** (voir plus bas) — il s'active en même temps que ce fond et se désactive avec lui, sans que vous puissiez l'activer ou le désactiver indépendamment. Tant que le fond Aéronautique est actif, chaque NOTAM couvrant la zone de votre mission est dessiné directement sur le globe :
+
+- **Forme** : le polygone réel du NOTAM quand il est publié sous cette forme ; sinon un cercle centré sur le point concerné avec le rayon publié ; et si le NOTAM n'est qu'un point sans rayon publié, un petit cercle-repère de rayon fixe (~926 m, soit environ 0,5 NM) pour rester visible sur le globe.
+- **Drapage** : la forme est plaquée sur le relief, comme les autres éléments de mission — elle suit les vallées et les sommets au lieu de flotter à plat.
+- **Couleur selon la sévérité** :
+
+| Sévérité | Couleur |
+|---|---|
+| Critique | Rouge |
+| Avertissement | Orange/ambre |
+| Information | Bleu |
+
+La couche se met à jour automatiquement autour de l'emprise de votre mission (tous les éléments tracés, avec une marge de sécurité) — pas seulement autour de la vue caméra affichée à l'écran. Elle reste affichée même en cas d'erreur réseau ponctuelle (le dernier résultat connu est conservé plutôt que d'afficher un globe vide).
+
+## La couche Aéroports mondiale
+
+L'interrupteur **Aéroports** (même panneau **Couches**, désactivé par défaut) affiche les aérodromes, héliports et altiports du monde entier sous forme d'icône + étiquette (code ICAO et nom lorsqu'un code ICAO est publié pour l'aérodrome, nom seul sinon). Cette étiquette s'estompe progressivement à mesure que vous vous éloignez, puis disparaît entièrement au-delà d'un certain éloignement — l'icône reste alors seule, sans aucun texte.
+
+Pour rester lisible même dans les régions très denses, la couche applique automatiquement :
+
+- **Une densité qui s'ajuste au zoom** : un grand aéroport international reste visible depuis très haut ; un altiport, un héliport ou une piste ULM sans code ICAO n'apparaît qu'en se rapprochant.
+- **Un plafond d'environ 90 aérodromes affichés simultanément**, quelle que soit la densité réelle de la région — les aérodromes les plus importants (aéroports internationaux, terrains publiés avec un code ICAO) sont prioritaires et restent affichés en premier.
+- **Un masquage automatique derrière le relief** : un aérodrome caché par une montagne ou situé au-delà de l'horizon depuis votre point de vue n'est pas affiché, même s'il correspond à la zone visible.
+
+La couche se recalcule sur le **rectangle actuellement visible à l'écran** (pas sur la géométrie de votre zone de mission) : déplacez ou zoomez la caméra pour révéler d'autres aérodromes.
+
+<Note>
+  Cliquer sur un aérodrome quand le fond **Aéronautique** est actif ouvre sa fiche détaillée — voir [Fiche aéroport](#fiche-aéroport-espaces-aériens-et-notam) plus bas.
+</Note>
+
+## Le fond de carte « Aéronautique »
+
+Dans le panneau **Couches**, la troisième vignette de fond de carte (à côté de Satellite et Street) s'appelle **Aéronautique**. Elle superpose au plan de base une véritable carte aéronautique :
+
+- **Espaces aériens colorés par type**, dans l'esprit d'une carte OACI :
+  - **Rouge** : zones interdites, restreintes, dangereuses et zones temporaires de restriction.
+  - **Bleu** : espaces contrôlés (CTR, TMA, CTA, ATZ, TIZ, TIA, LTA) — la nuance de bleu se raffine selon la classe ICAO : bleu foncé pour les classes A à D (contact radio obligatoire), bleu clair pour la classe E, bleu de base pour les classes F/G ou non classées.
+  - **Bleu foncé** également pour les zones à contact radio obligatoire (TMZ, RMZ).
+  - **Vert** : zones de vol à voile, zones sportives/loisir, et régions d'information de vol (FIR/FIS).
+- **Frontières des pays** et **grandes villes** (capitales en gras, villes secondaires selon le niveau de zoom), pour se repérer à l'échelle continentale.
+
+<Steps>
+  <Step title="Ouvrir le panneau Couches et choisir Aéronautique">
+    Cliquez sur la vignette **Aéronautique**. Le fond bascule sur le même plan que Street (sans les labels de rue) et la carte aéronautique se superpose par-dessus.
+  </Step>
+  <Step title="Aéroports et NOTAM s'activent automatiquement">
+    Le mode Aéronautique force l'activation des couches **Aéroports** et **NOTAM**. L'interrupteur **Aéroports** (qui existe dans les autres fonds) est masqué tant que ce mode est actif ; les **NOTAM** n'ont pas d'interrupteur propre — leur affichage est entièrement lié à ce mode.
+  </Step>
+  <Step title="Revenir à Satellite ou Street">
+    En quittant le mode Aéronautique, la carte aéronautique et les NOTAM se désactivent, et l'interrupteur **Aéroports** retrouve exactement la préférence que vous aviez réglée manuellement avant d'entrer en mode Aéronautique — il ne reste pas forcé allumé si vous ne l'aviez pas coché vous-même.
+  </Step>
+</Steps>
+
+### Info-bulle « Espaces aériens » au clic
+
+Quand le fond **Aéronautique** est actif, cliquer n'importe où sur la carte (en dehors d'un élément de mission ou d'un aérodrome) ouvre une petite carte flottante ancrée près du point cliqué, intitulée **Espaces aériens**. Elle liste tous les espaces aériens sous ce point, **du plus spécifique au plus large** :
+
+- Une pastille de couleur reprenant la teinte de l'espace concerné.
+- Le nom de l'espace et son type (Zone R, Zone D, Zone P, CTR, TMA, ATZ, TIZ, FIR, vol à voile, sport/loisir…).
+- La classe ICAO quand elle s'applique.
+- Le plancher et le plafond, formatés en pieds AMSL, en niveau de vol (FL), en pieds au-dessus du sol (« ft ASFC ») ou « SFC » quand la limite est exactement le sol.
+
+<Tip>
+  Cette info-bulle se ferme automatiquement dès que vous déplacez la caméra (elle est ancrée à un point de l'écran, pas à un point du globe), ou avec la touche Échap.
+</Tip>
+
+### Fiche aéroport : espaces aériens et NOTAM
+
+Cliquer directement sur l'icône d'un aérodrome (en mode Aéronautique) ouvre un panneau flottant distinct, dédié à cet aérodrome, avec deux onglets :
+
+| Onglet | Contenu |
+|---|---|
+| **Espaces aériens** | Les espaces aériens situés sous cet aérodrome, avec le même détail que l'info-bulle générale (nom, type, classe ICAO, plancher/plafond) et un compteur sur l'onglet. |
+| **NOTAM** | Les NOTAM actifs pour cet aérodrome — récupérés par son **code ICAO** s'il en a un, sinon par une recherche dans une **zone de 15 NM** autour de ses coordonnées. Chaque entrée affiche sa catégorie, le code ICAO le cas échéant, la période de validité (UTC, ou « PERM » si permanent) et le résumé décodé du texte. |
+
+Ce panneau se ferme avec la touche Échap ou son bouton de fermeture.
+
+## Alerte automatique d'intersection d'espace aérien
+
+Dès que votre zone de mission (au moins 3 sommets) recoupe un espace aérien réglementé, une notification apparaît automatiquement dans le centre de notifications (icône cloche, en haut de l'écran) — sans action de votre part et indépendamment du fond de carte actif.
+
+La **sévérité** de l'alerte dépend du type d'espace recoupé :
+
+| Type d'espace | Sévérité |
+|---|---|
+| Zone interdite | Critique |
+| Zone restreinte, zone militaire, zone dangereuse | Avertissement |
+| CTR, TMA, zone de vol à voile, zone sportive/loisir, région d'information de vol, autre | Information |
+
+Le titre de la notification reprend le type et le nom de la zone concernée (par exemple « Zone interdite : … », « CTR : … », « Zone planeurs : … ») et son texte rappelle la tranche d'altitude de la zone (plancher–plafond) ainsi que la nécessité de vérifier l'autorisation de vol avant de décoller.
+
+<Warning>
+  Quand votre zone recoupe plusieurs espaces aériens imbriqués (par exemple une TMA qui contient elle-même une CTR), seule la zone la plus spécifique est signalée pour éviter de vous noyer sous les alertes redondantes. Si aucune zone critique (interdite) n'est concernée, une seule alerte — la plus importante, ou la plus proche du centre de votre zone en cas d'égalité — est mise en avant à la fois.
+
+  **Exception** : dès qu'au moins une **zone interdite** est recoupée, ce dédoublonnage ne s'applique plus pour les zones critiques — **toutes** les zones interdites concernées sont signalées, une interdiction de survol ne devant jamais être masquée par un mécanisme anti-spam.
+
+  **Cas limite** : le filtre « zone la plus spécifique » (imbrication) s'applique avant cette exception. Si une zone interdite recoupée contient géométriquement une autre zone recoupée (quelle que soit sa sévérité), elle peut être écartée par ce filtre en tant qu'« enveloppe extérieure » avant même d'atteindre la vérification des zones critiques — dans ce cas de figure géométrique précis (et marginal), la garantie « toutes les zones interdites sont signalées » ci-dessus ne s'applique pas.
+</Warning>
+
+Chaque notification peut être fermée individuellement, ou toutes en une fois depuis le centre de notifications.

@@ -1,0 +1,167 @@
+---
+title: "Panneau Météo & NOTAM"
+description: "Consulter METAR/TAF, NOTAM et fenêtre solaire pour le vol et les aéroports."
+---
+
+Le panneau **Météo & NOTAM** regroupe, en un seul écran, le briefing météo de la zone de vol active, les données METAR/TAF de n'importe quel aéroport, les NOTAM en vigueur et la fenêtre solaire du jour. Il s'ouvre en incrustation par-dessus le globe 3D — la vue Cesium reste active en dessous et conserve exactement sa position de caméra à la fermeture du panneau.
+
+<CardGroup cols={2}>
+  <Card title="Briefing du vol actif" icon="layers">
+    Dès qu'une géométrie est présente dans le vol actif, ses METAR/TAF/NOTAM se chargent automatiquement, sans rien configurer.
+  </Card>
+  <Card title="Recherche libre" icon="search">
+    Tapez un code ICAO (ex. LFPG) ; l'autocomplétion propose des aéroports au fil de la frappe.
+  </Card>
+  <Card title="Décollage / Atterrissage" icon="plane-takeoff">
+    Deux champs dédiés se pré-remplissent depuis les points de décollage et d'atterrissage de la mission.
+  </Card>
+  <Card title="Fenêtre solaire" icon="sun">
+    Lever, coucher, midi solaire et durée d'ensoleillement du jour, calculés pour le centre de la zone de vol.
+  </Card>
+  <Card title="Sélecteur de date" icon="calendar">
+    Filtrez les METAR sur une journée UTC donnée et gardez un œil sur l'horizon de validité du TAF (~36 h).
+  </Card>
+  <Card title="NOTAM filtrables" icon="triangle-alert">
+    Liste dépliable, triable par sévérité (Tous / Critique / Avert. / Info), pour la zone de vol ou pour un aéroport.
+  </Card>
+</CardGroup>
+
+## Ouvrir le panneau
+
+<Steps>
+  <Step title="Cliquez sur l'icône météo">
+    Dans la barre du haut du globe, à droite, cliquez sur l'icône nuage/soleil (info-bulle « Météo »).
+  </Step>
+  <Step title="Le panneau s'ouvre en incrustation">
+    Il recouvre tout l'espace du globe, sous la barre du haut. Le globe reste chargé en arrière-plan : le fermer (croix en haut à droite) ne réinitialise ni la caméra ni la sélection en cours.
+  </Step>
+  <Step title="Le briefing du vol actif se charge automatiquement">
+    S'il existe une géométrie exploitable dans le vol actif (polygone, corridor, bandes déjà calculées, points de décollage…), son briefing météo apparaît immédiatement dans la colonne de gauche.
+  </Step>
+</Steps>
+
+## Briefing automatique du vol actif
+
+La colonne de gauche est toujours présente et affiche le briefing de la **zone du vol actuellement sélectionné** :
+
+- L'emprise interrogée est calculée à partir de **tous les éléments du vol actif** (polygones, corridors, bandes déjà générées, points de décollage), pas seulement de l'élément en cours d'édition.
+- Le nom affiché en en-tête de carte est celui du vol actif (ou « Vol actif » si le vol n'a pas de nom) ; l'heure UTC courante s'affiche à côté.
+- Le serveur météo interroge **toutes les stations aéronautiques trouvées dans (et légèrement autour de) cette emprise, jusqu'à 12 stations** — utile pour les zones de vol qui chevauchent plusieurs aérodromes.
+- Si le vol actif ne contient encore aucune géométrie, la carte affiche « Aucun vol actif » et invite à ajouter au moins un élément pour obtenir la météo de zone ; les sections METAR, TAF et NOTAM ci-dessous affichent alors un message d'indisponibilité plutôt que des données.
+
+<Note>
+  Le briefing de zone est indépendant de la recherche libre et des champs Décollage/Atterrissage décrits plus bas : les deux colonnes se chargent et se rafraîchissent séparément.
+</Note>
+
+## Rechercher un aéroport ou un point
+
+Trois champs de saisie partagent le même comportement d'autocomplétion (recherche par code ICAO ou par nom d'aéroport, avec un léger délai le temps de la frappe) :
+
+| Champ | Rôle |
+|---|---|
+| **Recherche** (icône loupe) | Champ libre : code ICAO (ex. `LFPG`). Valider (Entrée) ou choisir un résultat dans la liste dépose la valeur dans l'onglet actuellement sélectionné (Décollage ou Atterrissage, voir plus bas). |
+| **Départ (ICAO)** | Aéroport de décollage. Se pré-remplit automatiquement depuis le point de décollage du vol actif quand celui-ci est rattaché à un aérodrome, mais reste éditable et peut être vidé (bouton croix). |
+| **Arrivée (ICAO)** | Aéroport d'atterrissage. Même comportement que Départ, à partir du point d'atterrissage du vol actif. |
+
+La liste déroulante propose jusqu'à 20 résultats, en priorisant les correspondances ICAO exactes, puis les préfixes ICAO, puis les noms d'aéroport contenant le texte saisi.
+
+<Warning>
+  Ce champ ne reconnaît que les codes ICAO à 4 lettres. Si le texte saisi n'en est pas un (par exemple des coordonnées « 43.65, 7.21 »), il est bien déposé tel quel dans le champ Départ ou Arrivée, mais aucune requête météo n'est envoyée et la colonne Décollage/Atterrissage ne s'affiche même pas : la recherche par coordonnées n'est donc pas fonctionnelle par ce champ.
+</Warning>
+
+## Onglets Décollage / Atterrissage
+
+Dès qu'au moins un des deux champs Départ ou Arrivée contient un code ICAO à 4 lettres, une seconde colonne apparaît à droite avec deux onglets **Décollage** et **Atterrissage** : ils basculent l'affichage entre les données de l'aéroport de départ et celles de l'aéroport d'arrivée (METAR, TAF, NOTAM, et la carte d'identité de l'aéroport — nom, coordonnées, heure UTC). Un onglet reste désactivé tant que le champ correspondant est vide.
+
+Cette colonne fonctionne indépendamment du briefing de zone de gauche : elle sert à consulter la météo d'un aéroport précis, alors que la colonne de gauche montre la couverture de la zone de vol dans son ensemble.
+
+## Sélecteur de date de vol
+
+Le champ **Date de vol** (icône calendrier, à droite de la barre de recherche) ouvre un mini-calendrier pour planifier un briefing à une date donnée plutôt qu'en temps réel :
+
+- Navigation mois par mois, sélection d'un jour par clic.
+- Bouton **Aujourd'hui** : revient directement à la date du jour.
+- Bouton **Temps réel** (dans le calendrier, ou la croix directement dans le champ) : efface la date choisie et repasse le briefing en mode temps réel (dernier METAR/TAF connu).
+
+Une fois une date choisie, une ligne d'information apparaît au-dessus des colonnes de résultats, rappelant le filtre appliqué et sa portée réelle :
+
+| Situation | Comportement |
+|---|---|
+| Jour en cours ou passé récent | METAR filtrés sur la journée UTC choisie ; le TAF en vigueur reste affiché. |
+| Jour déjà entièrement passé | METAR de ce jour filtrés, mais le TAF actuel n'est plus représentatif de cette période. |
+| Jour futur, dans l'horizon de validité du TAF (~36 h) | Pas de METAR (aucune observation n'existe encore pour un jour à venir) ; le TAF en vigueur est affiché à titre indicatif. |
+| Jour futur, au-delà de ~36 h | Aucune donnée disponible — la date dépasse l'horizon de prévision du TAF. |
+
+<Warning>
+  Le TAF n'a une validité que d'environ 30 h à partir de son émission ; Helix conserve une marge de ±36 h autour de l'instant présent avant de considérer une date comme hors-horizon. Au-delà, aucune donnée n'est renvoyée pour cette date.
+</Warning>
+
+## Fenêtre solaire du jour
+
+Juste sous la carte d'identité de la zone, un bloc affiche la fenêtre solaire calculée pour le **centre géométrique du vol actif**, avec une précision d'environ 1 minute :
+
+| Indicateur | Contenu |
+|---|---|
+| Lever du soleil | Heure UTC du lever géométrique (disque solaire au ras de l'horizon, réfraction incluse). |
+| Coucher du soleil | Heure UTC du coucher géométrique. |
+| Midi solaire | Heure UTC où le soleil est au plus haut, au méridien du site. |
+| Durée d'ensoleillement | Durée totale entre lever et coucher, affichée en heures et minutes, mise en avant visuellement. |
+
+En latitude polaire, le bloc affiche un message dédié — « Jour polaire — le soleil ne se couche pas » ou « Nuit polaire — le soleil ne se lève pas » — à la place des quatre indicateurs.
+
+<Note>
+  Cette fenêtre solaire correspond toujours à la **date du jour**, indépendamment de la date choisie dans le sélecteur de date de vol ci-dessus.
+</Note>
+
+## Cartes METAR décodées
+
+Chaque station renvoyée par le briefing (zone active ou aéroport sélectionné) affiche une carte METAR décodée :
+
+- **Rose des vents** — cadran avec direction (flèche orientée), vitesse en nœuds, rafale (« G » + valeur) le cas échéant ; « vent calme » ou « variable » quand la direction n'est pas déterminée, plage de variation affichée sous le cadran si elle est présente dans le METAR.
+- **Catégorie de vol**, dérivée de la visibilité et du plafond nuageux (BKN/OVC le plus bas) :
+
+  | Catégorie | Condition |
+  |---|---|
+  | **VFR** | CAVOK, ou visibilité ≥ 8 km et plafond ≥ 3000 ft (ou pas de plafond significatif). |
+  | **MVFR** | Visibilité < 8 km ou plafond < 3000 ft. |
+  | **IFR** | Visibilité < 5 km ou plafond < 1000 ft. |
+  | **LIFR** | Visibilité < 1,6 km ou plafond < 500 ft. |
+
+- **Visibilité**, **plafond** (type de couche + altitude), **température / point de rosée**, **QNH** (hPa).
+- **Pictogrammes** de phénomènes (pluie, orage, neige, brouillard…) et de couches nuageuses (FEW/SCT/BKN/OVC, avec repère CB/TCU), ainsi qu'un badge **CAVOK** si applicable.
+- **Tendance** : badge NOSIG, ou BECMG/TEMPO si le METAR inclut une évolution prévue.
+- Bouton **brut / décodé** en haut à droite de la carte, pour basculer vers le texte METAR original.
+
+## Cartes TAF décodées
+
+Les prévisions TAF sont découpées **période par période** (conditions de base, puis chaque groupe FM/BECMG/TEMPO/PROB), chacune avec sa propre carte de catégorie de vol, ses métriques (vent, visibilité, plafond, CAVOK) et ses pictogrammes de phénomènes :
+
+| Type de période | Signification |
+|---|---|
+| **Conditions de base** | Conditions initiales de la prévision, valables jusqu'au premier changement annoncé. |
+| **FM** (from) | Changement de conditions à partir d'une heure donnée, valable jusqu'à la période suivante. |
+| **BECMG** (becoming) | Évolution progressive des conditions sur une plage horaire. |
+| **TEMPO** (temporary) | Fluctuations temporaires, ponctuelles, sur une plage horaire donnée. |
+| **PROB** (probability) | Probabilité (ex. PROB40) qu'un phénomène temporaire survienne sur une plage horaire. |
+
+L'en-tête de la carte indique l'heure d'émission et la plage de validité globale du TAF. Comme pour les METAR, un bouton permet de basculer entre l'affichage décodé et le texte TAF brut.
+
+## NOTAM
+
+Sous les cartes météo, la section NOTAM liste les avis en vigueur — pour la zone de vol active (recherche dans son emprise) ou pour l'aéroport sélectionné dans la colonne Décollage/Atterrissage :
+
+- **Filtre de sévérité** : Tous / Critique / Avert. / Info, en haut de la liste (le badge de sévérité affiché sur chaque ligne, lui, utilise le mot complet « Avertissement »).
+- Chaque ligne affiche le code ICAO, un badge de sévérité coloré, l'identifiant du NOTAM et sa période de validité (dates de début/fin).
+- Cliquer sur une ligne la déplie : elle révèle le résumé décodé (si disponible) puis le texte brut complet du NOTAM.
+
+## Actualiser les données
+
+Le bouton **Actualiser** en haut du panneau force un nouveau chargement des données **météo** (METAR/TAF) du briefing en cours (zone active et/ou aéroport sélectionné), en ignorant la version mise en cache pendant 5 minutes. Il est désactivé tant qu'aucune zone ni aéroport n'est encore renseigné. Il ne concerne que les données météo : la liste des NOTAM n'a pas de mécanisme de rafraîchissement manuel et n'est pas affectée par ce bouton.
+
+<Tip>
+  Les résultats METAR/TAF sont mis en cache 5 minutes par requête (zone ou aéroport, éventuellement combinée à la date choisie). Une nouvelle recherche identique dans ce délai réutilise donc la dernière réponse sans repasser par le serveur — utilisez Actualiser si vous savez qu'un rapport plus récent vient d'être publié.
+</Tip>
+
+---
+
+Les données METAR/TAF proviennent d'AVWX (avwx.rest), relayées par le serveur Helix ; le catalogue d'aéroports provient d'OpenAIP. Ces attributions sont rappelées en bas du panneau.

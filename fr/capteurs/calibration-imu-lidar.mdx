@@ -1,0 +1,121 @@
+---
+title: "Calibration IMU et colorisation LiDAR"
+description: "Manœuvres de calibration en figure en huit, calibration DJI native et colorisation."
+---
+
+# Calibration IMU et colorisation LiDAR
+
+Un capteur LiDAR a besoin de calibrer sa centrale inertielle (IMU) pour convertir ses mesures brutes en un nuage de points géoréférencé exploitable. Helix Flight Planner représente cette calibration différemment selon la nature du capteur choisi pour la zone.
+
+<CardGroup cols={2}>
+  <Card title="LiDAR non-DJI" icon="infinity">
+    Lorsque la calibration IMU est activée pour la mission, une figure en huit (deux boucles tangentes) est ajoutée au plan de vol, rendue comme un ruban de vol vert — déplaçable directement dans le globe 3D.
+  </Card>
+  <Card title="LiDAR DJI natif (Zenmuse L1/L2/L3)" icon="target">
+    L'appareil DJI réalise sa propre calibration automatique au sol ou en début de vol. Lorsque la calibration IMU est activée pour la mission, Helix affiche en plus un repère visuel fixe, orange, sur la trajectoire.
+  </Card>
+</CardGroup>
+
+<Warning>
+  **Rien de tout ceci n'est actif par défaut.** Toute la calibration IMU (figure en huit ou repère DJI natif) est gouvernée par un réglage de mission (`imuCalibration`) qui vaut par défaut **désactivé** tant que l'opérateur n'a rien choisi. Le seul contrôle capable de l'activer est l'interrupteur **Calibration IMU** du panneau Paramètres (voir la section « Réglages “Calibration IMU” et “Colorisation” » plus bas) — et cet interrupteur ne s'affiche lui-même que si **toutes** ces conditions sont réunies :
+
+  - le capteur de la zone est un **LiDAR DJI natif** (Zenmuse L1/L2/L3) ;
+  - la fonctionnalité correspondante (encore en accès anticipé) est **accordée à votre compte**.
+
+  **Pour un capteur LiDAR d'un autre fabricant, ces conditions ne peuvent jamais être réunies aujourd'hui** : l'interrupteur ne s'affiche jamais, et il n'existe donc **aucun chemin dans l'interface** pour déclencher la figure en huit décrite dans la section suivante. Le moteur de calcul dispose déjà du mécanisme de génération de la figure, mais il n'est volontairement pas encore relié à un contrôle opérateur pour ce cas — étape prévue pour une prochaine version.
+</Warning>
+
+## Figure en huit (capteur LiDAR non-DJI)
+
+<Note>
+  Cette section décrit le comportement de la figure en huit telle que le moteur de calcul la génère. **À ce jour, aucun réglage de l'interface ne permet de la déclencher pour un capteur LiDAR non-DJI** (voir l'avertissement ci-dessus) : ce qui suit décrit donc un mécanisme interne existant, pas une fonctionnalité actuellement disponible depuis l'application.
+</Note>
+
+Pour un capteur LiDAR d'un autre fabricant, la centrale inertielle a besoin d'une manœuvre dynamique — des changements de cap dans plusieurs axes — pour que son biais se stabilise. Helix insère cette manœuvre sous la forme d'une **figure en huit** : deux boucles tangentes, le point de jonction des deux boucles matérialisant l'ancrage de la manœuvre.
+
+- La figure est rendue comme un **tube 3D vert** avec un **liseré fantôme** qui reste visible même masqué par le relief — pour la lire comme un véritable segment de vol, pas comme une simple annotation. Ce rendu (tube + liseré fantôme) reprend le style de l'ancien moteur de rendu des bandes de mission ; les bandes de la mission elles-mêmes utilisent depuis un ruban plat à largeur d'écran constante, sans liseré fantôme sous le relief — la figure en huit ne partage donc plus le même rendu visuel que le reste de la trajectoire.
+- Un **trait pointillé vert** la relie à la première bande de la mission (calibration de départ) et un second à la dernière bande (calibration de fin).
+
+<Note>
+  En pratique, un opérateur décolle et atterrit souvent au même endroit. Helix n'affiche donc **qu'une seule** figure en huit, positionnée près du point de décollage, reliée par les deux traits pointillés — l'un représentant la calibration de départ, l'autre la calibration de fin de mission. Les deux calibrations partagent ainsi la même position.
+</Note>
+
+### Altitude de la figure
+
+L'altitude de la figure suit le **mode altimétrique actif** de la zone (voir [Choisir le mode d'altitude](/fr/planification/mode-altitude)) :
+
+| Mode | Comportement |
+|---|---|
+| **AMSL** | La figure vole à l'altitude constante saisie pour la mission. Si cette altitude passait sous le relief local, Helix la relève automatiquement d'une marge de sécurité de 30 m au-dessus du point le plus haut sous la figure. |
+| **AGL / iAGL** | La figure vole à une altitude constante égale à la hauteur consigne ajoutée au point le plus **haut** du relief sous les deux boucles — de quoi garantir le dégagement du terrain sur toute la manœuvre, sans que la figure ne suive chaque aspérité comme le fait le reste de la trajectoire. |
+
+Cette altitude se réévalue automatiquement (échantillonnage du relief sous les 64 sommets des deux boucles) à chaque déplacement de la figure ou changement de mode altimétrique.
+
+### Déplacer la figure à la souris
+
+<Steps>
+  <Step title="Survoler la figure">
+    Le curseur passe en icône « main ouverte » et la figure s'éclaircit (vert plus clair) dès que le pointeur passe au-dessus d'une des deux boucles ou de la zone qui les entoure.
+  </Step>
+  <Step title="Cliquer-glisser">
+    Maintenez le clic gauche et déplacez la souris : la figure suit le curseur en temps réel (la rotation et le déplacement de la caméra sont désactivés le temps du geste, pour ne pas interférer avec le glissement). Le reste du plan de vol — bandes, virages, empreintes — ne se recalcule pas pendant le geste : seules la figure et ses deux traits pointillés se redessinent.
+  </Step>
+  <Step title="Relâcher pour valider">
+    Le clic relâché fixe la nouvelle position. L'altitude se réajuste alors selon le relief réel sous ce nouvel emplacement (mode AGL/iAGL) ou selon la garde de sécurité (mode AMSL), et les deux traits pointillés se reconnectent depuis la nouvelle position vers la première et la dernière bande de la mission.
+  </Step>
+</Steps>
+
+<Warning>
+  Seule la figure de **début/fin** de mission se déplace à la souris. Si une recalibration périodique en cours de vol est également représentée (boucles vert plus foncé le long de la trajectoire), ces figures-là ne sont **pas** déplaçables : leur position suit automatiquement la bande la plus proche de chaque intervalle de temps calculé, pas un choix manuel de l'opérateur.
+</Warning>
+
+## Calibration IMU native DJI (Zenmuse L1/L2/L3)
+
+Pour un capteur LiDAR DJI natif (gamme Zenmuse L1/L2/L3), l'appareil DJI dispose de sa propre routine de calibration embarquée — inutile de lui faire voler une figure en huit. **Si la calibration IMU est activée pour la mission** via l'interrupteur **Calibration IMU** du panneau Paramètres (voir plus bas — cet interrupteur n'apparaît lui-même que si la fonctionnalité d'accès anticipé correspondante est accordée à votre compte), Helix affiche à la place un simple repère visuel :
+
+- Un **marqueur orange fixe**, positionné exactement au début de la première bande de la mission, matérialise l'endroit où l'appareil réalise sa calibration automatique juste avant le début de l'acquisition.
+- Des **marqueurs roses**, plus petits, peuvent apparaître le long de la trajectoire : ce sont des points où une **recalibration périodique** est recommandée en cours de vol.
+
+Contrairement à la figure en huit, ces marqueurs sont des repères fixes : ils ne se déplacent pas à la souris — leur position découle uniquement de la géométrie de la mission.
+
+## Réglages « Calibration IMU » et « Colorisation »
+
+Deux réglages complémentaires, propres au LiDAR DJI natif, vivent dans le panneau **Paramètres** (à droite de l'éditeur de mission), dans le groupe **Vol** :
+
+| Réglage | Effet |
+|---|---|
+| **Calibration IMU** | Interrupteur On/Off. Active la recalibration périodique en vol (les marqueurs roses ci-dessus) en plus de la calibration de pré-vol. Une fois activé, un champ **Intervalle** (en secondes) apparaît. |
+| **Colorisation** | Interrupteur On/Off, sans réglage d'intervalle. Déclenche la caméra RVB embarquée du capteur pendant l'acquisition, pour coloriser le nuage de points en post-traitement. La cadence de déclenchement se calcule automatiquement à partir du recouvrement avant et de la vitesse de vol — il n'y a rien à saisir. |
+
+### Intervalle de recalibration : auto ou manuel
+
+Le champ **Intervalle** propose une pastille **auto** à côté de la valeur en secondes :
+
+- **Auto** (par défaut) — la valeur vient d'une table interne par charge utile :
+
+  | Capteur | Intervalle par défaut |
+  |---|---|
+  | Zenmuse L1 | 100 s |
+  | Zenmuse L2 | 200 s |
+  | Zenmuse L3 | 180 s |
+  | Autre LiDAR DJI natif | 150 s |
+
+- **Manuel** — saisissez une valeur en secondes dans le champ : la pastille **auto** se désactive et votre valeur est conservée. Cliquez de nouveau sur **auto** pour revenir à la valeur par défaut du capteur.
+
+<Warning>
+  Les réglages **Calibration IMU** et **Colorisation** ne sont visibles dans le panneau Paramètres que si **toutes** ces conditions sont réunies :
+
+  - le capteur de la zone est un **LiDAR DJI natif** (Zenmuse L1/L2/L3) ;
+  - la fonctionnalité correspondante (encore en accès anticipé) est **accordée à votre compte** ;
+  - pour l'intervalle éditable et la colorisation : l'aéronef du vol est un **Matrice 300 RTK**, **350 RTK** ou **400**.
+
+  Si votre capteur est un LiDAR DJI natif mais que vous ne voyez pas ces réglages, contactez votre administrateur ou le support Helix — la fonctionnalité est en cours de déploiement progressif.
+
+  Tant que le réglage **Calibration IMU** n'est pas visible, ou qu'il reste désactivé, **aucun visuel de calibration n'apparaît sur le globe** (ni figure en huit, ni marqueur orange/rose) — voir l'avertissement en haut de cette page.
+</Warning>
+
+## Voir aussi
+
+- [Choisir le mode d'altitude](/fr/planification/mode-altitude)
+- [Choisir le capteur et l'appareil d'une mission](/fr/capteurs/choisir-capteur-et-appareil)
+- [Régler la couverture : capteur, altitude/GSD et recouvrement](/fr/planification/couverture-et-capteur)

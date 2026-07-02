@@ -1,0 +1,126 @@
+---
+title: "Vue d'ensemble de l'export"
+description: "Le bouton Export, ses quatre destinations et la sélection multi-vol."
+---
+
+Le bouton **Export**, en haut à droite de la barre du globe, est le point d'entrée unique vers toutes les destinations de sortie de Helix Flight Planner : fichier de plan de vol, vue client HTML, portail FMS ou DJI Pilot 2. Cette page décrit le premier écran de la fenêtre d'export, le verrouillage en cas d'alerte de sécurité, et la fenêtre de sélection multi-vol partagée par plusieurs destinations.
+
+<CardGroup cols={2}>
+  <Card title="Plan de vol" icon="route">
+    `.helix`, KML ou KMZ/WPML — fichier(s) écrit(s) sur le disque.
+  </Card>
+  <Card title="Exporter une vue client" icon="globe">
+    Un fichier HTML interactif, à ouvrir dans un navigateur, sans installer l'application.
+  </Card>
+  <Card title="Envoyer vers FMS" icon="send">
+    Publie directement le plan sur le portail Helix, visible sur la tablette pilote.
+  </Card>
+  <Card title="Envoyer vers DJI Pilot 2" icon="plane">
+    Pont local (LAN) ou publication cloud vers l'app pilote DJI.
+  </Card>
+</CardGroup>
+
+## Le bouton Export
+
+Le bouton **Export** de la barre supérieure du globe n'est actif que si **au moins un vol de la mission possède un plan calculé** — que ce soit le vol actif en mémoire ou un vol différent dont un résultat a déjà été calculé puis persisté. Il n'est plus nécessaire d'avoir tracé une zone sur le vol actif pour l'activer : dès qu'un vol quelconque de la mission a un résultat, le bouton s'allume.
+
+<Note>
+  Si la fenêtre est étroite (barre resserrée entre les deux panneaux latéraux), le libellé « Export » peut disparaître au profit de l'icône seule — le bouton reste cliquable de la même façon.
+</Note>
+
+Cliquer sur **Export** ouvre la fenêtre **Exporter le plan de vol**, avec quatre lignes de destination :
+
+| Destination | Effet |
+|---|---|
+| **Plan de vol** | Ouvre le choix de format : `.helix`, KML ou KMZ (WPML DJI Pilot 2). |
+| **Exporter une vue client** | Ouvre directement la fenêtre de sélection des vols pour produire un fichier HTML. |
+| **Envoyer vers FMS** | Publie immédiatement la mission sur le portail Helix — aucun écran intermédiaire. |
+| **Envoyer vers DJI Pilot 2** | Ouvre le choix du référentiel d'altitude puis **Local** ou **Cloud**. |
+
+## Plan de vol (.helix / KML / KMZ)
+
+Choisir **Plan de vol** affiche la liste des formats disponibles :
+
+| Format | Contenu | Condition |
+|---|---|---|
+| **.helix** (Helix Archive) | Archive interne, ré-importable. | Le vol actif doit avoir un plan calculé. |
+| **KML** | Compatible Google Earth / UgCS, en variante ligne (LineString) ou point par point (Placemark). | — |
+| **KMZ** (WPML, DJI Pilot 2) | Wayline au format WPML attendu par DJI Pilot 2. | Un aéronef **DJI** doit être sélectionné sur le vol — sinon la ligne est grisée avec l'indication du blocage (« Sélectionnez un drone DJI » ou « Export réservé aux drones DJI »). |
+
+<Steps>
+  <Step title="Choisir « .helix »">
+    Une sous-étape demande la variante à écrire :
+    - **FMS** — reflète le format actuel envoyé au FMS cockpit (une zone = un vol, pas de découpe multi-vol).
+    - **Projet Flight Planner** — archive de round-trip complet, ré-importable pour retrouver l'état exact de **toutes** les zones/vols de la mission (y compris les options et les bandes des zones verrouillées).
+
+    Dans les deux cas, un sélecteur de fichier natif s'ouvre directement (pas de fenêtre de sélection multi-vol) : l'archive `.helix` embarque automatiquement l'ensemble des vols et zones de la mission, il n'y a rien à cocher.
+  </Step>
+  <Step title="Choisir « KML » ou « KMZ »">
+    Ces deux formats ouvrent la [fenêtre de sélection multi-vol](#la-fenetre-de-selection-multi-vol) décrite plus bas, avec en plus :
+    - pour **KML** : un choix **LineString** / **Placemark** ;
+    - pour **KMZ**, si l'aéronef est DJI : un choix de **référentiel d'altitude** (Relatif au décollage / AMSL absolu).
+  </Step>
+</Steps>
+
+## Exporter une vue client (HTML)
+
+Cette destination ouvre directement la fenêtre de sélection multi-vol (tous les vols exportables sont cochés par défaut) puis écrit **un seul fichier HTML** contenant l'ensemble des vols cochés — contrairement au KML/KMZ, il n'y a jamais plusieurs fichiers produits même si plusieurs vols sont sélectionnés. Le fichier est autonome : il s'ouvre dans un navigateur sans connexion ni installation de l'application, pratique à transmettre à un client. Le nom proposé par défaut est `<nom-du-vol>-client.html` s'il n'y a qu'un seul vol coché, ou `<nom-de-la-mission>-client.html` au-delà.
+
+## Envoyer vers FMS
+
+Contrairement aux autres destinations, **Envoyer vers FMS** ne passe par aucun écran intermédiaire : cliquer dessus publie tout de suite le plan `.helix` de la mission active vers le portail Helix, où il devient visible sur la tablette pilote. Le FMS Helix est un **FMS de cockpit** (avion / hélicoptère) — si la mission ne contient que des zones drone, l'envoi échoue avec un message invitant à exporter vers DJI Pilot 2 (KMZ WPML) à la place.
+
+En cas de succès, un message confirme le numéro de version publiée et la taille du fichier envoyé. En cas d'échec, le message précise la cause la plus probable : mission non calculée, licence ne permettant pas la publication FMS, mission à publier au préalable, mission introuvable sur le portail (nécessite une synchronisation), ou erreur de synchronisation.
+
+## Envoyer vers DJI Pilot 2
+
+Cette destination affiche d'abord un choix de **référentiel d'altitude** pour le WPML (Relatif au décollage / AMSL absolu), puis deux lignes :
+
+| Ligne | Effet |
+|---|---|
+| **Local** | Ouvre le pont réseau (LAN) vers Pilot 2 installé sur la même radiocommande — aucun fichier n'est écrit sur le disque. |
+| **Cloud** | Ouvre la fenêtre de sélection multi-vol, puis publie les vols DJI cochés sur le portail Helix ; ils apparaissent ensuite directement dans DJI Pilot 2. |
+
+Les deux lignes sont grisées si l'aéronef du vol actif n'est **pas un drone DJI**, avec l'indication « Appareil non-DJI — réservé aux drones DJI ».
+
+<Note>
+  Le référentiel d'altitude choisi sur cet écran s'applique à l'envoi **Local**. Le flux **Cloud** propose son propre réglage identique, à nouveau, dans la fenêtre de sélection des vols qui suit — pensez à le vérifier une seconde fois si vous changez de flux.
+</Note>
+
+## Verrouillage selon la sévérité des alertes
+
+Avant d'afficher le premier écran ci-dessus, l'export tient compte de la sévérité d'alerte la plus grave détectée sur le vol actif :
+
+- **🔴 Sécurité** (ex. collision terrain) — un écran de confirmation **bloquant** s'affiche à la place du reste de la fenêtre, listant chaque problème détecté. Une case à cocher obligatoire (« Je comprends les risques et souhaite exporter malgré tout. ») doit être cochée pour activer le bouton **Continuer malgré tout** ; **Annuler** referme la fenêtre sans rien exporter. Une fois validé, l'écran normal apparaît — refermer puis rouvrir la fenêtre Export redemande la confirmation si le problème persiste.
+- **🟠 Qualité** / **🔵 Information** — un simple bandeau récapitulatif s'affiche au-dessus du choix de destination, sans jamais bloquer l'export.
+
+<Tip>
+  Pour le détail des seuils (couverture, garde au sol, suivi de terrain avion) qui déclenchent ces alertes, voir [Alertes de sécurité et blocage à l'export](/fr/qc/alertes-securite-et-validation).
+</Tip>
+
+## La fenêtre de sélection multi-vol
+
+KML, KMZ, la vue client HTML et l'envoi Cloud vers DJI Pilot 2 partagent la **même fenêtre** de sélection des vols :
+
+- seuls les vols possédant **au moins un élément calculé** apparaissent dans la liste (si aucun vol n'est calculable, la fenêtre l'indique et rien n'est cochable) ;
+- chaque vol est représenté par une **case à cocher** portant son nom ;
+- le **vol actif** de la mission est repéré par un petit badge « actif » à droite de son nom ;
+- la sélection par défaut change selon la destination : **tous** les vols exportables sont cochés d'entrée pour la vue client HTML et pour le Cloud, alors que seul le **vol actif** (ou à défaut le premier vol exportable) est coché par défaut pour un export fichier KML/KMZ — décochez/cochez librement avant de confirmer.
+
+Le résultat de la confirmation diffère ensuite par destination :
+
+| Destination | Un seul vol coché | Plusieurs vols cochés |
+|---|---|---|
+| **KML / KMZ** | Sélecteur de fichier natif classique, un seul fichier écrit. | Sélecteur de **dossier** : un fichier est écrit par vol dans ce dossier. |
+| **Vue client HTML** | Un seul fichier HTML combiné. | Toujours un **seul** fichier HTML, contenant tous les vols cochés. |
+| **Cloud (DJI Pilot 2)** | Publication directe sur le portail, aucun fichier local. | Idem — chaque vol DJI coché est publié ; un vol coché dont l'aéronef n'est pas DJI est **ignoré silencieusement** (non compté dans les échecs). |
+
+<Note>
+  Pour KML/KMZ, chaque nom de fichier est **assaini** (accents et caractères spéciaux retirés, espaces supprimés) à partir du nom du vol, puis rendu **unique** si plusieurs vols cochés se réduisent au même nom une fois assainis (suffixes `-2`, `-3`, …).
+</Note>
+
+## Voir aussi
+
+- [Alertes de sécurité et blocage à l'export](/fr/qc/alertes-securite-et-validation)
+- [Formats d'export](/fr/guides/export-formats)
+- [Créer et organiser les vols](/fr/mission/vols-et-appareils)

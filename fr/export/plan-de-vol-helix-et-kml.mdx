@@ -1,0 +1,101 @@
+---
+title: "Exporter le plan de vol : .helix et KML"
+description: "Les formats natifs .helix (FMS et projet complet) et KML/Google Earth."
+---
+
+# Exporter le plan de vol : .helix et KML
+
+Depuis la fenêtre **Exporter le plan de vol** (bouton **Export** en haut de la vue globe → **Plan de vol**), deux des formats disponibles couvrent des besoins très différents : **`.helix`**, le conteneur natif de Helix Aero (relu par le FMS de cockpit ou par Flight Planner lui-même), et **KML**, le format ouvert lu par Google Earth et par les logiciels de planification tiers (UgCS notamment). Cette page détaille ce que contient chacun des deux ; pour la navigation générale de la fenêtre d'export (bouton, verrouillage sécurité, fenêtre de sélection multi-vol partagée), voir [Vue d'ensemble de l'export](/fr/export/vue-densemble).
+
+<CardGroup cols={2}>
+  <Card title=".helix — FMS" icon="send">
+    Le document standard envoyé au FMS de cockpit — une zone calculée = un vol, pas de découpe automatique.
+  </Card>
+  <Card title=".helix — Projet Flight Planner" icon="route">
+    Le même document augmenté de l'état natif complet de l'éditeur — round-trip exact sur une autre machine.
+  </Card>
+  <Card title="KML — LineString" icon="map">
+    Une polyligne par bande/virage, dossiers nommés — lecture visuelle rapide dans Google Earth.
+  </Card>
+  <Card title="KML — Placemark" icon="camera">
+    Un point par waypoint façon UgCS, avec vitesse et déclenchement photo en métadonnées.
+  </Card>
+</CardGroup>
+
+## .helix — le conteneur natif Helix
+
+Choisir **.helix** dans la liste des formats ouvre un sous-écran demandant la **destination** : **FMS** ou **Projet Flight Planner**. Dans les deux cas, un sélecteur de fichier natif s'ouvre directement — il n'y a pas de fenêtre de sélection de vols, l'archive embarque automatiquement **tous** les vols de la mission qui possèdent un plan calculé (un vol sans aucun élément calculé est ignoré silencieusement).
+
+<Note>
+  L'export `.helix` exige qu'au moins le vol actif ait un plan calculé ; sinon la fenêtre affiche « Calculez la mission avant d'exporter » et bloque le choix du mode.
+</Note>
+
+### Mode FMS
+
+C'est le document JSON (schéma `helix-mission`, version 2.2) **standard envoyé au FMS de cockpit** Helix — le même format que celui utilisé par l'envoi direct **« Envoyer vers FMS »**, mais écrit ici comme fichier local à l'emplacement de votre choix plutôt que publié sur le portail.
+
+Il contient, pour chaque vol : la géométrie (AOI et éventuels trous), les paramètres d'acquisition (mode et valeur d'altitude, vitesse, recouvrements longitudinal/latéral, cap de balayage, tolérance AGL, grille double...), les caractéristiques du capteur et de l'aéronef, puis le résultat calculé complet — altitude effective, GSD, statistiques de vol, chaque bande avec ses waypoints, les jonctions de virage et les lignes d'approche (leading lines).
+
+- **Une zone calculée = un vol** côté FMS : chaque vol de la mission devient une entrée du fichier. Ce mode n'effectue **aucune découpe automatique** supplémentaire (pas de fractionnement par autonomie ni par durée) — si un vol doit être scindé en plusieurs sorties plus courtes, faites-le au préalable dans le planificateur (voir [Découper une zone calculée en plusieurs vols](/fr/planification/decoupe-multi-vol)).
+- Si la mission ne contient qu'un seul vol calculé, le fichier reste un document plat identique à ce que le FMS a toujours consommé (pas de liste de zones imbriquée). Dès qu'un second vol existe, chaque vol apparaît comme une entrée distincte dans le fichier, avec son propre type d'aéronef, ses propres paramètres et son propre résultat.
+- Nom de fichier proposé : `<nom-de-la-zone-active>.helix`.
+
+### Mode Projet Flight Planner
+
+Ce mode écrit **exactement le même document** que le mode FMS, augmenté d'un bloc additionnel (ignoré par le FMS lui-même) qui porte l'**état natif complet** de l'éditeur, pour chaque vol de la mission :
+
+- l'intégralité des options de planification telles que réglées dans l'éditeur (pas seulement celles nécessaires au FMS) — de quoi **recalculer à l'identique** sur une autre machine ;
+- pour les zones **verrouillées** (converties en trajectoire figée / wayline), la trajectoire exacte telle que calculée — et potentiellement retouchée point par point à la main — pour qu'elle soit **restaurée telle quelle** plutôt que recalculée à l'import ; les zones non verrouillées, elles, sont recalculées automatiquement à l'import.
+
+<Tip>
+  Utilisez ce mode pour **transmettre ou archiver une mission complète** (par exemple entre deux postes équipés de Helix Flight Planner) sans rien perdre des réglages de chaque vol — le mode FMS seul ne suffit pas pour ça : il porte le résultat calculé, mais pas les options qui ont permis de l'obtenir.
+</Tip>
+
+Nom de fichier proposé : `<nom-de-la-zone-active>_projet.helix`.
+
+### Réimporter un projet .helix
+
+Le bouton **Importer une mission** du tableau de bord accepte ces mêmes fichiers `.helix`. Un fichier **Projet Flight Planner** recrée une mission avec tous ses vols ; un fichier **générique** (mode FMS pur, sans le bloc projet) crée une mission vide, sans vol restauré — ce format n'est prévu que pour être lu par le FMS, pas réimporté dans le planificateur.
+
+<Warning>
+  Pour un vol qui portait plusieurs zones (par exemple un polygone et un corridor combinés), **une seule zone survit** à l'aller-retour export/import : celle qui était active au moment de l'export si c'est le vol actif, sinon la première zone calculée du vol. Le détail complet du comportement à l'import est documenté dans [Créer et organiser les vols](/fr/mission/vols-et-appareils#importer-une-mission-existante-helix).
+</Warning>
+
+## KML — Google Earth et UgCS
+
+Choisir **KML** ouvre la [fenêtre de sélection des vols](/fr/export/vue-densemble#la-fenetre-de-selection-multi-vol) avec, en plus, un choix de **présentation** : **LineString** ou **Placemark**. Contrairement à `.helix`, le KML est produit **par vol** : un fichier par vol coché (sélecteur de dossier de sortie si plusieurs vols sont cochés à la fois).
+
+### Deux présentations
+
+<Steps>
+  <Step title="LineString (par défaut)">
+    Chaque bande d'acquisition et chaque virage inter-bandes est tracé comme une seule polyligne (`<LineString>`) continue, dans son propre dossier. C'est la présentation la plus légère, adaptée à une lecture visuelle rapide du trajet dans Google Earth.
+  </Step>
+  <Step title="Placemark (façon UgCS)">
+    Chaque waypoint devient son propre point (`<Placemark>`), avec des métadonnées attachées : une vitesse de référence, le type de virage (arrêt-puis-virage sur le premier point d'une bande, lissé ailleurs) et, sur les waypoints de bande, un déclenchement photo par intervalle de distance dès qu'un capteur est configuré sur le vol (avec un repère d'assiette caméra nadir sur le premier point de chaque bande). Fichier plus volumineux (un point par waypoint), au format attendu par les outils qui lisent la convention UgCS.
+  </Step>
+</Steps>
+
+### Organisation du fichier : un dossier par rôle
+
+Dans les deux présentations, le document est découpé en dossiers nommés, pour qu'un logiciel tiers (ou un pilote qui l'ouvre directement) sache immédiatement à quoi correspond chaque morceau plutôt que de deviner à partir d'une liste de points à plat :
+
+| Dossier | Contenu |
+|---|---|
+| **Strip 1, Strip 2, …** | Les bandes d'acquisition principales, dans l'ordre de vol. |
+| **Corrective N / Transfer N / Leading N** | Les passes additionnelles produites par les réglages du vol lui-même (grille double, bandes de transfert, lignes d'approche/sortie) — n'apparaissent que si le vol en génère. |
+| **Turn N→N+1** | Le connecteur entre deux bandes consécutives — voir la restriction ci-dessous. |
+| **Survey Area** | Le contour de la ou des zones du vol (polygone AOI). |
+| **Waypoints** | Les waypoints isolés (points d'intérêt) posés sur le vol, un point par waypoint — dossier absent si le vol n'en contient aucun. |
+
+Toutes les altitudes sont **absolues** (AMSL) et la ligne est « extrudée » jusqu'au sol : Google Earth dessine un rideau vertical entre la trajectoire et le terrain, ce qui donne une lecture immédiate de la hauteur AGL survolée. Les bandes et connecteurs sont tracés dans le vert de marque Helix, les virages en ambre, pour les distinguer d'un coup d'œil sur un trajet qui reste par ailleurs continu.
+
+### Virages : réservés aux vols drone
+
+Le dossier **Turn N→N+1** (et, en présentation Placemark, les points intérieurs de virage) n'est produit que pour un vol dont l'aéronef est un **drone DJI** — ces appareils volent réellement l'arc en U entre deux bandes, à l'altitude d'acquisition. Un vol **avion** ou **hélicoptère** ne vole pas ce type de virage à l'altitude de la bande (transit à part) : pour ces vols, seules les bandes elles-mêmes sont exportées, sans connecteur entre elles.
+
+## Voir aussi
+
+- [Vue d'ensemble de l'export](/fr/export/vue-densemble) — le bouton Export, ses quatre destinations, la fenêtre de sélection multi-vol et le verrouillage en cas d'alerte de sécurité.
+- [Créer et organiser les vols](/fr/mission/vols-et-appareils) — la notion de vol/zone et le détail du comportement à l'import d'un `.helix`.
+- [Découper une zone calculée en plusieurs vols](/fr/planification/decoupe-multi-vol) — organiser les vols avant un export FMS, puisque celui-ci ne découpe rien automatiquement.

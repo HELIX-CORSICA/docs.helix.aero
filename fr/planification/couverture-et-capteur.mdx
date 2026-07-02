@@ -1,0 +1,139 @@
+---
+title: "Régler la couverture : capteur, altitude/GSD et recouvrement"
+description: "Paramètres qui déterminent la résolution et le recouvrement des bandes de vol."
+---
+
+# Régler la couverture : capteur, altitude/GSD et recouvrement
+
+Ces réglages vivent dans le **panneau de gauche**, sous la bande d'éléments du vol actif — il n'y a pas d'onglet « Paramètres » séparé à cliquer : dès qu'un élément de couverture (polygone ou corridor) est actif, le formulaire apparaît automatiquement en dessous de la liste des éléments. Ils pilotent trois choses : la **résolution** des données acquises (GSD ou champ de vue du capteur), l'**espacement** des bandes de vol, et la **redondance** de la couverture (recouvrement, double grille, marges).
+
+<Note>
+  Le **capteur** se choisit par **zone** (polygone ou corridor), pas par vol ni par aéronef. Un même vol peut ainsi combiner, par exemple, un polygone photogrammétrique sur un capteur et un corridor LiDAR sur un autre — chacun avec son propre réglage d'altitude, de GSD et de recouvrement.
+</Note>
+
+<CardGroup cols={2}>
+  <Card title="Capteur" icon="camera">
+    Choix indépendant par zone, avec filtre de compatibilité selon l'aéronef du vol.
+  </Card>
+  <Card title="Altitude / GSD" icon="ruler">
+    Deux champs couplés — saisir l'un recalcule l'autre instantanément.
+  </Card>
+  <Card title="Vitesse" icon="gauge">
+    Bornée automatiquement par l'enveloppe de vol de l'aéronef choisi.
+  </Card>
+  <Card title="Recouvrement" icon="layers">
+    Avant/latéral, buffer, overshoot et double grille pour ajuster la redondance.
+  </Card>
+</CardGroup>
+
+<Warning>
+  Si la zone active est une **trajectoire verrouillée** (wayline figée, éditée point par point après génération), ce formulaire de couverture **disparaît entièrement** — il est remplacé par un éditeur dédié : le mode de virage global, et l'altitude (AGL ou AMSL) du waypoint actuellement sélectionné sur la trajectoire. Aucun champ Vitesse n'est visible dans cet état (le recalcul ne porte que sur l'altitude et les virages). Pour retrouver le formulaire de couverture complet (capteur, altitude/GSD, recouvrement, vitesse…), il faut restaurer le polygone de la zone.
+</Warning>
+
+## Choisir le capteur de la zone
+
+Le champ **Capteur**, en tête du groupe **Vol**, ouvre le sélecteur de capteur :
+
+<Steps>
+  <Step title="Rechercher ou filtrer">
+    Une barre de recherche (nom, fabricant, type) et des chips de catégorie — **Tous / Photo / LiDAR / Pushbroom / Thermique** — chacune affichant le nombre de résultats.
+  </Step>
+  <Step title="Natif vs Tous">
+    Si un aéronef est déjà choisi pour le vol et déclare des capteurs compatibles, deux boutons apparaissent : **Natif** (catalogue restreint aux capteurs compatibles avec cet aéronef) et **Tous** (catalogue complet, compatibilité non vérifiée). Sans déclaration de compatibilité, le filtre ne s'affiche pas et le catalogue complet est proposé directement.
+  </Step>
+  <Step title="Focale (boîtiers multi-objectifs)">
+    Si le capteur choisi accepte plusieurs focales, une étape supplémentaire s'ouvre : choisissez l'une des valeurs déclarées par le catalogue, ou saisissez une focale personnalisée (verre tiers). La sélection n'est confirmée qu'une fois une focale valide fixée — la focale conditionne directement le GSD et l'espacement des bandes.
+  </Step>
+</Steps>
+
+<Tip>
+  L'étoile sur chaque ligne du catalogue épingle le capteur en **favori** — les favoris remontent en tête de liste, tout comme le capteur déjà sélectionné.
+</Tip>
+
+## Altitude et GSD : deux champs couplés
+
+Pour un capteur **Caméra** ou **Thermique**, deux champs se règlent l'un l'autre en direct :
+
+- **Altitude** — la hauteur de vol effective (le mode d'altitude actif — AMSL, AGL, iAGL, etc. — détermine ce que « hauteur » veut dire ici, mais ce n'est pas le sujet de cette page).
+- **GSD** — la distance d'échantillonnage au sol (résolution image), en cm ou m selon le capteur et la focale retenus.
+
+<Note>
+  Les deux champs sont **toujours éditables**, sans bascule de « mode » à choisir au préalable : saisissez l'altitude et le GSD se recalcule aussitôt (et inversement). Chacun a son propre bouton d'unité — **m ↔ ft** pour l'altitude, **cm ↔ m** pour le GSD — cliquable indépendamment l'un de l'autre.
+</Note>
+
+Si vous changez de capteur (ou de focale) après avoir fixé une GSD cible, l'altitude est automatiquement recalculée pour continuer à viser la même résolution avec les nouvelles caractéristiques optiques.
+
+### Capteurs LiDAR et Pushbroom
+
+Ces capteurs n'ont pas de GSD image unique : le champ GSD est remplacé par un champ **FOV (°)** — le champ de vue across-track du scanner, qui détermine le fauchage au sol.
+
+- En mode automatique, la valeur affichée (en italique, gris) vient du catalogue du capteur ; il n'y a pas de pastille à cliquer — saisissez directement une valeur pour la personnaliser pour cette zone.
+- Une fois une valeur personnalisée saisie, un bouton icône (flèche de retour, gris) apparaît à côté du champ pour revenir au FOV catalogue.
+- Le FOV personnalisable est borné entre **5°** et **360°** (en dessous de 5° le fauchage s'effondre et l'espacement des bandes n'a plus de sens).
+
+## Vitesse de vol
+
+Le champ **Vitesse** (unité au choix — **km/h · m/s · kt**, bouton cliquable) s'ajuste selon l'aéronef choisi pour le vol :
+
+| Aéronef | Borne basse | Borne haute |
+|---|---|---|
+| **Avion / Hélicoptère** | Vitesse de décrochage catalogue × **1,2** (marge de sécurité standard) | Vitesse maximale catalogue |
+| **Drone** | Vitesse minimale de repère (~0,36 km/h, allure de prise de vue stationnaire) | Vitesse maximale catalogue |
+| Aucun aéronef choisi | 0,36 km/h | 350 km/h (plage générique par défaut) |
+
+<Tip>
+  Quand un **drone** vient d'être choisi (changement d'aéronef), la vitesse par défaut se cale sur **5 m/s**, une allure lente adaptée à la photogrammétrie. Si l'enveloppe du drone ne permet pas d'atteindre 5 m/s, la valeur retombe sur la vitesse minimale de l'appareil plutôt que sur sa vitesse maximale. Ce préréglage ne s'applique qu'au **changement** d'aéronef — une vitesse déjà réglée manuellement n'est jamais écrasée par la suite, sauf si elle sort de la nouvelle enveloppe (auquel cas elle est ramenée à la borne la plus proche).
+</Tip>
+
+## Recouvrement avant et latéral
+
+Dans le groupe **Recouvrement**, deux curseurs règlent la redondance de la couverture :
+
+- **Avant** — recouvrement entre prises successives le long d'une même bande (axe de vol).
+- **Latéral** — recouvrement entre bandes adjacentes ; c'est ce qui détermine l'espacement réel entre les bandes.
+
+Chacun bascule entre deux unités d'affichage via le même bouton **% ↔ m** : en pourcentage (fraction de l'empreinte capteur), ou directement en **mètres de recouvrement au sol**. Le mode mètres a besoin d'un premier calcul de mission pour connaître la dimension de l'empreinte : tant qu'aucune trajectoire n'a encore été générée, le champ retombe sur la valeur en pourcentage (ex. 70 pour 70 %) tout en affichant le suffixe « m » — un nombre trompeur, à ne pas lire comme un vrai recouvrement en mètres tant qu'un premier calcul n'a pas eu lieu.
+
+<Note>
+  Le recouvrement **latéral** ne descend pas en dessous de **10 %** — en dessous, la continuité de la couverture entre bandes n'est plus garantie. Les deux curseurs sont plafonnés à **95 %** (protection contre un nombre de bandes qui exploserait).
+</Note>
+
+## Buffer AOI
+
+Le champ **Buffer AOI** (0 à 500 m, 0 par défaut quel que soit le capteur) gonfle le contour du polygone **vers l'extérieur**, uniformément sur tout son pourtour, avant que les bandes ne soient calculées — les bandes de couverture s'étendent donc de la valeur saisie au-delà du contour tel que vous l'avez tracé.
+
+Cas d'usage typique : garantir une densité de points ou une qualité d'image homogène jusqu'au bord réel du contour tracé, en particulier pour du LiDAR (où la pratique courante est d'étendre le passage de quelques dizaines de mètres au-delà du périmètre) — Helix ne l'applique plus automatiquement, ce réglage est désormais **toujours manuel**.
+
+<Note>
+  Le Buffer AOI ne s'applique pas aux **corridors** : leur emprise vient uniquement de la **Largeur corridor** (voir plus bas), pas d'un gonflement du contour.
+</Note>
+
+## Overshoot
+
+Le champ **Overshoot** (0 à 100 m) prolonge **chaque bande** de couverture de la distance saisie, **aux deux extrémités**, sans changer leur espacement ni leur nombre. Le drone ou l'aéronef continue tout droit sur cette distance avant d'amorcer son virage vers la bande suivante.
+
+Utile pour laisser de la marge à un virage large ou lissé (rayon de virage important, virage géré nativement par le pilote automatique) sans rogner le plan de couverture théorique dans les angles de la zone.
+
+## Double grille
+
+Le bouton **Double grille** (Oui/Non) ajoute une **seconde passe complète**, perpendiculaire à la passe principale (90° par rapport au cap de balayage retenu).
+
+<Warning>
+  Activer la double grille double approximativement le nombre de bandes — et donc le temps de vol — puisque la zone est survolée deux fois, à angle droit. C'est la pratique photogrammétrique classique pour renforcer la redondance sur des scènes complexes (façades, végétation, reliefs marqués).
+</Warning>
+
+Sur un **corridor**, la passe croisée ne reproduit pas un second passage parallèle à l'axe : elle génère des **transects perpendiculaires** qui traversent toute la largeur de la bande tamponnée du corridor, pour une couverture croisée complète malgré l'absence de polygone fermé.
+
+## Largeur de corridor (corridor uniquement)
+
+Quand la zone active est un **corridor**, un curseur **Largeur corridor** apparaît (0 à 2000 m) au-dessus du groupe Recouvrement — l'emprise du corridor se règle avant son recouvrement, puisque ce dernier en dépend. La largeur est répartie **symétriquement** de part et d'autre de l'axe tracé.
+
+<Tip>
+  Un corridor nouvellement tracé démarre avec une largeur par défaut de **200 m** ; ce curseur permet de l'ajuster ensuite à tout moment. Voir [Dessiner une zone, un corridor ou un point de décollage](/fr/mission/dessiner-une-zone) pour le tracé initial de l'axe.
+</Tip>
+
+## Voir aussi
+
+- [Dessiner une zone, un corridor ou un point de décollage](/fr/mission/dessiner-une-zone)
+- [Modifier une zone après le tracé](/fr/mission/editer-une-zone)
+- [Créer et organiser les vols](/fr/mission/vols-et-appareils)

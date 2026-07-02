@@ -1,0 +1,85 @@
+---
+title: "Gérer ses missions"
+description: "Lister, créer, importer, renommer et supprimer des missions depuis le tableau de bord."
+---
+
+Le **tableau de bord** est le premier écran de Helix Flight Planner après la connexion. Il regroupe toutes vos missions et donne accès aux catalogues de capteurs et d'appareils via trois onglets en haut de l'écran : **Missions**, **Capteurs** et **Appareils**. Cette page couvre l'onglet **Missions** — la liste, la création, l'import, le renommage et la suppression — ainsi que les réglages propres à une mission une fois celle-ci ouverte.
+
+## La liste des missions
+
+Chaque mission apparaît sous la forme d'une **carte** (vue par défaut) avec une vignette générée automatiquement, ou sous la forme d'une **ligne compacte** en vue liste. Une barre d'outils au-dessus de la liste permet de :
+
+- **Rechercher** une mission par son nom ou par le nom du client renseigné dans ses paramètres.
+- **Trier** par date de dernière modification (par défaut, la plus récente en premier) ou par nom.
+- **Basculer entre la vue cartes et la vue liste** grâce aux deux icônes à côté du tri.
+
+<Tip>
+  La vignette de chaque carte est générée en arrière-plan la première fois que la mission est affichée (vue du dessus de la zone + bandes de vol), puis mise en cache. Elle se régénère automatiquement dès que le contenu de la mission change ; tant qu'elle n'existe pas encore, un motif de fond neutre s'affiche à la place.
+</Tip>
+
+### Ouvrir une mission
+
+Cliquez n'importe où sur une carte, ou sur une ligne en vue liste, pour ouvrir la mission dans l'éditeur de vol (globe 3D + panneau de planification).
+
+## Créer une mission
+
+Cliquez sur **+ Nouvelle mission** en haut à droite de la liste pour ouvrir l'assistant de création, en deux étapes :
+
+<Steps>
+  <Step title="Informations">
+    Saisissez le nom de la mission. C'est le seul champ obligatoire pour passer à l'étape suivante.
+  </Step>
+  <Step title="Lieu (optionnel)">
+    Recherchez un lieu par son nom, ou saisissez directement une latitude/longitude (ex. `42.0, 9.0`). Les lieux récemment utilisés dans d'autres missions sont proposés en raccourci tant que le champ de recherche est vide. Si vous choisissez un lieu, le globe 3D se centre automatiquement dessus à l'ouverture de la mission ; si vous laissez le champ vide, la mission s'ouvre sans pré-centrage.
+  </Step>
+</Steps>
+
+Cliquez sur **Créer la mission** : la mission est enregistrée puis ouverte immédiatement dans l'éditeur de vol.
+
+## Importer une mission (.helix)
+
+Le bouton **Importer une mission** (dans la barre d'outils, et aussi proposé sur l'écran « Aucune mission ») ouvre un sélecteur de fichier limité à l'extension `.helix`. Le comportement de l'import dépend du contenu du fichier :
+
+- **Projet Flight Planner complet** — si le fichier `.helix` a été exporté par Helix Flight Planner et contient l'ensemble des zones/vols d'un projet, l'import crée une nouvelle mission qui restaure **toutes** ces zones/vols. Les vols qui étaient verrouillés conservent leurs bandes de vol telles qu'elles avaient été calculées (et éventuellement éditées) au moment de l'export ; les autres vols sont recalculés automatiquement dès que vous les activez.
+- **Fichier `.helix` générique (FMS)** — si le fichier ne contient pas cette structure de projet complet (par exemple un fichier produit par un autre système compatible), l'import crée une mission simple avec un seul vol, à partir des paramètres et du résultat contenus dans le fichier.
+
+Dans les deux cas, la nouvelle mission apparaît dans la liste et s'ouvre automatiquement à la fin de l'import.
+
+<Note>
+  En cas d'échec de la lecture du fichier (format non reconnu, fichier corrompu), un message d'erreur s'affiche et aucune mission n'est créée.
+</Note>
+
+## Renommer une mission
+
+Ouvrez le menu contextuel d'une mission (clic droit sur sa carte ou sa ligne) puis choisissez **Renommer**. Saisissez le nouveau nom et validez — le bouton d'enregistrement reste désactivé tant que le nom est vide ou identique au nom actuel.
+
+## Supprimer une ou plusieurs missions
+
+Deux façons de supprimer :
+
+- **Suppression seule** — menu contextuel (clic droit) sur la carte ou la ligne, puis **Supprimer**.
+- **Suppression en masse** — cochez la case qui apparaît au survol de chaque carte (ou visible en permanence en vue liste) pour sélectionner plusieurs missions. Une barre d'action apparaît alors en haut de la liste avec le nombre de missions sélectionnées, un bouton **Supprimer les missions** et un bouton **Annuler** pour vider la sélection.
+
+Dans les deux cas, une boîte de confirmation liste les noms des missions concernées avant de valider.
+
+<Warning>
+  La suppression d'une mission est irréversible.
+</Warning>
+
+## Aucune mission
+
+Quand la liste est vide (aucune mission créée ni importée), le tableau de bord affiche un écran dédié avec le logo Helix, le message « Aucune mission » et deux boutons : **+ Créer une mission** et **Importer une mission**, qui ouvrent respectivement l'assistant de création et le sélecteur d'import décrits ci-dessus.
+
+## Paramètres de la mission
+
+Une fois une mission ouverte, cliquez sur l'icône de réglages à côté de son nom, dans la barre supérieure, pour ouvrir ses **Paramètres de la mission** :
+
+| Champ | Rôle |
+|---|---|
+| **Nom de la mission** | Identité affichée dans le tableau de bord et la barre supérieure. |
+| **Client** | Nom du client associé, utilisé aussi dans la recherche du tableau de bord. |
+| **Description** | Notes internes libres. |
+
+## Réglages généraux
+
+L'icône en forme d'engrenage, tout à droite de la barre supérieure (visible depuis le tableau de bord comme depuis une mission ouverte), ouvre les **Réglages** généraux de l'application — thème, langue, unités, cache terrain, licence, etc. — indépendamment de toute mission particulière.

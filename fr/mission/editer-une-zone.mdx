@@ -1,0 +1,121 @@
+---
+title: "Modifier une zone après le tracé"
+description: "Déplacer, insérer ou supprimer des sommets, et découper une zone en plusieurs vols."
+---
+
+# Modifier une zone après le tracé
+
+Une fois qu'une zone (polygone, corridor, obstruction, décollage ou waypoint isolé) existe, elle reste éditable directement sur le globe : glissez ses sommets, ajoutez-en ou retirez-en, déplacez un décollage ou un waypoint, ou scindez une zone de couverture en plusieurs vols distincts. Ces gestes s'appliquent après le tracé initial — voir [Dessiner une zone, un corridor ou un point de décollage](/fr/mission/dessiner-une-zone) pour la mise en place des éléments.
+
+## Sélectionner une zone à éditer
+
+La zone **active** (celle du panneau Paramètres à droite) affiche ses sommets en **jaune** — ce sont les seuls réellement déplaçables dans l'instant. Les autres zones visibles du même vol, ou d'un autre vol affiché en contexte, montrent leurs sommets en **gris**.
+
+<Tip>
+  Cliquer sur un sommet gris, ou n'importe où sur le contour d'une zone inactive, **active cette zone** mais ne la déplace pas encore : le glisser effectif se fait au geste suivant, une fois ses sommets passés en jaune. C'est volontaire — un premier clic sur une zone qui n'est pas la vôtre ne doit pas la déformer par accident.
+</Tip>
+
+<Warning>
+  Si le contour d'une zone se recoupe lui-même (un « nœud papillon »), ses sommets et son contour restent affichés en **rouge** tant que le croisement n'est pas corrigé.
+</Warning>
+
+## Déplacer un sommet
+
+Cliquez-glissez une poignée jaune vers sa nouvelle position. Le contour suit le curseur en temps réel, mais les bandes de vol, la couverture et tous les calculs ne se **régénèrent qu'au relâchement** de la souris — le déplacement lui-même reste fluide même sur une zone déjà volumineuse.
+
+## Insérer un sommet
+
+Deux façons d'ajouter un sommet sur une zone active :
+
+- **Poignée milieu** — un petit point gris apparaît au centre de chaque arête de la zone active. Cliquez-glissez cette poignée : un nouveau sommet est créé à cet endroit et suit immédiatement votre curseur.
+- **Double-clic sur un bord** — double-cliquez directement sur un segment du contour (hors sommet existant) : un sommet est inséré au point cliqué, sur l'arête la plus proche.
+
+## Supprimer un sommet
+
+Faites un **clic droit** sur un sommet jaune puis choisissez **Supprimer le sommet** dans le menu contextuel.
+
+<Note>
+  L'entrée est grisée (indisponible) si la zone est déjà à son nombre minimum de sommets — **3** pour un polygone fermé, **2** pour un corridor.
+</Note>
+
+## Modifier une obstruction
+
+Les obstructions (zones d'exclusion) se redessinent avec la même mécanique de glisser que les zones de couverture : cliquez-glissez un sommet de l'obstruction pour la reformer, en temps réel puis recalcul au relâchement.
+
+<Note>
+  Contrairement à une zone de couverture, une obstruction ne propose pas encore de poignée milieu ni de suppression de sommet au clic droit — seul le déplacement des sommets existants est disponible.
+</Note>
+
+## Déplacer le point de décollage
+
+Cliquez-glissez le pin de décollage vers sa nouvelle position.
+
+<Tip>
+  Maintenez **Maj (Shift)** pendant le glisser pour aimanter le décollage sur celui d'un **autre vol** proche à l'écran — pratique quand plusieurs vols doivent partager exactement le même point de départ.
+</Tip>
+
+## Déplacer un waypoint isolé
+
+Un waypoint posé seul (sans surface de couverture associée) se matérialise par un montant vertical ambre reliant le sol à son altitude de vol. Cliquez d'abord sur le montant pour sélectionner le waypoint : une sphère apparaît à sa base, au sol — c'est la poignée de déplacement. Cliquez-glissez cette sphère pour repositionner le waypoint horizontalement ; ce qui reste constant dépend du mode d'altitude de la zone. En mode **AGL/iAGL** (le mode par défaut), c'est la garde au sol qui est préservée : l'altitude de vol (le sommet du montant) est recalculée pour maintenir la même hauteur au-dessus du nouveau terrain sous-jacent. En mode **AMSL**, c'est l'inverse : l'altitude de vol (le sommet du montant) ne change pas, et c'est la garde au sol qui varie selon le terrain sous-jacent.
+
+## Aimantation aux éléments voisins (Maj)
+
+Que ce soit pendant un **tracé** (nouveau sommet en cours de pose) ou pendant le **glisser** d'un sommet existant, maintenir **Maj (Shift)** aimante le point à un sommet ou à un bord d'une zone proche à l'écran — utile pour faire coïncider exactement deux zones voisines sans viser au pixel près.
+
+## Déplacer plusieurs éléments ensemble
+
+Ctrl/Cmd-clic ou Maj-clic sur les sommets de plusieurs zones ou waypoints (dans le vol actif) les ajoute à une **multi-sélection**, exactement comme pour les pastilles de vol en haut du globe. Une fois au moins deux éléments sélectionnés, cliquez-glissez n'importe laquelle de leurs poignées : **tout le groupe se translate d'un bloc**, en conservant la forme et la position relative de chaque élément. Le déplacement de groupe compte comme une seule action (un seul Ctrl+Z l'annule entièrement).
+
+## Déplacer un élément entier (Alt)
+
+Maintenez **Alt** en cliquant-glissant n'importe quel sommet d'un polygone, d'un corridor ou d'une obstruction pour translater **tout l'élément d'un bloc**, au lieu de déformer un seul sommet. Combiné à une multi-sélection active, Alt déplace de la même façon l'ensemble du groupe sélectionné.
+
+## Découper une zone en plusieurs vols
+
+L'outil **ciseaux** (barre d'outils de dessin, raccourci `s`) scinde la zone active en plusieurs vols distincts le long d'une ou plusieurs lignes de coupe. Le geste de tracé d'une ligne de coupe (double-clic pour démarrer, clics simples pour les points suivants, clic sur le premier point ou double-clic pour la refermer) est identique aux autres outils — voir [Dessiner une zone](/fr/mission/dessiner-une-zone) pour le détail du tracé.
+
+<Warning>
+  L'outil est **indisponible** (icône grisée, infobulle explicite) dès que la zone active est une trajectoire **figée** (wayline, éditée point par point après génération) : il n'y a alors plus de contour polygonal à scinder. Restaurez d'abord le polygone éditable de la zone pour réactiver la découpe.
+</Warning>
+
+<Steps>
+  <Step title="Tracer une ou plusieurs coupes">
+    Chaque ligne de coupe fermée reste affichée en tireté orange **et l'outil reste actif** : vous pouvez enchaîner plusieurs lignes de coupe dans la même session, pour scinder la zone en plus de deux morceaux d'un coup.
+  </Step>
+  <Step title="Ajuster une coupe déjà tracée">
+    Tant que la session n'est pas validée, chaque ligne de coupe reste **éditable** : ses sommets affichent une poignée que vous pouvez cliquer-glisser pour l'ajuster, sans avoir à refaire le tracé.
+  </Step>
+  <Step title="Valider ou annuler">
+    Une barre flottante apparaît en haut du globe : **« Découpe : *n* ligne(s) tracée(s) »**, avec deux boutons — **Valider** (ou touche `Entrée`) applique la découpe, **Annuler** (ou touche `Échap`) abandonne toute la session sans rien modifier.
+  </Step>
+</Steps>
+
+À la validation, chaque morceau valide devient un **nouveau vol**, avec le même aéronef, le même capteur et la même orientation (cap de balayage) que la zone d'origine. La zone source, elle, **n'est pas supprimée** : elle est simplement masquée et désactivée dans la barre de vols — vous pouvez la réafficher et la réactiver à tout moment pour la redécouper autrement.
+
+<Note>
+  Si aucune ligne tracée ne traverse réellement la zone, la validation refuse la découpe (« Aucune coupe valide — tracez au moins une ligne qui traverse la zone. ») et la session reste ouverte pour corriger le tracé.
+</Note>
+
+## Nom de la zone
+
+À la création, une zone reçoit un nom par défaut selon son type (« Polygone », « Corridor », « Waypoint », ou « Obstruction *N* » pour une exclusion). Ce nom apparaît dans les info-bulles de la liste des éléments du vol et dans les fichiers exportés.
+
+<Tip>
+  Pour renommer le **vol** qui contient la zone, faites un clic droit sur sa pastille en haut du globe puis **Renommer** — voir [Créer et organiser les vols](/fr/mission/vols-et-appareils).
+</Tip>
+
+## Direction du balayage : automatique ou manuelle
+
+Dans l'onglet **Paramètres** du panneau de droite, le champ **Direction** pilote le cap de balayage des bandes (0° = Nord, sens horaire) :
+
+- **Auto** (pastille verte) — le cap est recalculé en continu à partir de la **forme de l'AOI** (l'axe qui minimise le nombre de bandes, donc de virages) et du **point d'entrée réel dans le vol** — la sortie de la zone précédente dans l'ordre du vol, ou le décollage si c'est la première zone — de façon à entrer directement dans la couverture sans grand transit de mise en place.
+- **Manuel** — cliquez la pastille **auto** pour figer le cap courant, ou réglez-le directement au curseur / au champ numérique : la valeur saisie remplace alors le calcul automatique tant qu'elle n'est pas réinitialisée.
+- Cliquez de nouveau la pastille (grisée en mode manuel) pour **revenir à l'automatique**.
+
+<Note>
+  Un corridor n'affiche pas ce réglage : les bandes suivent toujours l'axe du corridor tel qu'il a été tracé.
+</Note>
+
+<Tip>
+  Si vous déplacez le décollage ou modifiez une zone qui précède la vôtre dans l'ordre du vol, Helix réoriente automatiquement en arrière-plan les zones suivantes dont l'entrée ou la sortie a changé — sans avoir besoin de rouvrir chacune d'elles manuellement.
+</Tip>

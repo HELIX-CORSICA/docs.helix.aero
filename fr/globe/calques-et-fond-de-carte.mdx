@@ -1,0 +1,85 @@
+---
+title: "Fond de carte et calques"
+description: "Choisir le fond de carte et afficher/masquer les couches de la mission."
+---
+
+Le panneau **Couches** regroupe deux choses distinctes dans un seul tiroir, en haut à droite du globe : le choix du **fond de carte** (Satellite, Street, Aéronautique) et la **visibilité** des différents éléments affichés sur le globe (bandes de vol, empreintes capteur, GCP, obstructions, calques qualité, etc.). Il ne modifie jamais le calcul de la mission — uniquement ce qui est dessiné à l'écran.
+
+<CardGroup cols={2}>
+  <Card title="Onglet Fond" icon="map">
+    Trois vignettes de fond de carte, plus les interrupteurs des couches globales de la mission.
+  </Card>
+  <Card title="Onglet Calques" icon="list">
+    Les listes de GCP et d'obstructions de la mission, avec suppression et recentrage rapide.
+  </Card>
+</CardGroup>
+
+## Ouvrir le panneau
+
+Un bouton flottant en haut à droite du globe, avec une icône de calques empilés, ouvre le panneau.
+
+- Cliquez sur ce bouton pour afficher le panneau (300 px de large environ, ancré à droite).
+- Le panneau contient sa propre flèche de repli (chevron) dans son en-tête : cliquez dessus pour le refermer. Le bouton flottant réapparaît alors à sa place.
+
+Le panneau s'ouvre par défaut sur l'onglet **Fond**.
+
+## L'onglet Fond : choisir le fond de carte
+
+Trois vignettes en haut de l'onglet permettent de choisir le fond de carte affiché sous le globe :
+
+| Vignette | Effet |
+|---|---|
+| **Satellite** | Imagerie satellite comme fond de carte. |
+| **Street** | Fond de type plan routier (labels de villes, routes). |
+| **Aéronautique** | Reprend le même fond que Street (plan sans les labels), et superpose par-dessus la carte aéronautique (espaces aériens, frontières) ainsi que les couches NOTAM et Aéroports. |
+
+<Note>
+  En basculant sur **Aéronautique**, les couches **Aéroports** et **NOTAM** sont automatiquement activées et leurs interrupteurs dédiés disparaissent de la liste (ils sont forcés). En quittant ce mode vers Satellite ou Street, la carte aéronautique et les NOTAM sont désactivés et l'interrupteur **Aéroports** retrouve exactement la préférence que vous aviez réglée manuellement avant d'entrer en mode Aéronautique — il ne reste pas allumé si vous ne l'aviez pas coché vous-même.
+</Note>
+
+## Afficher ou masquer les couches de la mission
+
+Sous les vignettes de fond de carte, une section **Mission** liste les interrupteurs des couches qui s'appliquent à l'ensemble de la mission, indépendamment de l'élément sélectionné :
+
+| Couche | Ce qu'elle affiche |
+|---|---|
+| **Bandes de vol** | Les bandes de vol calculées, leurs flèches de sens de parcours, les virages, les transits entre éléments et les traits de liaison de décollage. |
+| **Obstructions** | Les polygones d'obstruction (avec leur marge de sécurité en hachuré). |
+| **Aéroports** | Les aérodromes à proximité de la vue affichée à l'écran (la couche se recalcule sur le rectangle visible de la caméra, pas sur la géométrie de la zone). Cet interrupteur n'apparaît pas quand le fond **Aéronautique** est actif (voir ci-dessus — il est alors forcé sur ON). |
+
+<Note>
+  Tant qu'aucune zone n'a été tracée et qu'aucun élément n'a été posé, seul l'interrupteur **Aéroports** est proposé — **Bandes de vol** et **Obstructions** n'apparaissent qu'une fois la mission amorcée (une zone dessinée, un élément posé, ou un résultat déjà calculé).
+</Note>
+
+Un interrupteur **GCP** s'ajoute à cette même section dès qu'au moins un point de contrôle au sol a été importé dans la mission.
+
+### Couches liées à l'élément sélectionné
+
+Quand l'élément actif de la mission a une zone tracée (polygone ou corridor d'au moins 3 sommets), une section **Élément sélectionné** apparaît sous la section Mission :
+
+| Couche | Ce qu'elle affiche |
+|---|---|
+| **Empreinte capteur** | Selon le type de capteur de l'élément sélectionné : le contour de chaque photo le long de la trajectoire pour un capteur photo/thermique, ou le ruban de fauchée pour un capteur LiDAR/pushbroom. |
+| **GSD** *(tout capteur autre que LiDAR : caméra, thermique, pushbroom)* | Carte de contrôle qualité de la résolution au sol, drapée sur la zone. |
+| **Densité** *(capteur LiDAR uniquement)* | Carte de contrôle qualité de la densité de points, drapée sur la zone. |
+| **Recouvrement** | Carte de contrôle qualité du recouvrement entre bandes, drapée sur la zone. |
+
+<Note>
+  **GSD** (ou **Densité** selon le type de capteur) et **Recouvrement** partagent le même emplacement de carte plaquée sur le terrain : activer l'un désactive automatiquement l'autre, ils ne peuvent pas s'afficher ensemble. **Empreinte capteur** est indépendante et peut rester active en même temps que l'un ou l'autre.
+</Note>
+
+<Tip>
+  Quand un de ces calques qualité (GSD, Densité, Recouvrement) est actif, une légende avec les seuils s'affiche en bas à droite du globe, à côté de la boussole.
+</Tip>
+
+## L'onglet Calques : gérer GCP et obstructions
+
+Le second onglet du panneau liste, sous forme de deux listes déroulantes, les **GCP** et les **obstructions** de la mission — avec le nombre d'éléments affiché à côté de chaque titre de section.
+
+- Chaque ligne affiche le nom de l'élément et une information complémentaire (coordonnées lat/lon pour un GCP, marge de sécurité pour une obstruction), suivis d'une icône de suppression.
+- **Double-cliquer sur une ligne GCP** recentre la caméra du globe sur ce point.
+- Si la mission ne contient encore aucun GCP ni obstruction, un message rappelle d'en importer ou d'en tracer un depuis la barre d'outils de dessin.
+
+<Note>
+  Supprimer une ligne dans cette liste retire définitivement le GCP ou l'obstruction de la mission — l'action n'est pas limitée à l'affichage, contrairement aux interrupteurs de l'onglet Fond.
+</Note>

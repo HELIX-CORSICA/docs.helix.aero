@@ -1,0 +1,90 @@
+---
+title: "Découper une zone calculée en plusieurs vols"
+description: "Le panneau de découpe multi-vol par durée ou distance."
+---
+
+# Découper une zone calculée en plusieurs vols
+
+Une fois qu'une zone (polygone ou corridor) a été **calculée** — ses bandes de vol existent — le panneau **Découpe multi-vol** permet de la répartir automatiquement en plusieurs vols distincts, selon un budget de **durée** ou de **distance** par vol. Utile dès qu'une couverture dépasse l'autonomie réelle de l'appareil, ou qu'un opérateur préfère la fractionner en sorties plus courtes.
+
+<Warning>
+  Ce panneau est **distinct** de l'outil ciseaux qui scinde une zone le long de lignes de coupe dessinées à la main. Ce dernier agit **avant** tout calcul, sur le contour du polygone lui-même — voir [Modifier une zone après le tracé](/fr/mission/editer-une-zone#découper-une-zone-en-plusieurs-vols). Le panneau décrit ici agit **après** le calcul : il répartit les bandes déjà générées selon un budget de temps ou de distance, sans dessiner aucune ligne de coupe.
+</Warning>
+
+## Ouvrir le panneau
+
+Faites un **clic droit** sur un élément de couverture déjà calculé (polygone ou corridor avec au moins une bande) dans la liste des éléments du panneau de gauche, puis choisissez **Découper en vols…** dans le menu contextuel.
+
+<Note>
+  Cette entrée n'apparaît que pour un polygone ou un corridor **déjà calculé**. Une trajectoire figée (wayline) ne la propose pas — il n'y a alors plus de bandes rééditables à répartir par ce mécanisme.
+</Note>
+
+Le panneau s'ouvre en incrustation à gauche du globe, à côté de la barre d'outils. Il reste ouvert pendant que vous ajustez les réglages : la couverture se recolore instantanément sur le globe, un bloc de couleur par vol prévu.
+
+## Régler le budget par vol
+
+<Steps>
+  <Step title="Choisir la métrique">
+    Le sélecteur **Durée** / **Distance** détermine ce qui plafonne chaque vol : une durée maximale en **minutes**, ou une distance maximale en **kilomètres**. Chaque métrique garde sa propre valeur en mémoire — basculer de l'une à l'autre ne remplace pas la valeur déjà saisie pour l'autre.
+  </Step>
+  <Step title="Saisir la valeur">
+    Entrez la valeur voulue puis validez avec **Entrée** ou en quittant le champ. Une bande qui dépasse à elle seule le budget forme quand même son propre vol — les bandes ne sont jamais coupées en plein milieu.
+  </Step>
+  <Step title="Ou laisser Helix calculer (Auto, en durée)">
+    En métrique **Durée**, le bouton **Auto** reprend l'**autonomie estimée** de l'appareil du vol (endurance constructeur avec une réserve de sécurité) comme budget par vol. Il reste actif (vert) tant que vous ne saisissez pas vous-même une valeur manuelle ; cliquez-le à nouveau pour revenir à cette estimation après une saisie manuelle. Si l'appareil ne déclare aucune autonomie dans le catalogue, le bouton reste grisé (« Estimation indisponible ») et une valeur manuelle est requise.
+  </Step>
+</Steps>
+
+Dès qu'au moins deux vols résultent du budget choisi, la liste des vols prévus s'affiche dans le panneau avec, pour chacun, sa pastille de couleur (la même que sur le globe), sa durée et sa distance. Le nombre de vols et la **durée totale** (somme des durées de chaque vol prévu, décollages/atterrissages inclus si la case ci-dessous est cochée) s'affichent au-dessus de la liste.
+
+<Note>
+  Si un seul vol suffit à couvrir toute la zone dans le budget choisi, le panneau invite à réduire la durée ou la distance saisie — il n'y a alors rien à valider.
+</Note>
+
+## Alerte VLOS (optionnelle)
+
+La case **Alerte VLOS** n'est activable que si la zone dispose d'un **point de décollage**. Une fois cochée, un champ **rayon en mètres** apparaît : Helix vérifie alors que chaque vol prévu reste entièrement à l'intérieur de ce rayon autour du décollage.
+
+Si un ou plusieurs vols sortent du rayon déclaré, une notification **« VLOS non respecté »** s'affiche — cette alerte est informative et **ne bloque pas** la validation : elle indique qu'il faudra soit rapprocher le décollage, soit augmenter le rayon, soit revoir le découpage, pour rester en vue directe de l'appareil sur l'ensemble des vols.
+
+## Inclure les décollages et atterrissages
+
+Cette case, cochée par défaut, détermine si les trajets de montée depuis le décollage, de transit vers la couverture et de retour sont **comptés** dans la durée et la distance de chaque vol :
+
+- **Cochée** — la durée/distance de chaque vol inclut ces trajets (nécessite qu'un point de décollage soit posé sur la zone) : le budget par vol reflète le temps de vol réel de bout en bout.
+- **Décochée** — seule la durée/distance d'acquisition des bandes est comptée, sans les trajets de décollage/atterrissage.
+
+## Optimiser l'orientation des vols
+
+Cette case ne s'applique **qu'à la découpe vers polygones** (voir plus bas) :
+
+- **Décochée (par défaut)** — chaque sous-zone créée hérite de l'**orientation d'origine** du vol source (le même cap de balayage) : les vols résultants restent alignés entre eux.
+- **Cochée** — chaque sous-zone **recalcule son propre cap optimal** en fonction de sa propre forme, ce qui peut désaligner les vols les uns par rapport aux autres mais réduit le nombre de virages localement sur chacun.
+
+## Valider et choisir la cible
+
+Une fois au moins deux vols prévus, le bouton **Valider** ouvre le choix de la cible de la découpe :
+
+<CardGroup cols={2}>
+  <Card title="Vers polygones" icon="draft">
+    Crée un nouveau vol avec un **polygone éditable** par sous-zone. Chaque sous-zone **recalcule** normalement ses bandes (aéronef, capteur, altitude, recouvrement identiques à la zone d'origine) dès qu'elle est activée, et reste modifiable comme n'importe quel polygone.
+  </Card>
+  <Card title="Vers waylines" icon="route">
+    Crée un nouveau vol avec une **trajectoire figée** (waypoints) par vol prévu — la répartition des bandes est gelée telle quelle, sans recalcul possible ensuite.
+  </Card>
+</CardGroup>
+
+Dans les deux cas :
+
+- Un **nouveau vol** est créé pour chaque sous-zone (ou chaque vol prévu), reprenant l'aéronef et le capteur du vol d'origine, ainsi que ses réglages de décollage/RTH/VLOS.
+- La **zone d'origine n'est pas supprimée et reste active** : elle est simplement **masquée** (icône œil dans la barre de vols en haut du globe). Vous pouvez la réafficher à tout moment (même icône œil) pour la redécouper différemment avec un autre budget.
+
+<Tip>
+  La découpe **vers polygones** est le choix à privilégier si vous pensez retoucher l'un des morceaux ensuite (déplacer un sommet, changer le capteur d'un des vols, etc.) — chaque sous-zone reste un polygone vivant. Réservez **vers waylines** aux cas où la trajectoire de chaque vol doit rester figée telle quelle, par exemple juste avant export.
+</Tip>
+
+## Voir aussi
+
+- [Modifier une zone après le tracé](/fr/mission/editer-une-zone) — l'outil ciseaux qui découpe le contour d'une zone **avant** tout calcul.
+- [Créer et organiser les vols](/fr/mission/vols-et-appareils) — gérer les vols créés par la découpe depuis la barre du globe.
+- [Régler la couverture : capteur, altitude/GSD et recouvrement](/fr/planification/couverture-et-capteur) — les réglages hérités par chaque sous-zone créée.

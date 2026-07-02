@@ -1,0 +1,127 @@
+---
+title: "Édition multiple, attributs et validation de la mission"
+description: "Modifier plusieurs éléments à la fois et lire les alertes de validation."
+---
+
+# Édition multiple, attributs et validation de la mission
+
+Trois outils accélèrent le réglage d'une mission qui contient beaucoup de zones : régler plusieurs éléments d'un coup depuis un formulaire condensé, reporter les réglages d'un élément sur d'autres sans tout ressaisir, et repérer d'un coup d'œil si la mission comporte un problème bloquant. Cette page couvre les trois, plus le cas particulier du **waypoint isolé**, qui n'expose qu'un formulaire minimal.
+
+<CardGroup cols={2}>
+  <Card title="Édition multiple" icon="layers">
+    Sélectionnez plusieurs éléments (Ctrl/Maj-clic) : le panneau Paramètres affiche un formulaire condensé qui s'applique à toute la sélection en une seule action.
+  </Card>
+  <Card title="Waypoint isolé" icon="map-pin">
+    Un point posé seul n'a que quatre réglages : mode d'altitude (AGL/AMSL), altitude, vitesse, comportement au virage.
+  </Card>
+  <Card title="Coller les attributs" icon="clipboard-paste">
+    Copiez un élément, puis reportez tout ou partie de ses réglages sur un ou plusieurs autres via une fenêtre à cases à cocher.
+  </Card>
+  <Card title="Badge de validation" icon="shield-check">
+    Une pastille dans la barre de statut signale, en un coup d'œil, les problèmes qui empêchent ou fragilisent le calcul de la mission.
+  </Card>
+</CardGroup>
+
+## Modifier plusieurs éléments à la fois
+
+Sélectionnez plusieurs zones ou waypoints du même vol par **Ctrl-clic** (ajouter/retirer un élément) ou **Maj-clic** (sélectionner une plage) — que ce soit dans la liste des éléments du panneau gauche ou directement sur le globe. Voir [Naviguer et sélectionner sur le globe](/fr/globe/navigation-et-selection) pour le détail des gestes de sélection.
+
+Dès que **deux éléments ou plus** sont sélectionnés, l'onglet **Paramètres** du panneau de droite bascule automatiquement sur un formulaire d'**édition multiple** — il n'y a rien à activer manuellement. Un bandeau en tête rappelle le nombre d'éléments sélectionnés, avec un bouton **Annuler** qui vide la sélection et referme le formulaire.
+
+<Note>
+  Un champ **vide** signifie que les éléments sélectionnés n'ont **pas la même valeur** pour ce réglage — c'est volontaire, il n'y a pas de tiret ni de valeur par défaut trompeuse. Tant que vous ne saisissez rien dans un champ vide, aucun élément n'est modifié pour ce réglage : le formulaire n'écrase que ce que vous éditez explicitement.
+</Note>
+
+Chaque modification (saisie validée, bascule d'un interrupteur, clic sur une option) s'applique **immédiatement à tous les éléments sélectionnés**, en une seule action — un unique **Ctrl+Z** annule le changement sur l'ensemble de la sélection d'un coup, il n'y a pas besoin d'annuler élément par élément.
+
+Les champs proposés dépendent de la composition de la sélection :
+
+| Champ | Condition d'affichage |
+|---|---|
+| **Mode** (altitude) | Uniquement les modes communs à **tous** les éléments sélectionnés (ex. un drone accepte AMSL/AGL/iAGL, un avion ou un hélicoptère AMSL/iAGL, un waypoint AGL/AMSL — le sélecteur ne propose que l'intersection) |
+| **Altitude** | Toujours |
+| **Vitesse** (unité km/h · m/s · kt au choix) | Toujours |
+| **Recouvrement latéral / frontal** | Uniquement si **tous** les éléments sélectionnés sont des zones de couverture (polygone, corridor ou trajectoire figée) |
+| **Largeur** (du corridor) | Uniquement si **tous** les éléments sélectionnés sont des corridors |
+| **Virage** (Stop / Fluide) | Toujours — y compris pour un waypoint isolé, qui a aussi un comportement de virage |
+| **Rayon de virage** | Zones de couverture uniquement |
+| **Tol. AGL** | Zones de couverture uniquement |
+| **Photos virages** (Oui/Non) | Zones de couverture uniquement |
+| **Zone stricte** (Oui/Non) | Zones de couverture uniquement |
+
+<Note>
+  Le **capteur** ne fait pas partie de l'édition multiple : il reste un réglage propre à chaque zone, à régler individuellement — voir [Régler la couverture : capteur, altitude/GSD et recouvrement](/fr/planification/couverture-et-capteur).
+</Note>
+
+## Réglages d'un waypoint isolé
+
+Un waypoint posé seul (sans polygone ni corridor associé) n'a pas de fauchée à couvrir : quand il est l'élément actif, l'onglet **Paramètres** n'affiche donc que quatre réglages, sous un groupe **Waypoint** dédié — aucun champ de couverture (capteur, recouvrement, buffer…) n'apparaît pour ce type d'élément.
+
+| Réglage | Détail |
+|---|---|
+| **Mode** | Bascule à deux positions seulement : **AGL** (hauteur au-dessus du sol sous le point) ou **AMSL** (altitude absolue). Le **iAGL** n'est volontairement pas proposé ici — ce mode veut dire « suivre le profil de terrain le long d'une bande », ce qui n'a pas de sens pour un point unique. |
+| **Altitude** | La hauteur ou l'altitude du point, selon le mode choisi juste au-dessus. |
+| **Vitesse** | Le même champ (avec le même sélecteur d'unité km/h · m/s · kt) que le groupe Vol des zones de couverture. |
+| **Virage** | Le comportement de l'aéronef **au** point : **Stop & turn** (arrêt complet puis reprise) ou **Fluide** (le trajet continue sans marquer de pause). |
+
+## Copier/coller les attributs
+
+Pour reporter les réglages d'un élément (altitude, vitesse, recouvrements, virages…) sur un ou plusieurs autres sans les ressaisir à la main :
+
+<Steps>
+  <Step title="Copier la source">
+    Clic droit sur l'élément qui porte les réglages à dupliquer, dans la liste des éléments du panneau gauche, puis **Copier** (ou **Ctrl+C** avec l'élément sélectionné).
+  </Step>
+  <Step title="Choisir la ou les cibles">
+    Clic droit sur l'élément destinataire — ou sur une multi-sélection (Ctrl-clic / Maj-clic) pour appliquer le collage à plusieurs éléments d'un coup.
+  </Step>
+  <Step title="Coller les attributs">
+    Choisissez **Coller les attributs…** dans le menu contextuel (ou **Alt+V** au clavier). Cette entrée n'apparaît que si un élément a déjà été copié et que la cible n'est pas l'élément source lui-même.
+  </Step>
+</Steps>
+
+La fenêtre **Coller les attributs** liste, en cases à cocher regroupées par section (**Vol**, **Couverture**, **Trajectoire**, **Terrain**), les réglages qui peuvent être reportés. Toutes les cases sont cochées par défaut à l'ouverture ; un lien **Tout cocher / Tout décocher** bascule l'ensemble d'un coup. **Valider** applique en une seule action, annulable d'un coup de Ctrl+Z, tous les attributs cochés à toutes les cibles.
+
+<Note>
+  Seuls les attributs applicables **à la fois** à la source **et** à toutes les cibles sont proposés — c'est une intersection, pas une simple liste fixe. Un recouvrement, un rayon de virage ou une tolérance AGL n'a par exemple aucun sens sur un waypoint isolé et n'apparaît donc jamais si l'une des cibles en est un ; à l'inverse, une largeur de corridor ne s'affiche que si la source et toutes les cibles sont des corridors. Si l'intersection est vide, la fenêtre l'indique explicitement plutôt que d'afficher une liste vide sans explication.
+</Note>
+
+<Tip>
+  Le même mécanisme existe au niveau du **vol**, mais pas par clic droit sur la pastille en haut du globe : sélectionnez la ligne ou le chip du vol source puis **Ctrl+C** (**Ctrl+X** pour couper), sélectionnez le ou les vols destinataires, puis clic droit **hors élément** dans la liste des éléments du panneau gauche → **Coller les attributs du vol…** (ou **Alt+V** avec un vol sélectionné). Tant qu'aucun vol n'a été copié, cette entrée reste désactivée. Cette variante ne propose pas les réglages de zone mais les réglages de **décollage** (vitesse de démarrage, vitesse de transit, offset d'altitude, retour automatique et son altitude) et l'**aéronef** du vol. Voir [Créer et organiser les vols](/fr/mission/vols-et-appareils) pour la sélection des vols.
+</Tip>
+
+## Le badge de validation de la mission
+
+Une pastille de couleur, à l'extrémité droite de la barre de statut (bas du globe), résume l'état de validation de la mission :
+
+| Couleur | Signification |
+|---|---|
+| **Verte** | Aucun problème détecté. |
+| **Ambre / jaune** | Un ou plusieurs avertissements — la mission peut être calculée, mais un point mérite attention (contour pas explicitement fermé, vitesse dépassant le maximum de l'appareil, charge utile proche du maximum…). |
+| **Orange** | Une ou plusieurs erreurs bloquantes. Il n'y a pas de pastille rouge : la sévérité la plus grave s'affiche dans un orange franc. |
+
+Cliquez la pastille pour ouvrir un panneau qui détaille chaque problème actif, avec sa propre pastille de sévérité et son message. Cliquez ailleurs ou appuyez sur **Échap** pour le refermer.
+
+Les contrôles couvrent notamment :
+
+| Catégorie | Ce qui est vérifié |
+|---|---|
+| **Contour de la zone** | Le polygone doit avoir au moins 3 sommets, une aire non nulle, et ne pas se recouper lui-même (« nœud papillon »). Un contour non explicitement refermé remonte comme avertissement mais ne bloque pas le calcul (Helix le referme automatiquement). |
+| **Capteur / Aéronef** | Un capteur et un aéronef doivent être choisis pour la zone. |
+| **Altitude** | L'altitude de vol doit être strictement positive et au moins égale à 50 m. |
+| **Recouvrement** | Le recouvrement latéral et le recouvrement avant doivent rester entre 0 et 99 %. |
+| **Vitesse** | La vitesse de croisière doit rester dans l'enveloppe de vol (minimum/maximum) de l'aéronef choisi ; un avertissement séparé signale un risque de flou de bougé si la vitesse combinée au recouvrement avant dépasse la cadence de déclenchement du capteur. |
+| **Charge utile** | Le poids cumulé du capteur (et des marqueurs GCP embarqués, le cas échéant) est comparé à la charge utile maximale déclarée pour l'aéronef — avertissement en dessous de 10 % de marge, erreur au-delà du maximum. |
+| **Garde au sol** | Une fois une trajectoire calculée, chaque point de la mission est comparé à une garde minimale au-dessus du terrain et des obstructions déclarées. Le plancher dépend du type d'aéronef (le plus exigeant pour un avion, le plus permissif pour un drone) et inclut une marge liée à la précision du modèle de terrain utilisé. |
+
+<Warning>
+  Le badge ne s'affiche pas du tout tant qu'**aucune validation n'a encore été exécutée** : tant que rien n'a déclenché le contrôle, la pastille reste absente en permanence — ce n'est pas une confirmation que tout est valide. À vérifier en priorité avant de s'appuyer sur cette section : au moment de la rédaction, aucun déclenchement automatique du contrôle (au chargement d'une mission, après un calcul de trajectoire, etc.) n'a été retrouvé dans le code de l'application. Si la pastille n'apparaît jamais dans vos essais, ce n'est probablement pas un simple problème de latence.
+</Warning>
+
+## Voir aussi
+
+- [Naviguer et sélectionner sur le globe](/fr/globe/navigation-et-selection)
+- [Régler la couverture : capteur, altitude/GSD et recouvrement](/fr/planification/couverture-et-capteur)
+- [Choisir le mode d'altitude](/fr/planification/mode-altitude)
+- [Modifier une zone après le tracé](/fr/mission/editer-une-zone)
+- [Créer et organiser les vols](/fr/mission/vols-et-appareils)

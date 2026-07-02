@@ -1,0 +1,134 @@
+---
+title: "Créer et organiser les vols"
+description: "Assistant de création, gestion des vols et choix de l'aéronef."
+---
+
+# Créer et organiser les vols
+
+Une **mission** Helix Flight Planner peut contenir plusieurs **vols** : chaque vol porte un aéronef et regroupe une ou plusieurs zones à survoler (polygones, corridors). Cette page couvre l'assistant de création de mission, l'import d'une mission existante, puis tout ce qui concerne le vol lui-même — sa création, sa gestion au quotidien depuis la barre du globe, le choix de l'aéronef et les paramètres de décollage.
+
+## Créer une mission
+
+Depuis le tableau de bord, le bouton **+ Nouvelle mission** ouvre un assistant en deux étapes :
+
+<Steps>
+  <Step title="Informations">
+    Saisissez le nom de la mission — c'est le seul champ requis pour passer à l'étape suivante.
+  </Step>
+  <Step title="Lieu (optionnel)">
+    Pré-centrez le globe sur un lieu, de trois façons possibles :
+    - **Recherche par nom** — tapez un lieu (ville, montagne, adresse) ; les résultats s'affichent au fil de la frappe.
+    - **Latitude/longitude directe** — saisissez des coordonnées (ex. `42.0, 9.0`) : elles sont reconnues immédiatement, sans recherche réseau.
+    - **Récents** — tant que le champ contient moins de deux caractères, les derniers lieux choisis (toutes missions confondues, jusqu'à 6) apparaissent en raccourci ; cliquer dessus crée la mission immédiatement, centrée sur ce lieu.
+  </Step>
+</Steps>
+
+Cliquez sur **Créer la mission**. Si aucun lieu n'a été choisi, la mission s'ouvre sans pré-centrage particulier.
+
+## Importer une mission existante (.helix)
+
+Le bouton **Importer une mission** du tableau de bord ouvre un sélecteur limité aux fichiers `.helix`. Le comportement dépend du contenu du fichier :
+
+| Type de fichier | Comportement à l'import |
+|---|---|
+| **Projet Flight Planner complet** (exporté depuis l'application, toutes ses zones/vols) | Une nouvelle mission est créée avec tous les vols restaurés. Pour chaque vol, **une seule zone est conservée** : celle qui était active au moment de l'export si c'est le vol actif, sinon la première zone calculée du vol (à défaut sa première zone) — si un vol contenait plusieurs zones (polygone + corridor, par exemple), seule l'une d'elles survit à l'export/réimport, sans avertissement. La zone conservée reste **verrouillée** (trajectoire telle que calculée, et éventuellement éditée point par point, au moment de l'export) si elle l'était déjà, sinon elle est restaurée avec sa géométrie et ses paramètres puis **recalculée automatiquement** dès que le vol est activé. |
+| **Fichier `.helix` générique** (produit par un autre système, sans la structure de projet complet) | Une mission est créée mais reste **vide** (aucun vol) : ce format n'est pas relu par l'application au chargement de la mission, seuls les projets complets ci-dessus restaurent des vols et des zones. |
+
+<Tip>
+  Pour tout ce qui concerne la liste des missions au tableau de bord — recherche, tri, renommage, suppression — voir [Gérer ses missions](/fr/dashboard/missions).
+</Tip>
+
+## Qu'est-ce qu'un vol ?
+
+Un **vol** est le conteneur qui porte :
+
+- un **aéronef** (avion, hélicoptère ou drone),
+- une ou plusieurs **zones** à survoler (polygone ou corridor), chacune avec son propre **capteur**.
+
+Une mission peut ainsi combiner plusieurs vols avec des aéronefs différents — utile, par exemple, pour planifier un relevé photogrammétrique en drone et un passage LiDAR en hélicoptère dans la même mission.
+
+## Créer un vol
+
+<Steps>
+  <Step title="Cliquer sur « + Vol »">
+    Le bouton **+ Vol**, à droite de la barre de vols en haut du globe, crée un vol vide et ouvre aussitôt la fenêtre **Configurer le vol**.
+  </Step>
+  <Step title="Nommer le vol et choisir l'aéronef">
+    Le nom est pré-rempli (`Vol 1`, `Vol 2`, …) et modifiable. L'aéronef se choisit via le même sélecteur que dans le reste de l'application — voir la section **Choisir l'aéronef d'un vol** plus bas. Le vol hérite par défaut de l'aéronef du vol actif au moment de la création ; vous pouvez le confirmer ou le changer ici.
+  </Step>
+  <Step title="Valider">
+    Le bouton **Valider** reste désactivé tant qu'aucun aéronef n'est choisi. Le capteur ne se règle pas ici : il se choisit ensuite sur chaque zone (polygone ou corridor) rattachée au vol.
+  </Step>
+</Steps>
+
+<Note>
+  Cliquer sur **Annuler** dans cette fenêtre supprime le vol qui venait d'être créé — aucun vol vide n'est laissé derrière.
+</Note>
+
+Un vol est un conteneur vide au départ : tracez un polygone ou un corridor (ou posez un waypoint) pour lui donner sa première zone.
+
+## Gérer les vols depuis la barre de vols
+
+Chaque vol apparaît sous forme de **pastille** (chip) numérotée dans la barre en haut du globe, avec un point de couleur qui lui reste attaché même si l'ordre des vols change.
+
+| Action | Effet |
+|---|---|
+| **Clic simple** | Active le vol (le rend courant dans l'éditeur / le globe). Cliquer à nouveau sur le vol déjà actif le désélectionne — plus aucun vol actif, outils de dessin grisés. |
+| **Ctrl/Cmd-clic** ou **Maj-clic** | Ajoute le vol à une multi-sélection (plage continue avec Maj), sans changer le vol actif dans le globe. Utile pour les actions groupées ci-dessous. |
+| **Double-clic** | Centre et recadre la caméra sur toutes les zones du vol (recul ×2 pour garder de la marge autour). |
+| **Glisser-déposer** | Réordonne les vols horizontalement dans la barre. |
+| **Icône œil** | Masque ou affiche les bandes du vol sur le globe, sans le supprimer. Si le vol cliqué fait partie d'une multi-sélection, l'action s'applique à tous les vols sélectionnés. |
+| **Clic droit** | Ouvre le menu contextuel du vol (détail ci-dessous). |
+
+<Tip>
+  Au-delà de 8 vols, un bouton flèche apparaît à droite de la barre pour dérouler une grille reprenant tous les vols supplémentaires.
+</Tip>
+
+### Menu contextuel d'un vol
+
+| Entrée | Effet |
+|---|---|
+| **Paramètres du vol…** | Ouvre les paramètres de décollage du vol (voir la section **Paramètres de décollage du vol** plus bas). |
+| **Renommer** | Édite le nom directement dans la pastille (Entrée pour valider, Échap pour annuler). |
+| **Choisir un appareil** / **Changer l'appareil** | Ouvre le sélecteur d'aéronef pour ce vol. |
+| **Dupliquer le vol** | Crée une copie du vol (aéronef, zones, paramètres) qui devient le vol actif. |
+| **Supprimer le vol** (ou **Supprimer *N* vols** en multi-sélection) | Supprime le ou les vols sélectionnés ainsi que leurs zones et trajectoires, après confirmation. |
+
+<Warning>
+  La suppression d'un vol est irréversible : ses zones et ses trajectoires calculées disparaissent avec lui.
+</Warning>
+
+## Choisir l'aéronef d'un vol
+
+Le sélecteur d'aéronef liste le catalogue complet, avec :
+
+- une **barre de recherche** (nom, indicatif, type d'appareil),
+- des **filtres par catégorie** — Tous / Avion / Hélico / Drone, chacun affichant le nombre d'appareils disponibles,
+- une **étoile favori** sur chaque ligne pour épingler les appareils fréquemment utilisés en tête de liste,
+- l'aéronef actuellement sélectionné mis en évidence et remonté en tête de liste.
+
+<Note>
+  Certaines catégories d'aéronef peuvent apparaître verrouillées (icône cadenas) si votre formule d'abonnement ne les inclut pas — elles restent visibles mais non sélectionnables, avec une infobulle renvoyant vers l'offre qui les débloque.
+</Note>
+
+<Warning>
+  Changer un vol d'un aéronef **drone** vers un **avion** ou un **hélicoptère** fait perdre le découpage multi-vol (répartition automatique en plusieurs vols par autonomie) éventuellement actif sur ce vol — ce mode ne s'applique qu'aux drones. L'application demande confirmation avant d'appliquer ce changement.
+</Warning>
+
+## Paramètres de décollage du vol
+
+Le clic droit **Paramètres du vol…** d'une pastille ouvre les réglages de décollage du vol actif (ou de tous les vols sélectionnés, en édition groupée) :
+
+| Paramètre | Rôle |
+|---|---|
+| **Vitesse de démarrage** | Vitesse de montée vers le premier point de cheminement, et vitesse des segments de transit / virage non photographiques. Vide = reprend la vitesse de croisière générale du vol. |
+| **Offset d'altitude de décollage** | Correction appliquée à l'élévation de référence du point de décollage (utile quand le sol réel diffère du modèle numérique de terrain — plateforme, toit…). Laissé vide, l'élévation du MNT au point de décollage est utilisée telle quelle. Ce réglage ne décale pas le plan de vol, qui reste exporté en altitude absolue. |
+| **Altitude RTH** | Altitude de retour au point de décollage imposée en cas de *Return To Home*, relative au décollage. Désactivée par défaut — dans ce cas, le préréglage RTH configuré sur la télécommande de l'opérateur est conservé. |
+
+<Note>
+  Ces trois réglages concernent les vols **drone** et **hélicoptère** ; ils ne s'affichent pas pour un vol en **avion**.
+</Note>
+
+<Tip>
+  Quand plusieurs vols sont sélectionnés (Ctrl/Maj-clic sur les pastilles), toute modification dans cette fenêtre s'applique à l'ensemble des vols sélectionnés.
+</Tip>

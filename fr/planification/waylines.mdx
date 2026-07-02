@@ -1,0 +1,132 @@
+---
+title: "Figer une trajectoire (wayline) et éditer ses waypoints"
+description: "Convertir un polygone calculé en trajectoire figée éditable point par point."
+---
+
+# Figer une trajectoire (wayline) et éditer ses waypoints
+
+Une fois qu'un polygone ou un corridor a été **calculé** — ses bandes de vol existent — vous pouvez geler ce résultat en une **trajectoire figée** (wayline) : chaque point devient un waypoint indépendant, déplaçable, réglable en altitude et supprimable un par un, sans plus jamais redéclencher de calcul de couverture automatique. Pratique pour une retouche fine juste avant l'export, ou pour corriger localement un point sans rouvrir tous les réglages de couverture.
+
+<CardGroup cols={2}>
+  <Card title="Convertir en wayline" icon="route">
+    Clic droit sur un élément déjà calculé — gèle la trajectoire courante en waypoints éditables.
+  </Card>
+  <Card title="Éditeur d'altitude par waypoint" icon="mountain">
+    Sélectionnez un point sur la trajectoire pour régler son altitude en AGL ou en AMSL.
+  </Card>
+  <Card title="Déplacer / supprimer un waypoint" icon="move">
+    Glissez un waypoint horizontalement, ou clic droit pour le supprimer.
+  </Card>
+  <Card title="Restaurer le polygone" icon="rotate-ccw">
+    Revenez à la géométrie source éditable et relancez un calcul complet.
+  </Card>
+</CardGroup>
+
+## Convertir un élément en wayline
+
+Dans la liste des éléments du vol actif (panneau de gauche), faites un **clic droit** sur un polygone ou un corridor **déjà calculé** (au moins une bande générée), puis choisissez **Convertir en wayline** dans le menu contextuel.
+
+<Note>
+  Cette entrée n'apparaît que pour un polygone ou un corridor qui a déjà produit au moins une bande de vol. Un élément vide, un waypoint isolé, ou une trajectoire déjà figée ne la proposent pas.
+</Note>
+
+Si plusieurs éléments sont sélectionnés à la fois (Ctrl/Maj-clic), l'entrée devient **Convertir la sélection en waylines** : chaque polygone/corridor calculé de la sélection est converti individuellement ; les éléments non applicables (waypoints, waylines déjà figées) sont simplement ignorés.
+
+La conversion :
+
+- **Gèle le résultat affiché à l'instant T** — bandes, altitudes, virages — en une suite de **waypoints indépendants**, chacun éditable un par un.
+- **Efface le contour** du polygone/corridor : il n'y a plus d'AOI à redimensionner, seuls les waypoints de la trajectoire restent visibles sur le globe.
+- **Coupe tout recalcul automatique** pour cet élément : déplacer, monter/descendre ou supprimer un waypoint ne redéclenche jamais un calcul de couverture — seule la trajectoire elle-même bouge.
+- Remplace les réglages de couverture (capteur, recouvrement, mode d'altitude, direction de balayage…) du panneau **Paramètres** par l'éditeur d'altitude par waypoint décrit plus bas.
+
+<Warning>
+  L'outil **Découpe en vols…** (multi-vol par durée/distance) et l'outil **ciseaux** ne s'appliquent plus à un élément converti — les deux exigent des bandes rééditables par calcul, qui n'existent plus une fois la trajectoire figée. Découpez d'abord si besoin, **puis** convertissez en wayline. Voir [Découper une zone calculée en plusieurs vols](/fr/planification/decoupe-multi-vol) et [Modifier une zone après le tracé](/fr/mission/editer-une-zone).
+</Warning>
+
+## L'éditeur d'altitude par waypoint
+
+Une fois l'élément converti, le panneau **Paramètres** (à droite) bascule entièrement vers un éditeur dédié à la trajectoire figée.
+
+### Virage — réglage global de la trajectoire
+
+En tête du panneau, le champ **Virage** reste réglable : **Stop & turn** (arrêt au point puis reprise) ou **Fluide** (trajectoire courbée sans arrêt). Le changement s'applique instantanément à **tous les virages** de la trajectoire, sans aucun recalcul — chaque jonction bascule simplement entre les deux tracés déjà figés au moment de la conversion (l'arc lissé mémorisé, ou ses deux seules extrémités en mode Stop & turn).
+
+<Note>
+  C'est le **seul** réglage qui reste modifiable globalement une fois la trajectoire figée. La vitesse et la tolérance AGL, elles, ne sont plus proposées sur ce panneau — elles ne réapparaissent que si vous sélectionnez **plusieurs éléments à la fois** (dont cette wayline) via l'édition multiple.
+</Note>
+
+### Sélectionner un waypoint
+
+Chaque waypoint de la trajectoire se matérialise sur le globe par une sphère au sol reliée par un montant vertical jusqu'à son altitude de vol. Cliquez sur la sphère (ou sur le montant) pour sélectionner le point — un simple clic suffit, pas besoin de glisser.
+
+<Tip>
+  Si la trajectoire n'est pas encore l'élément **actif**, un premier clic sur un de ses waypoints l'active seulement (comme pour un polygone) ; la sélection et le glisser deviennent possibles au geste suivant. Voir [Modifier une zone après le tracé](/fr/mission/editer-une-zone) pour cette règle « activer puis manipuler », commune à tous les éléments du globe.
+</Tip>
+
+Une fois un waypoint sélectionné, le panneau Paramètres affiche :
+
+| Champ | Contenu |
+|---|---|
+| **Position** | Latitude / longitude du point (lecture seule). |
+| **Terrain** | Altitude du sol échantillonnée sous le point (lecture seule). |
+| **Référence** | Bascule **AGL** / **AMSL**. |
+| **Altitude** | L'altitude éditable, dans l'unité de la référence choisie (mètres). |
+
+Tant qu'aucun waypoint n'est sélectionné, le panneau affiche une invite à en choisir un sur le globe.
+
+### AGL ou AMSL — et la bascule entre les deux
+
+- **AGL** — vous réglez la hauteur au-dessus du terrain échantillonné sous le point.
+- **AMSL** — vous réglez l'altitude absolue au-dessus du niveau de la mer.
+
+Basculer d'une référence à l'autre **conserve l'altitude physique de vol** (l'AMSL) : le champ change juste de convention d'affichage et l'AGL est recalculé par rapport au terrain courant — le waypoint ne saute pas d'un mode à l'autre.
+
+Toute saisie dans le champ **Altitude** est propagée après une courte pause, ou immédiatement à la validation (Entrée) ou en quittant le champ : le waypoint se déplace verticalement et les **transits reliant les bandes voisines s'ajustent aussitôt** — édition entièrement côté client, sans recalcul de couverture.
+
+## Déplacer un waypoint (glisser horizontal)
+
+Cliquez-glissez la sphère d'un waypoint de la trajectoire pour le repositionner horizontalement (latitude/longitude) :
+
+- L'**altitude de vol reste constante** pendant le glisser — le sommet du montant ne bouge pas verticalement.
+- Au relâchement, le **terrain est rééchantillonné** sous la nouvelle position et la **clairance sol (AGL) est recalculée** en conséquence — c'est elle qui varie, pas l'altitude de vol.
+- Les transits touchant ce waypoint suivent le déplacement en temps réel pendant le glisser.
+
+<Tip>
+  Ce glisser ne déplace **qu'un seul point à la fois** : à la différence d'un sommet de polygone/corridor ou d'un waypoint isolé, un waypoint de wayline ne peut pas être inclus dans une translation de groupe ni translaté en bloc avec Alt — voir [Modifier une zone après le tracé](/fr/mission/editer-une-zone) pour ces modificateurs sur les autres éléments du globe.
+</Tip>
+
+## Supprimer un waypoint ou toute la bande
+
+Faites un **clic droit** sur un waypoint de la trajectoire pour ouvrir son menu contextuel :
+
+| Entrée | Effet |
+|---|---|
+| **Supprimer le waypoint** | Retire ce seul point de la bande. |
+| **Supprimer la bande** | Retire immédiatement toute la bande à laquelle appartient ce waypoint. |
+
+<Note>
+  Si une bande ne compte plus que deux waypoints, **Supprimer le waypoint** retire la bande entière plutôt que de la laisser dégénérer à un seul point.
+</Note>
+
+Les deux suppressions s'appliquent immédiatement, sans recalcul : les transits voisins s'ajustent aussitôt à la nouvelle extrémité de bande.
+
+## Restaurer le polygone ou le corridor source
+
+Faites un **clic droit** sur l'élément figé dans la liste des éléments, puis choisissez **Restaurer le polygone** (ou **Restaurer le corridor**, selon la géométrie d'origine). Une confirmation s'affiche :
+
+<Warning>
+  La trajectoire wayline et **toutes ses éditions manuelles** (waypoints déplacés, altitudes modifiées, waypoints supprimés) sont **écrasées** en confirmant. L'élément redevient un polygone/corridor éditable avec ses réglages de couverture d'origine (capteur, recouvrement, mode d'altitude…), et un calcul complet repart automatiquement.
+</Warning>
+
+C'est l'opération inverse de la conversion : utile pour revenir en arrière après une conversion exploratoire, ou pour reprendre les réglages de couverture globaux après avoir tenté une retouche point par point qui ne convient finalement pas.
+
+<Note>
+  Cette entrée ne s'affiche que pour une trajectoire obtenue via **Convertir en wayline** (le contour source est mémorisé au moment de la conversion). Un waypoint posé isolément sur le globe, sans passer par cette conversion, ne propose pas de restauration.
+</Note>
+
+## Voir aussi
+
+- [Modifier une zone après le tracé](/fr/mission/editer-une-zone)
+- [Modes d'altitude](/fr/planification/mode-altitude)
+- [Découper une zone calculée en plusieurs vols](/fr/planification/decoupe-multi-vol)
+- [Cap de balayage et comportement en virage](/fr/planification/direction-et-virages)

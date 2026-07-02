@@ -1,0 +1,104 @@
+---
+title: "Licence et activation du poste"
+description: "Comprendre l'activation automatique de la licence sur chaque machine et gérer son poste."
+---
+
+Dans Helix Flight Planner, la licence est entièrement rattachée à votre **compte Helix Aero** : il n'y a aucune clé de licence à saisir dans l'application. À chaque connexion, le logiciel active — ou reconfirme — automatiquement le poste (l'ordinateur) sur lequel vous travaillez, en s'appuyant sur l'abonnement associé à votre compte et à votre organisation.
+
+<Tip>
+  Vous n'avez rien à faire pour « activer » Helix Flight Planner : connectez-vous simplement avec votre email et votre mot de passe, l'activation du poste se déclenche toute seule juste après.
+</Tip>
+
+## Comment fonctionne l'activation automatique
+
+<Steps>
+  <Step title="Connexion au compte">
+    Vous saisissez votre email et votre mot de passe sur l'écran de connexion (ou l'application retrouve automatiquement votre session au démarrage si vous étiez déjà connecté).
+  </Step>
+  <Step title="Activation du poste">
+    Immédiatement après une authentification réussie, l'application demande au portail Helix Aero un siège de licence pour **ce poste précis**. Chaque ordinateur est reconnu par une empreinte propre à la machine — vous n'avez rien à saisir.
+  </Step>
+  <Step title="Session active">
+    Une fois le poste accepté, la session s'ouvre normalement et le tableau de bord apparaît. Ce même processus se répète à chaque connexion, y compris les fois suivantes sur le même poste — c'est ce qui permet au panneau **Réglages → Licence** d'afficher un statut toujours à jour.
+  </Step>
+</Steps>
+
+Si l'activation échoue, la connexion est bloquée et l'application affiche un message précis selon la raison du refus :
+
+| Situation | Message affiché |
+|---|---|
+| **Limite de postes atteinte** — votre licence n'a plus de siège machine disponible (tous vos postes autorisés sont déjà occupés) | *« Limite de postes atteinte. Aucun siège machine disponible — libérez un poste depuis le portail ou contactez votre administrateur. »* |
+| **Connexion Internet requise** — ce poste n'a encore jamais été activé et l'application n'arrive pas à joindre le serveur pour le faire (aucune activation hors ligne possible tant qu'un poste n'a pas été confirmé au moins une fois en ligne) | *« Connexion Internet requise pour activer ce poste. Connectez-vous une première fois en ligne pour enregistrer la machine sur votre licence. »* |
+| **Licence non valide pour ce poste** — le compte n'a pas de licence active, ou la licence a été refusée pour une autre raison définitive | *« Licence non validée pour ce poste. Vérifiez que votre compte dispose d'une licence active, puis réessayez. »* |
+
+<Note>
+  Ce contrôle est volontairement strict : par sécurité, l'application refuse de démarrer une session tant que le poste n'a pas de siège de licence confirmé. Couper la connexion réseau ne permet pas de contourner la vérification sur un poste qui ne l'a encore jamais réussie.
+</Note>
+
+## Le panneau Licence des Réglages
+
+Ouvrez **Réglages → Licence** pour consulter l'état de votre licence sur ce poste.
+
+| Champ | Contenu |
+|---|---|
+| **Statut** | `Active` (licence valide sur ce poste) ou `Inactive`. |
+| **Type de licence** | Le nom du plan associé à votre compte (par exemple *Bundle*). |
+| **Organisation** | L'organisation dont provient votre licence, si votre compte est rattaché à une entreprise. |
+
+## Désactiver ce poste
+
+Le bouton **Désactiver** du panneau Licence libère le siège machine occupé par cet ordinateur, afin de pouvoir l'attribuer à un autre poste sans dépasser le nombre de licences de votre organisation.
+
+<Steps>
+  <Step title="Cliquer sur Désactiver">
+    Un message de confirmation apparaît.
+  </Step>
+  <Step title="Confirmer">
+    Cliquez sur **Confirmer**. Le poste est instantanément désactivé : le siège est libéré côté portail et l'application vous ramène à l'écran de connexion.
+  </Step>
+</Steps>
+
+<Warning>
+  La désactivation est **différente d'une simple déconnexion** (voir ci-dessous) : elle libère réellement un siège de licence auprès du portail, alors qu'une déconnexion classique laisse le poste comptabilisé comme actif. Utilisez **Désactiver** quand vous changez d'ordinateur ou que vous voulez libérer un siège pour un collègue.
+
+  Par mesure anti-abus, le portail impose un court délai avant qu'un poste tout juste désactivé puisse être réactivé. Si vous essayez de vous reconnecter trop vite depuis le même ordinateur, vous pouvez voir apparaître le même message *« Limite de postes atteinte »* même si d'autres sièges de votre licence sont libres — patientez quelques instants puis réessayez.
+</Warning>
+
+## Simple déconnexion
+
+Le bouton **Se déconnecter** de l'onglet **Réglages → Compte** ferme uniquement votre session locale (vous revenez à l'écran de connexion). Contrairement à **Désactiver**, il **ne libère pas** le siège machine : la prochaine fois que vous vous reconnecterez depuis ce même poste, il sera reconnu immédiatement sans consommer de nouveau siège.
+
+En résumé :
+
+| Action | Où | Effet sur le siège machine |
+|---|---|---|
+| **Se déconnecter** | Réglages → Compte | Aucun — le poste reste rattaché à votre licence. |
+| **Désactiver** | Réglages → Licence | Libère le siège — ce poste devra être ré-activé (et un siège redevient disponible pour un autre appareil). |
+
+## Fonctionnalités réservées à certains plans
+
+Le contrôle d'accès par plan n'est pas uniforme selon les fonctionnalités : certaines restent aujourd'hui accessibles à tous les comptes, d'autres affichent une restriction lorsque votre licence ne les couvre pas — et pas toujours sous la même forme. Le tableau ci-dessous décrit le comportement réel de chaque fonctionnalité.
+
+| Fonctionnalité | Comportement observé |
+|---|---|
+| Export PDF | Aucune vérification de licence : l'export PDF est accessible quel que soit votre plan. |
+| Comparateur de scénarios | Aucune vérification de licence : cette fonctionnalité, autrefois réservée, est désormais accessible à tous les comptes. |
+| Cap optimal (optimiseur de cap) | Fonctionnalité réservée : le mécanisme prévu affiche un badge **Premium** avec infobulle indiquant le plan requis lorsque la licence ne couvre pas la fonctionnalité. Ce déclencheur n'apparaît toutefois dans aucun écran de l'application à ce jour ; son affichage effectif pour l'utilisateur n'est pas garanti dans cette version. |
+| Envoi vers le FMS | Aucun badge préalable : le bouton d'envoi reste visible pour tous ; si votre licence ne couvre pas la publication FMS, un message d'erreur apparaît **après la tentative d'envoi** : *« Votre licence ne permet pas la publication FMS. »* |
+| Mode corridor | Aucune vérification de licence : le mode corridor est accessible quel que soit votre plan. |
+| Aéronefs de type Drone | Fonctionnalité réservée : dans le sélecteur d'aéronef, les types de drone non couverts par votre formule apparaissent verrouillés (icône cadenas), avec l'infobulle *« Non inclus dans votre formule — disponible avec l'offre Bundle. »* |
+
+<Note>
+  Si vous pensez qu'une fonctionnalité devrait être disponible sur votre compte, contactez votre administrateur d'organisation ou le support Helix Aero pour mettre à niveau votre licence.
+</Note>
+
+## Mode hors ligne
+
+Helix Flight Planner reste utilisable sans connexion Internet, avec un **délai de grâce de 7 jours** après la dernière vérification de licence réussie :
+
+- Tant que la dernière vérification en ligne remonte à **moins de 7 jours**, l'application démarre normalement hors ligne et votre statut de licence reste valide.
+- Passé ce délai de **7 jours** sans vérification réussie, l'application exige une reconnexion en ligne pour continuer : reconnectez-vous dès que possible pour revalider votre licence et repartir pour une nouvelle période de grâce.
+
+<Tip>
+  Pensez à vous connecter au moins une fois en ligne avant un déplacement prolongé sans réseau, afin de repartir avec un délai de grâce complet de 7 jours.
+</Tip>

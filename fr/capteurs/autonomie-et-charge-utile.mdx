@@ -1,0 +1,64 @@
+---
+title: "Autonomie de vol et charge utile"
+description: "Estimation du temps de vol utilisable et vérification du poids embarqué."
+---
+
+# Autonomie de vol et charge utile
+
+Deux contrôles distincts s'appuient sur les caractéristiques déclarées de l'**appareil** (drone, avion ou hélicoptère) choisi pour un vol : une **estimation du temps de vol réellement utilisable**, qui sert notamment à pré-remplir la découpe en plusieurs vols, et une **vérification du poids embarqué** par rapport à la charge utile maximale de l'appareil.
+
+<CardGroup cols={2}>
+  <Card title="Autonomie estimée" icon="battery">
+    L'autonomie constructeur déclarée sur la fiche de l'appareil, réduite d'une réserve de sécurité, donne un budget de vol par défaut — utilisé par le bouton **Auto** de la découpe multi-vol.
+  </Card>
+  <Card title="Charge utile" icon="scale">
+    Le poids total embarqué (repères GCP transportés, et poids du capteur quand il est déclaré) est comparé à la charge utile maximale de l'appareil.
+  </Card>
+</CardGroup>
+
+## Autonomie de vol estimée
+
+La fiche d'un appareil (onglet **Appareils** du catalogue) porte un champ **Autonomie (min)** — la durée de vol maximale annoncée par le constructeur, sur batterie neuve, sans marge. Voir [Catalogues des capteurs et des appareils](/fr/dashboard/catalogue-capteurs-appareils#fiche-détail-dun-appareil) pour l'ensemble des champs de la fiche appareil.
+
+Helix n'utilise jamais cette valeur brute comme budget de vol : elle est réduite d'une **réserve de sécurité par défaut de 15 %**, pour couvrir le vent, la météo, une batterie vieillissante ou tout aléa qui grignote l'autonomie réelle. Le budget retenu est donc :
+
+```
+autonomie utilisable = autonomie déclarée × (1 − 15 %)
+```
+
+arrondie à la minute entière la plus proche (jamais en dessous de 1 minute). Par exemple, un appareil qui déclare **20 min** d'autonomie donne un budget utilisable de **17 min**.
+
+<Note>
+  Ce modèle est **forfaitaire** : il ne tient pas encore compte du poids réel du capteur embarqué sur ce vol précis, ni de la vitesse de croisière choisie — seule l'autonomie déclarée de l'appareil entre en jeu, avec la même réserve de 15 % pour tous les types d'appareil. Si la fiche de l'appareil ne renseigne aucune autonomie, aucune estimation n'est disponible.
+</Note>
+
+### Où cette estimation est utilisée
+
+L'autonomie estimée sert aujourd'hui à pré-remplir le bouton **Auto** du panneau **Découpe multi-vol** (métrique Durée) : voir [Découper une zone calculée en plusieurs vols](/fr/planification/decoupe-multi-vol#régler-le-budget-par-vol) pour la procédure complète. En résumé :
+
+- Le bouton **Auto** reprend cette autonomie utilisable comme durée maximale par vol, et reste actif tant que vous ne saisissez pas vous-même une valeur.
+- Si l'appareil du vol ne déclare pas d'autonomie, le bouton reste grisé (« Estimation indisponible ») et il faut saisir une durée manuellement.
+- Une durée saisie à la main est utilisée **telle quelle** comme plafond par vol — la réserve de 15 % ne s'applique qu'à la valeur proposée par **Auto**, jamais en plus d'une saisie manuelle.
+
+## Vérification de la charge utile
+
+La fiche d'un appareil porte aussi un champ **Charge utile max (kg)** — le poids maximal que l'appareil peut transporter en plus de sa propre masse. Lors de la validation de la mission, Helix compare ce plafond au poids total embarqué sur le vol, composé :
+
+- du poids des **repères GCP** transportés à bord (quand des repères au sol sont associés au vol) — chaque repère compte pour un poids forfaitaire par défaut d'environ **0,4 kg**, représentatif d'une cible pliable premium type AeroPoint (une valeur volontairement large qui couvre aussi des cibles peintes plus légères) ;
+- du poids du **capteur** de la zone active, quand la fiche du capteur en déclare un (le catalogue de capteurs actuel n'expose pas encore ce champ pour la plupart des modèles — en pratique, le poids pris en compte aujourd'hui reflète surtout les repères GCP transportés).
+
+Selon le résultat de cette comparaison :
+
+| Situation | Sévérité |
+|---|---|
+| L'appareil ne déclare aucune charge utile maximale | **Info** — le contrôle n'est pas appliqué, faute de limite connue. |
+| Poids total à moins de 10 % de la limite déclarée | **Avertissement** — proche de la limite, aucune marge pour un imprévu. |
+| Poids total au-delà de la limite déclarée | **Erreur** — dépassement de la charge utile maximale. |
+
+Ce contrôle alimente les mêmes indicateurs de validation que les autres règles de la mission (contour de zone, vitesse, garde au sol…) — voir [Édition multiple, attributs et validation de la mission](/fr/planification/edition-multiple-et-validation#le-badge-de-validation-de-la-mission) pour le détail du badge de validation, ses couleurs, et une réserve importante sur les conditions de son déclenchement actuel.
+
+## Voir aussi
+
+- [Découper une zone calculée en plusieurs vols](/fr/planification/decoupe-multi-vol) — utilisation du bouton **Auto**.
+- [Édition multiple, attributs et validation de la mission](/fr/planification/edition-multiple-et-validation) — le badge de validation de la mission.
+- [Catalogues des capteurs et des appareils](/fr/dashboard/catalogue-capteurs-appareils) — déclarer l'autonomie et la charge utile max d'un appareil.

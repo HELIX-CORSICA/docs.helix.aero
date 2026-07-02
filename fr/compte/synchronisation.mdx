@@ -1,0 +1,120 @@
+---
+title: "Synchronisation entre appareils et mode hors-ligne"
+description: "Comment les missions, catalogues et données restent à jour sur plusieurs postes."
+---
+
+Helix Flight Planner fonctionne d'abord **en local** : vos projets, vos missions, vos catalogues de capteurs/aéronefs et la base d'aéroports vivent sur votre poste et restent utilisables sans connexion Internet. Dès qu'un réseau est disponible, l'application synchronise discrètement ces données avec votre compte Helix Aero — en arrière-plan, sans jamais bloquer votre travail.
+
+Cette page décrit les indicateurs visibles à l'écran, ce qui se synchronise automatiquement et à quel moment, ainsi que le comportement de l'application lorsque vous travaillez hors ligne.
+
+<CardGroup cols={2}>
+  <Card title="Projets et missions" icon="cloud-arrow-up">
+    Poussés vers le portail à la connexion et environ 5 secondes après chaque modification.
+  </Card>
+  <Card title="Travail hors ligne" icon="wifi-off">
+    Vos missions, capteurs, aéronefs et projets sont stockés localement et restent pleinement utilisables sans connexion.
+  </Card>
+  <Card title="Catalogue capteurs et aéronefs" icon="camera">
+    Vos capteurs et aéronefs personnalisés suivent votre compte d'un poste à l'autre.
+  </Card>
+  <Card title="Base mondiale des aéroports" icon="map">
+    Utilisée par les NOTAM et l'affichage des aéroports sur le globe, tenue à jour en arrière-plan.
+  </Card>
+</CardGroup>
+
+## Les indicateurs de synchronisation à l'écran
+
+Trois éléments d'interface vous renseignent en permanence sur l'état de la connexion et de la synchronisation.
+
+### La pastille de la barre du haut
+
+Dans la barre supérieure de l'application (tableau de bord comme vue mission), une pastille avec une icône de nuage indique l'état de la synchronisation des projets/missions :
+
+| État | Libellé affiché | Signification |
+|---|---|---|
+| En cours | *Synchronisation…* | Un envoi ou une récupération est en cours (icône animée). |
+| À jour | *Synchronisé* ou *Synchronisé · HH:MM* | Tout est à jour ; l'heure de la dernière synchronisation réussie s'affiche dès qu'elle est connue. |
+
+<Note>
+  Cette pastille peut également afficher *Erreur sync* (pastille orange) ou *Hors ligne*, mais ces deux états ne sont pas atteints en pratique aujourd'hui : la synchronisation automatique (à la connexion) tourne toujours en mode silencieux, qui retombe sur l'état « Synchronisé » en cas d'échec plutôt que d'afficher une erreur, et rien dans l'application ne bascule aujourd'hui cette pastille sur « Hors ligne » (la connectivité réseau est reflétée uniquement par le second indicateur, juste à droite). Au quotidien, elle alterne donc seulement entre *Synchronisation…* et *Synchronisé*.
+</Note>
+
+Juste à droite de cette pastille, un second indicateur (point vert ou gris + libellé **En ligne** / **Hors ligne**) reflète l'état brut de votre connexion réseau, indépendamment de l'avancement de la synchronisation elle-même.
+
+### La puce flottante hors ligne
+
+Une petite puce peut apparaître en haut à droite de l'écran, par-dessus n'importe quelle page de l'application. Elle est **masquée en permanence** tant que tout va bien (en ligne et aucune opération en attente) et ne s'affiche que lorsqu'il y a quelque chose à signaler :
+
+| Situation | Libellé affiché | Couleur |
+|---|---|---|
+| Hors ligne | *Hors ligne (N en file)* | Ambre |
+| En ligne, opérations encore en file d'attente de traitement | *En ligne (N en attente)* | Vert |
+
+<Note>
+  L'état hors ligne / en ligne affiché ici reflète la connexion réseau réelle. Le compteur `N` et les variantes *Synchronisation (N)* / *N échec(s) sync* correspondent en revanche à une file d'attente locale qui n'est, à ce jour, **pas alimentée** par les actions courantes de l'application (voir la section « La file d'attente hors ligne » plus bas) : en pratique `N` reste à 0 et ces variantes ne sont pas observées. Ce point est à vérifier/à confirmer plutôt qu'à considérer comme acquis.
+</Note>
+
+### La carte détaillée et le bouton « Synchroniser »
+
+Dans la **vue Mission**, une carte flottante plus détaillée peut s'afficher près du bas de l'écran, juste à gauche du panneau de planification. Elle reprend l'état de synchronisation avec, selon le cas :
+
+- une barre de progression pendant une synchronisation complète des projets/missions ;
+- le nombre d'opérations encore en file d'attente, ou l'heure de la dernière synchronisation réussie ;
+- un bouton **Synchroniser** pour déclencher manuellement l'envoi de la file d'attente (désactivé tant que vous êtes hors ligne ou qu'un envoi est déjà en cours). En pratique, tant que la file d'attente reste vide (voir plus bas), ce bouton n'a rien à envoyer.
+
+Cette carte est conçue pour rester affichée en continu tant que vous êtes hors ligne avec des opérations en attente, ou pendant l'envoi de la file d'attente. En dehors de ces cas, elle apparaît brièvement (quelques secondes) pour confirmer une synchronisation réussie ou signaler un échec, puis se referme d'elle-même.
+
+<Tip>
+  Vous n'avez normalement rien à faire : la synchronisation se déclenche toute seule. Le bouton **Synchroniser** de cette carte est utile si vous voulez forcer un envoi immédiat plutôt que d'attendre le déclenchement automatique.
+</Tip>
+
+## Synchronisation automatique des projets et des missions
+
+Vos projets et missions sont stockés localement en premier lieu, puis synchronisés avec le portail Helix Aero à trois moments précis :
+
+<Steps>
+  <Step title="À la connexion">
+    Juste après une connexion réussie (ou une reconnexion automatique au démarrage), l'application envoie immédiatement toute modification locale en attente, puis effectue une synchronisation complète (récupération + envoi) afin qu'un poste fraîchement connecté retrouve bien tous vos projets et missions existants.
+  </Step>
+  <Step title="Environ 5 secondes après chaque modification">
+    Chaque changement apporté à une mission (tracé de zone, paramètres, résultat de calcul, obstructions, points de contrôle, points de décollage…) relance un délai de 5 secondes. Si vous enchaînez plusieurs modifications rapprochées (déplacer un point, ajuster une altitude, renommer la mission), elles sont regroupées en un seul envoi une fois que vous vous arrêtez.
+  </Step>
+  <Step title="Au retour de la connexion">
+    Si le réseau revient après une coupure, l'envoi se déclenche aussitôt, sans attendre la prochaine modification.
+  </Step>
+</Steps>
+
+<Note>
+  Les synchronisations déclenchées à la connexion ou en arrière-plan sont **silencieuses** : un échec (portail injoignable, machine hors ligne, etc.) ne fait apparaître aucun message d'erreur — l'application reste utilisable avec vos données locales et retentera plus tard. Seul un échec après une action **manuelle** (bouton **Synchroniser** de la carte détaillée) s'affiche clairement.
+</Note>
+
+## La file d'attente hors ligne
+
+Le moteur de synchronisation embarque un mécanisme de file d'attente locale, prévu pour la création, la modification et la suppression de **missions**, **capteurs**, **aéronefs** et **projets** effectuées hors ligne :
+
+- **Au retour du réseau**, la file serait rejouée automatiquement dans l'ordre, opération par opération.
+- **Une opération qui échoue** (par exemple une coupure réseau en plein envoi) serait retentée automatiquement plusieurs fois, avec un délai croissant entre chaque tentative. Si elle continuait d'échouer après plusieurs essais, elle serait marquée en échec et remontée dans la puce flottante (*N échec(s) sync*) plutôt que d'être silencieusement perdue.
+- **La file survivrait à la fermeture de l'application**, grâce à une persistance locale des opérations en attente.
+
+<Warning>
+  **À vérifier avant de vous y fier** : à ce jour, ce mécanisme de file d'attente n'est **pas branché** sur les actions courantes de l'application. Créer, modifier ou supprimer une mission, un capteur, un aéronef ou un projet écrit directement dans la base de données locale, ce qui réussit déjà en soi, que vous soyez en ligne ou hors ligne — ces actions ne transitent donc pas par la file d'attente décrite ci-dessus. En pratique, la file reste vide et le comportement « mise en attente puis rejeu automatique » n'est pas observable dans l'application telle qu'elle fonctionne actuellement. Par ailleurs, une action refusée par le serveur pour une autre raison (droits insuffisants, donnée invalide…) alors que vous êtes en ligne remonterait immédiatement comme une erreur normale, sans passer par la file d'attente.
+</Warning>
+
+## Catalogue de capteurs et d'appareils
+
+Vos capteurs et aéronefs personnalisés (ceux que vous créez vous-même dans l'application, en plus du catalogue standard fourni par défaut) sont rattachés à votre compte Helix Aero et suivent le même principe :
+
+- **À la connexion** (ou à la reconnexion automatique au démarrage), l'application récupère en arrière-plan la dernière version du catalogue standard ainsi que vos capteurs/aéronefs personnalisés, afin qu'ils apparaissent sur tous vos postes reliés au même compte, avec leurs éventuels liens de compatibilité capteur ↔ aéronef.
+- **Si vous êtes hors ligne**, ou que cette récupération échoue, le catalogue déjà présent sur votre poste (catalogue embarqué par défaut + vos ajouts précédemment synchronisés) reste utilisable sans interruption ; la synchronisation sera retentée à la prochaine connexion.
+- Un bouton **Sync** est également disponible directement dans la page **Catalogue**, sur les onglets Capteurs et Appareils, pour forcer une actualisation immédiate (limité à une fois par minute).
+
+## Catalogue mondial des aéroports
+
+La base d'aéroports utilisée par la recherche NOTAM et par l'affichage des aéroports sur le globe est elle aussi tenue à jour automatiquement :
+
+- **À la connexion**, l'application compare en arrière-plan la version de la base installée localement avec celle du portail, et ne télécharge la base complète que si une nouvelle version est disponible — sinon rien n'est transféré.
+- **En cas d'échec** (hors ligne, portail injoignable…), la base déjà présente sur votre poste continue de fonctionner normalement ; aucune donnée n'est perdue et la vérification sera retentée à la prochaine connexion.
+
+<Note>
+  Il n'existe pas aujourd'hui de bouton dédié pour forcer cette vérification manuellement : elle se déclenche uniquement à la connexion.
+</Note>

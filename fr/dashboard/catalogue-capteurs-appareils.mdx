@@ -1,0 +1,134 @@
+---
+title: "Catalogues des capteurs et des appareils"
+description: "Consulter, créer et synchroniser les fiches capteurs et appareils du compte."
+---
+
+Le **tableau de bord** de Helix Flight Planner regroupe trois onglets en haut de l'écran : **Missions**, **Capteurs** et **Appareils**. Cette page couvre les onglets **Capteurs** et **Appareils** — comment rechercher, filtrer, consulter et créer les fiches techniques utilisées par le planificateur de mission. Pour la gestion des missions elles-mêmes, voir [Gérer ses missions](/dashboard/missions).
+
+Les capteurs (caméras photo, thermiques, LiDAR, pushbroom) et les appareils (avions, hélicoptères, drones) définis ici sont ceux que vous retrouvez ensuite dans le sélecteur d'équipement d'une mission.
+
+## Ouvrir un catalogue
+
+Depuis le tableau de bord, cliquez sur l'onglet **Capteurs** ou sur l'onglet **Appareils** en haut de l'écran. Chacun affiche la liste complète des fiches disponibles sur votre compte — les fiches **standards** fournies par Helix Aero et vos éventuelles fiches **personnalisées**.
+
+## Rechercher et filtrer
+
+Les deux onglets partagent la même barre d'outils :
+
+- **Champ de recherche** — filtre par nom ou par fabricant (correspondance insensible à la casse, sur une partie du texte).
+- **Filtre Marque** — liste déroulante **Toutes les marques** suivie des fabricants réellement présents dans la liste courante.
+- **Filtre Type** — pour les capteurs : **Tous types**, **Photo**, **LiDAR**, **Pushbroom**, **Thermique**. Pour les appareils : **Tous types**, **Avion**, **Hélicoptère**, **Drone**.
+
+Recherche, marque et type se combinent (ET logique) : par exemple `Recherche : "phase" + Marque : Phase One` n'affiche que les capteurs de ce fabricant correspondant au texte saisi.
+
+## Vue cartes vs vue liste
+
+Le bouton à bascule à côté des filtres permute entre deux présentations :
+
+<CardGroup cols={2}>
+  <Card title="Vue cartes" icon="layout-grid">
+    Une grille de vignettes — chacune affiche la photo du modèle (ou une silhouette générique à défaut), son nom, son type/fabricant, et quelques spécifications clés en aperçu.
+  </Card>
+  <Card title="Vue liste" icon="list">
+    Une liste compacte, une ligne par fiche, avec les mêmes informations condensées à droite — pratique pour comparer rapidement plusieurs modèles.
+  </Card>
+</CardGroup>
+
+## Photos des modèles
+
+Chaque vignette essaie d'afficher une photo réelle du modèle. Quand aucune photo n'est enregistrée pour ce nom exact (typiquement les modèles personnalisés ou certains ajouts récents), une **silhouette générique** est affichée à la place — une icône de boîtier pour un capteur, une icône d'appareil pour un aéronef — sur un fond dégradé vert, sans que cela bloque quoi que ce soit.
+
+## Fiche détail d'un capteur
+
+Cliquez sur une carte ou une ligne pour ouvrir la fiche détaillée du capteur.
+
+| Champ | Description |
+|---|---|
+| **Nom** | Nom affiché partout dans l'application. |
+| **Fabricant** | Marque du capteur. |
+| **Type de capteur** | Caméra, Thermique, LiDAR ou Pushbroom. |
+| **Cadence max (Hz)** | Fréquence de déclenchement maximale du capteur. |
+
+Des champs supplémentaires apparaissent selon le type choisi :
+
+| Type | Champs spécifiques |
+|---|---|
+| **Photo / Thermique** | Largeur image (px), Hauteur image (px), Taille pixel (µm), Focales (mm — liste séparée par des virgules, ex. `35,50,80`). |
+| **LiDAR / Pushbroom** | Champ de vision transversal (°), Portée max (m). |
+| **LiDAR** (en plus) | Fréquence de répétition (PRR, Hz). |
+
+<Warning>
+  Tant que les champs nécessaires au calcul (selon le type de capteur) ne sont pas renseignés, le bouton **Enregistrer** reste désactivé et un encadré orange liste précisément les champs manquants. Une valeur à zéro ou vide compte comme manquante.
+</Warning>
+
+## Fiche détail d'un appareil
+
+De la même façon, cliquez sur une carte ou une ligne de l'onglet **Appareils** pour ouvrir sa fiche.
+
+| Champ | Description |
+|---|---|
+| **Nom** | Nom affiché partout dans l'application. |
+| **Type d'appareil** | Avion, Hélicoptère ou Drone. |
+| **Indicatif** | Identifiant/immatriculation libre. |
+| **Croisière (km/h)** | Vitesse de croisière utilisée par défaut en planification. |
+| **Autonomie (min)** | Durée de vol maximale. |
+| **Plafond (m)** | Altitude maximale de l'appareil. |
+
+La fiche détaille ensuite les **performances de vol** — taux de montée (m/s), taux de descente (m/s), et selon le type : rayon de virage minimal (m) pour un avion ou un hélicoptère, inclinaison max (°) pour un hélicoptère — puis les **limites de vol** — vitesse de décrochage (m/s), taux de virage max (°/s), montée/descente max (m/s), garde au sol minimale (m), rayon d'action max (m) et charge utile max (kg).
+
+<Note>
+  Seuls le type d'appareil, la croisière, l'autonomie et les taux de montée/descente bloquent l'enregistrement s'ils sont manquants. Le rayon de virage minimal et l'inclinaison max, bien qu'affichés pour les types concernés, ne sont pas obligatoires : le moteur de calcul retombe sur des valeurs par défaut propres à chaque type d'appareil quand ils sont absents.
+</Note>
+
+## Fiches standards vs personnalisées
+
+- **Standards** — fournies par Helix Aero. En ouvrant leur fiche, tous les champs apparaissent grisés (lecture seule) et le bas de la fenêtre ne propose que **Fermer** — pas d'enregistrement possible.
+- **Personnalisées** (`origin: user`) — créées par vous, entièrement modifiables : le bas de la fenêtre propose **Annuler** / **Enregistrer**.
+
+## Créer un capteur ou un appareil personnalisé
+
+En haut à droite de chaque onglet, un bouton permet de créer une fiche vierge :
+
+<Steps>
+  <Step title="Cliquer sur + Nouveau capteur ou + Nouvel appareil">
+    Une fiche vide s'ouvre, pré-remplie avec un type par défaut (Photo pour un capteur, Avion pour un appareil).
+  </Step>
+  <Step title="Renseigner l'identité et les spécifications">
+    Nom, fabricant, type, puis les champs techniques qui apparaissent selon le type choisi (voir les tableaux ci-dessus).
+  </Step>
+  <Step title="Enregistrer">
+    Le bouton reste désactivé tant qu'un champ obligatoire manque. Une fois complété, **Enregistrer** ajoute la fiche à votre catalogue personnalisé, immédiatement disponible dans le sélecteur d'équipement d'une mission.
+  </Step>
+</Steps>
+
+## Dupliquer un modèle standard
+
+Une fiche standard n'étant pas modifiable directement, la façon de l'adapter à votre matériel est de la dupliquer :
+
+<Steps>
+  <Step title="Ouvrir la fiche standard">
+    Cliquez sur la carte ou la ligne du modèle standard à copier.
+  </Step>
+  <Step title="Dupliquer">
+    Cliquez sur **Dupliquer comme personnalisé** (capteur) ou **Créer un nouvel appareil à partir de celui-ci** (appareil), en bas de la fenêtre.
+  </Step>
+  <Step title="Ajuster et enregistrer">
+    Une nouvelle fiche s'ouvre, éditable, pré-remplie avec les valeurs du modèle standard et un nom suffixé « (copie) ». Modifiez ce qu'il faut puis cliquez sur **Enregistrer** pour créer une fiche personnalisée indépendante — le modèle standard d'origine n'est pas affecté.
+  </Step>
+</Steps>
+
+## Synchroniser le catalogue
+
+Le bouton **Sync**, à côté des filtres, récupère depuis votre compte Helix Aero les dernières mises à jour du catalogue standard ainsi que vos capteurs et appareils personnalisés, puis rafraîchit la liste affichée.
+
+- Le bouton passe à **Synchronisation…** pendant l'appel, puis se désactive avec un compte à rebours (**Sync (Ns)**) pendant **une minute** avant de pouvoir être réutilisé.
+- En cas d'échec réseau, un message d'erreur s'affiche en rouge à côté du bouton.
+- Si vous n'êtes pas connecté à votre compte (hors ligne ou session expirée), la synchronisation ne fait rien silencieusement — votre catalogue local reste inchangé, sans message d'erreur — mais le délai d'une minute s'applique quand même avant un nouvel essai.
+
+<Tip>
+  Si l'enregistrement d'un capteur ou d'un appareil personnalisé échoue faute de connexion, la fiche est tout de même sauvegardée localement et reste immédiatement utilisable dans le sélecteur d'équipement de cette machine. En revanche, son envoi vers votre compte Helix Aero n'est pas garanti par la suite : elle ne devient pas automatiquement disponible sur vos autres postes. Si plusieurs comptes se connectent sur le même poste, seules les fiches personnalisées du compte actuellement connecté sont synchronisées.
+</Tip>
+
+<Note>
+  Le catalogue standard n'est jamais vidé par une synchronisation, même en cas de réponse vide ou d'incident côté portail : les fiches standards déjà présentes localement sont conservées.
+</Note>

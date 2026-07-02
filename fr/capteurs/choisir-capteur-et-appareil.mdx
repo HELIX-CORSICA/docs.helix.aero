@@ -1,0 +1,98 @@
+---
+title: "Choisir le capteur et l'appareil d'une mission"
+description: "Fenêtres de sélection utilisées pendant la planification, et favoris."
+---
+
+# Choisir le capteur et l'appareil d'une mission
+
+Dans Helix Flight Planner, chaque **vol** est associé à un **appareil** (drone, avion ou hélicoptère), et chaque **zone de couverture** (polygone ou corridor) de ce vol est associée à un **capteur** — puisqu'un même vol peut couvrir un polygone avec un capteur et un autre polygone avec un capteur différent. Les deux se choisissent via des fenêtres de sélection dédiées, avec recherche, filtres par catégorie et favoris.
+
+<Note>
+  Le capteur n'appartient pas au vol mais à l'élément de couverture (polygone ou corridor). C'est pour cela que la sélection du capteur se fait dans le panneau **Paramètres**, sur l'élément actif, et non depuis la barre supérieure.
+</Note>
+
+## Ouvrir les fenêtres de sélection
+
+<CardGroup cols={2}>
+  <Card title="Choisir un capteur" icon="camera">
+    Dans le panneau **Paramètres** (à droite de l'éditeur de mission), cliquez sur le champ **Capteur** de la zone active. S'il n'y a pas encore de capteur, le champ affiche *« Choisir un capteur… »*.
+  </Card>
+  <Card title="Choisir un appareil" icon="plane">
+    À la création d'un vol, la fenêtre **Configurer le vol** demande directement l'appareil. Pour un vol existant, faites un clic droit sur son chip dans la barre supérieure puis choisissez **Choisir un appareil** (ou **Changer l'appareil** si un appareil est déjà défini).
+  </Card>
+</CardGroup>
+
+## Fenêtre « Choisir un capteur »
+
+La fenêtre liste tout le catalogue de capteurs (caméras photo, LiDAR, pushbroom, thermiques) avec les contrôles suivants en haut de liste.
+
+### Recherche et catégories
+
+- Le champ **Rechercher un capteur…** filtre par nom, fabricant ou type de capteur au fil de la frappe.
+- Les chips de catégorie **Tous / Photo / LiDAR / Pushbroom / Thermique** restreignent la liste par type. Chaque chip affiche, juste après son libellé, le nombre de capteurs qu'il contient dans le périmètre courant (par exemple *« Photo 5 »*).
+
+Recherche et catégorie se combinent : par exemple *« Photo »* + le texte *« sony »* n'affiche que les caméras Sony.
+
+### Filtre Natif / Tous
+
+Quand le vol a déjà un appareil défini **et** que cet appareil déclare une liste de capteurs compatibles, deux boutons apparaissent au-dessus des catégories :
+
+| Bouton | Effet |
+|---|---|
+| **Natif** (sélectionné par défaut) | Limite la liste aux capteurs déclarés compatibles avec l'appareil du vol. |
+| **Tous** | Ignore la compatibilité et montre le catalogue complet — un message rappelle alors *« Catalogue complet — compatibilité non vérifiée »*. |
+
+<Tip>
+  Si l'appareil du vol n'a aucune compatibilité déclarée (ou qu'aucun appareil n'est encore choisi), ce filtre n'apparaît pas du tout : la fenêtre montre directement le catalogue complet.
+</Tip>
+
+### Choisir la focale (objectifs interchangeables)
+
+Certains boîtiers photo acceptent plusieurs focales (ils portent un badge **Multi-focale** dans la liste). Cliquer dessus ouvre une étape supplémentaire avant de valider :
+
+<Steps>
+  <Step title="Sélectionner une focale déclarée">
+    Cliquez sur l'une des valeurs proposées (par exemple *35 mm*, *50 mm*…) — ce sont les focales renseignées dans la fiche du capteur.
+  </Step>
+  <Step title="Ou saisir une focale personnalisée">
+    Si l'objectif réellement monté n'apparaît pas dans la liste (verre tiers), renseignez sa valeur en millimètres dans le champ **Autre focale (mm)**.
+  </Step>
+  <Step title="Valider">
+    Le bouton **Valider** ne s'active qu'une fois une focale positive choisie ou saisie — la focale conditionne directement le GSD et l'espacement des bandes, elle est donc obligatoire. Un lien **← Changer de capteur** permet de revenir en arrière sans fermer la fenêtre.
+  </Step>
+</Steps>
+
+Les capteurs à focale unique (la plupart des drones grand public par exemple) n'affichent pas cette étape : un clic sur la ligne suffit à valider le choix.
+
+## Fenêtre « Choisir un appareil »
+
+Même principe : recherche + catégories, avec en plus des catégories verrouillées selon votre licence.
+
+### Recherche et catégories
+
+- Le champ **Rechercher un appareil…** filtre par nom, indicatif ou type d'appareil.
+- Les chips **Tous / Avion / Hélico / Drone** filtrent par type, avec le nombre d'appareils affiché juste après le libellé (par exemple *« Drone 3 »*).
+
+### Catégories verrouillées selon la formule
+
+Si votre licence restreint les types d'appareils accessibles, la ou les catégories non incluses apparaissent grisées avec une icône de cadenas, non cliquables. Survoler le cadenas affiche l'infobulle :
+
+> Non inclus dans votre formule — disponible avec l'offre Bundle.
+
+<Note>
+  Ce verrouillage ne dépend que de votre licence, jamais du contenu du catalogue : une catégorie vide (par exemple si vous n'avez encore créé aucun hélicoptère personnalisé) reste cliquable et n'affiche pas de cadenas.
+</Note>
+
+Chaque ligne de la liste affiche le nom de l'appareil, son type, son indicatif éventuel, sa vitesse de croisière et son autonomie maximale déclarée.
+
+## Favoris
+
+Les deux fenêtres proposent une étoile à droite de chaque ligne (survolez ou cliquez dessus) :
+
+- Cliquer sur l'étoile ajoute ou retire l'élément de vos favoris — l'icône se remplit quand il est marqué favori.
+- Les favoris **remontent automatiquement en tête de la liste** (juste après l'élément déjà sélectionné, s'il y en a un), quels que soient la recherche et le filtre de catégorie actifs.
+- Les favoris capteurs et les favoris appareils sont deux listes indépendantes.
+
+<Warning>
+  Les favoris sont stockés **localement sur ce poste** — ils ne sont pas synchronisés avec votre compte ni partagés entre plusieurs machines. Si vous changez d'ordinateur, vous devrez les redéfinir.
+</Warning>

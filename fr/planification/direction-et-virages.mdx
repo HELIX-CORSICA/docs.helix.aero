@@ -1,0 +1,126 @@
+---
+title: "Cap de balayage et comportement en virage"
+description: "Direction automatique/manuelle, mode de virage et transitions entre bandes."
+---
+
+# Cap de balayage et comportement en virage
+
+Ces réglages vivent dans le groupe **Vol**, sous le champ **Vitesse** du panneau de couverture — dès qu'un polygone ou un corridor est actif. Ils pilotent trois choses distinctes : le **cap** que suivent les bandes (Direction), la **façon dont l'appareil enchaîne d'une bande à l'autre** (mode de virage / lignes d'approche), et deux interrupteurs de comportement en virage (Photos en virage, Zone stricte).
+
+<CardGroup cols={2}>
+  <Card title="Direction" icon="compass">
+    Curseur 0–360° avec bascule auto/manuel et aperçu temps réel sur le globe.
+  </Card>
+  <Card title="Mode de virage" icon="route">
+    Stop & turn (arrêt puis pivot) ou Fluide (virage courbé) — drones.
+  </Card>
+  <Card title="Leading lines" icon="corner-up-right">
+    Virage, ligne d'approche ou aucune transition — avion / hélicoptère.
+  </Card>
+  <Card title="Virages : photos & zone" icon="camera-off">
+    Couper l'obturateur en virage ; confiner les virages dans le polygone ou non.
+  </Card>
+</CardGroup>
+
+## Direction du balayage
+
+Le champ **Direction** règle le cap (0 à 360°) suivi par les bandes de vol. Il fonctionne en deux états :
+
+- **Automatique** (pastille verte « auto ») — le cap est calculé pour **minimiser le nombre de bandes** (donc le nombre de virages, qui domine le temps de vol), en tenant compte en plus du **point d'entrée réel** dans la zone : la sortie de l'élément précédent dans l'ordre d'exécution du vol, ou le point de décollage si c'est le premier élément. Parmi les caps qui donnent (à peu près) le même nombre de bandes, celui qui aligne le mieux les bandes avec l'axe d'arrivée est choisi — pour éviter une longue traversée à vide avant la première bande.
+- **Manuel** — un cap saisi ou glissé à la main ; il reste figé tant qu'il n'est pas réinitialisé.
+
+<Note>
+  Le point d'entrée/sortie sur le contour du polygone n'est **jamais réglé manuellement** ici : il se déduit entièrement de l'**enchaînement des éléments du vol** (l'ordre des zones, waypoints et trajectoires figées dans le vol). Pour changer ce point d'entrée, il faut réorganiser l'ordre des éléments ou déplacer le point de décollage — pas ce champ.
+</Note>
+
+Le bouton **auto** bascule entre les deux états :
+
+<Steps>
+  <Step title="En automatique">
+    Le champ affiche la valeur calculée en italique, la pastille est verte. Le cap se recalcule tout seul si la zone, le point de décollage ou l'élément précédent changent.
+  </Step>
+  <Step title="Cliquer sur « auto »">
+    La valeur automatique courante est figée en manuel — la pastille passe en gris. Le cap ne bouge plus tout seul.
+  </Step>
+  <Step title="Revenir à l'automatique">
+    Cliquer à nouveau sur la pastille (désormais grise, « revenir à la direction automatique ») annule la valeur manuelle et rebascule sur le calcul automatique.
+  </Step>
+</Steps>
+
+Vous pouvez aussi glisser directement le curseur ou taper une valeur dans le champ : les deux actions posent un cap manuel (elles quittent l'état auto).
+
+<Note>
+  Pour une mission **avion** avec un **point d'atterrissage** distinct configuré (dialogue Décollage/atterrissage), un troisième mécanisme peut faire basculer ce champ en manuel **sans aucune action de l'opérateur sur le curseur** : dès que le décollage et l'atterrissage sont tous deux définis, le cap est automatiquement réaligné sur l'azimut grand-cercle décollage → atterrissage, et cette valeur est écrite dans le champ comme un cap manuel (pastille grise). Le calcul par minimisation du nombre de bandes décrit plus haut est alors court-circuité pour ces missions. Pour revenir au calcul automatique habituel, cliquez sur la pastille grise comme pour toute autre valeur manuelle.
+</Note>
+
+<Tip>
+  Pendant que vous glissez le curseur, une **flèche verte plein écran** apparaît sur le globe pour prévisualiser le cap en temps réel — elle suit le curseur au pixel près, mais **aucun recalcul de trajectoire n'a lieu tant que vous n'avez pas relâché** le curseur. La flèche disparaît au relâchement, une fois le cap validé.
+</Tip>
+
+<Note>
+  Le champ **Direction** disparaît entièrement sur un **corridor** : les passes suivent l'axe que vous avez tracé, un cap n'a pas de sens ici — y compris quand la **double grille** est activée. Le balayage croisé (perpendiculaire à l'axe du corridor) que produit alors la double grille est calculé automatiquement côté moteur à partir de la géométrie de la ligne centrale ; ce n'est pas piloté par un champ Direction, qui reste masqué dans tous les cas sur un corridor.
+</Note>
+
+## Mode de virage (drones)
+
+Pour un **drone**, le champ **Virage** choisit comment l'appareil enchaîne d'une bande à la suivante :
+
+| Option | Comportement |
+|---|---|
+| **Stop & turn** | Le drone s'arrête au point de virage, pivote sur place, puis reprend en ligne droite sur la bande suivante. |
+| **Fluide** | Le drone ne s'arrête pas : il négocie le virage en trajectoire courbée. |
+
+<Note>
+  En mode **Fluide**, le rayon de virage dessiné sur la carte n'est qu'un **aperçu visuel fixe** — c'est le **firmware du drone** (DJI) qui gère en vol l'amortissement réel du virage (arrondi de trajectoire), pas une valeur que vous réglez ici. Il n'y a donc pas de curseur de rayon pour les drones, contrairement à l'avion et l'hélicoptère (voir plus bas).
+</Note>
+
+Ce même réglage **Virage** (options et libellés identiques) réapparaît dans deux autres contextes, pour rester cohérent partout où le comportement de virage se règle :
+
+- l'éditeur d'un **waypoint** isolé (point de passage) — avec le **même composant** (menu déroulant) que dans le groupe Vol ;
+- le panneau d'**édition multiple** quand plusieurs éléments sont sélectionnés à la fois — sous la forme d'un **toggle segmenté à boutons** (widget différent, mêmes options « Stop & turn » / « Fluide »), pour rester cohérent avec les autres champs de ce panneau.
+
+## Leading lines (avion / hélicoptère)
+
+Pour un **avion** ou un **hélicoptère**, il n'y a pas de bascule Stop & turn / Fluide : la transition entre deux bandes se choisit dans le menu **Leading lines**, qui propose trois options.
+
+<Note>
+  Le libellé du menu reste **« Leading lines »** quelle que soit l'option sélectionnée — y compris quand vous choisissez « Virage » ou « Aucune ».
+</Note>
+
+| Option | Effet | Réglage associé |
+|---|---|---|
+| **Virage** | Transition en arc courbé (virage en U façon « racetrack ») entre les deux bandes. | Curseur **Rayon de virage** (50 à 2000 m) — éditable. |
+| **Ligne d'approche** | Segment droit d'approche/dégagement entre les deux bandes, sans arc courbé. | Curseur **Longueur** (50 à 2000 m) — éditable. |
+| **Aucune** | Aucune géométrie de transition n'est générée entre les bandes. | — |
+
+<Tip>
+  Pour l'**avion**, « Ligne d'approche » est l'option par défaut. Pour l'**hélicoptère**, c'est « Virage » qui est proposé par défaut, avec un rayon repris du catalogue de l'aéronef s'il en déclare un (sinon une valeur de repli raisonnable).
+</Tip>
+
+## Photos en virage
+
+L'interrupteur **Photos virages** décide si le capteur continue de déclencher pendant les arcs de virage entre deux bandes.
+
+- **Activé** (par défaut) — les prises de vue continuent normalement pendant les virages.
+- **Désactivé** — l'obturateur est coupé le temps du virage (et des transferts) ; sur un **drone DJI**, cela autorise en plus l'appareil à voler à sa **vitesse maximale** en dehors des bandes de couverture, puisque l'exposition n'a plus besoin d'être maîtrisée hors bande.
+
+<Note>
+  Ce réglage est masqué pour les capteurs à **capture continue** (LiDAR, Pushbroom — il n'y a pas d'obturateur à couper) et pour les missions **avion** (pas d'arc de virage : les transitions sont des lignes d'approche, voir ci-dessus).
+</Note>
+
+## Zone stricte
+
+L'interrupteur **Zone stricte** décide si les virages entre bandes doivent rester à l'intérieur du polygone tracé.
+
+- **Activé** (par défaut) — les virages restent contraints **à l'intérieur de l'AOI** ; sur un contour concave, cela peut imposer un détour par les sommets rentrants plutôt que le chemin direct.
+- **Désactivé** — les virages prennent le **chemin le plus court**, quitte à sortir brièvement du polygone tracé.
+
+<Note>
+  Ce réglage n'est pas proposé pour les missions **avion** : les transitions y sont des lignes d'approche/virages extérieurs par construction, la notion de « rester dans l'AOI » ne s'applique pas.
+</Note>
+
+## Voir aussi
+
+- [Régler la couverture : capteur, altitude/GSD et recouvrement](/fr/planification/couverture-et-capteur)
+- [Modes d'altitude](/fr/planification/mode-altitude)
+- [Créer et organiser les vols](/fr/mission/vols-et-appareils)

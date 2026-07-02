@@ -1,108 +1,137 @@
 ---
 title: "Demarrage rapide"
-description: "Installez Helix Flight Planner et creez votre premiere mission en moins de 10 minutes"
+description: "Premiers pas : connexion, creation d'une mission et premier export."
 ---
 
 # Demarrage rapide
 
-Suivez ces etapes pour installer Helix Flight Planner et produire votre premier plan de vol.
+Ce guide suppose que Helix Flight Planner est deja installe et lance. Vous allez : vous connecter, creer une mission, ajouter un vol, tracer une zone de couverture, choisir un capteur, regler l'altitude / le GSD et le recouvrement, puis exporter votre premier plan.
 
-## Etape 1 : Telecharger l'application
+## Etape 1 : Se connecter
 
-Visitez [app.helix.aero/download](https://app.helix.aero/download) et choisissez votre plateforme.
+Sur l'ecran de connexion, saisissez votre adresse e-mail et votre mot de passe, puis cliquez sur **Se connecter**.
 
-<Tabs>
-  <Tab title="Windows">
-    Telechargez l'installeur **Helix-FlightPlanner-Setup-x64.exe** pour Windows 10 ou superieur (64 bits).
-  </Tab>
-  <Tab title="macOS">
-    Telechargez l'image disque **Helix-FlightPlanner-macOS.dmg** pour macOS 12 Monterey ou superieur.
-  </Tab>
-</Tabs>
-
-## Etape 2 : Installer et lancer
-
-<Tabs>
-  <Tab title="Windows">
-    <Steps>
-      <Step title="Lancer l'installeur">
-        Executez le `.exe` telecharge et suivez l'assistant. Le chemin par defaut est `C:\Program Files\Helix Flight Planner`.
-      </Step>
-      <Step title="Demarrer l'application">
-        Ouvrez **Helix Flight Planner** depuis le menu Demarrer ou le raccourci bureau. L'application s'ouvre directement sur l'ecran de connexion.
-      </Step>
-    </Steps>
-  </Tab>
-  <Tab title="macOS">
-    <Steps>
-      <Step title="Monter le DMG">
-        Ouvrez le `.dmg` telecharge et glissez **Helix Flight Planner** dans votre dossier Applications.
-      </Step>
-      <Step title="Lancer depuis Applications">
-        Ouvrez l'application depuis Applications ou Spotlight. Au premier lancement, macOS peut afficher une demande Gatekeeper — le build est notarise, cliquez sur **Ouvrir** pour continuer.
-      </Step>
-    </Steps>
-  </Tab>
-</Tabs>
-
-## Etape 3 : Connexion et activation
-
-Sur l'ecran de connexion, saisissez vos identifiants Helix Aero. Si vous n'avez pas de compte, visitez [app.helix.aero](https://app.helix.aero) pour vous inscrire ou demander un essai.
-
-L'activation est automatique au premier lancement — l'application envoie l'empreinte de votre machine au serveur de licence et enregistre un poste.
+- L'icone en forme d'oeil dans le champ mot de passe permet de l'afficher en clair.
+- La case **Se souvenir de moi** est cochee par defaut : la session reste ouverte au prochain lancement de l'application. Decochez-la si vous voulez qu'elle se ferme a la fermeture de l'application.
 
 <Note>
-  Votre licence permet une utilisation hors ligne jusqu'a 7 jours. Au-dela, l'application se re-verifie en ligne avant de pouvoir modifier des missions.
+  L'activation de la licence se fait automatiquement a la connexion (verification du poste machine). Le catalogue de capteurs / aeronefs et vos projets se synchronisent ensuite en arriere-plan.
 </Note>
 
-Si le message **Limite de postes atteinte** apparait, gerez vos machines enregistrees sur [app.helix.aero](https://app.helix.aero).
+Si vos identifiants sont refuses ou que le serveur est injoignable, un message explicite s'affiche sous le formulaire (identifiants invalides, limite de postes atteinte, serveur injoignable, etc.).
 
-## Etape 4 : Tutoriel de premier lancement
+## Etape 2 : Creer une mission
 
-Au premier lancement, Helix Flight Planner affiche une courte infobulle qui presente l'espace de travail : le tableau de bord, l'assistant de mission, le globe 3D, le panneau de planification et le menu d'export. Vous pouvez le rejouer a tout moment depuis **Aide > Tutoriel**.
-
-## Etape 5 : Creer votre premiere mission
-
-Depuis le tableau de bord, cliquez sur **Nouvelle mission**. L'assistant vous guide en six etapes :
+Depuis le tableau de bord, cliquez sur **+ Nouvelle mission**. L'assistant s'ouvre en deux etapes courtes :
 
 <Steps>
-  <Step title="Projet et nom">
-    Donnez un nom a la mission et, optionnellement, rattachez-la a un projet. Les missions creees sans projet apparaissent en haut du tableau de bord en tant que missions "orphelines".
+  <Step title="Informations">
+    Saisissez le **Nom de la mission** (obligatoire), puis cliquez sur **Suivant**.
   </Step>
-  <Step title="Localisation">
-    Recherchez un lieu par nom ou pointez-le sur la carte. Cela centrera le globe a l'ouverture de la mission.
-  </Step>
-  <Step title="CRS">
-    Choisissez le systeme de reference. Par defaut WGS84 avec zone UTM automatique, ou un code EPSG manuel.
-  </Step>
-  <Step title="Source MNT">
-    Choisissez la source terrain : **SRTM 30 m** (par defaut, mondiale), **Copernicus GLO-30** (meilleure qualite en zone montagneuse) ou **Aucune** (terrain plat).
-  </Step>
-  <Step title="Capteur">
-    Selectionnez un capteur dans le catalogue et, si besoin, sa focale.
-  </Step>
-  <Step title="Aeronef">
-    Choisissez le type d'aeronef. Cela initialise l'altitude, la vitesse et le recouvrement par defaut.
+  <Step title="Lieu">
+    Optionnel : recherchez un lieu dans le champ (par nom, ex. "Ajaccio", ou en coordonnees "42.0, 9.0"), ou choisissez un lieu recent dans la liste. Le lieu choisi pre-centre le globe a l'ouverture. Laissez le champ vide si vous preferez centrer manuellement ensuite.
   </Step>
 </Steps>
 
-Cliquez sur **Creer**. Le globe s'ouvre sur votre localisation avec le panneau de planification a droite.
+Cliquez sur **Creer la mission**. Le globe 3D s'ouvre sur la mission, vide pour l'instant : il faut maintenant y ajouter un vol.
 
-## Etape 6 : Tracer la zone d'interet
+## Etape 3 : Creer un vol
 
-Sur le globe 3D, ouvrez la barre d'outils de dessin (a gauche, sous le panneau de couches) :
+Un **vol** est le conteneur dans lequel vous allez dessiner une ou plusieurs zones (polygone, corridor, waypoint) ; l'appareil se choisit au niveau du vol, le capteur se choisit ensuite zone par zone.
 
-- Cliquez sur **Dessiner** pour commencer un polygone, puis cliquez sur le globe pour placer chaque sommet. Fermez le polygone en cliquant sur le premier point ou en appuyant sur **Entree**.
-- Cliquez sur **Dessiner corridor** pour tracer un corridor lineaire (routes, rivieres, pipelines).
-- Cliquez sur **Recentrer** pour ramener la camera sur la zone.
+Cliquez sur **+ Vol** (barre superieure du globe, a droite des onglets de vol). La fenetre **Configurer le vol** s'ouvre :
 
-Des que le polygone est ferme, les bandes de vol sont calculees automatiquement et affichees sur le globe.
+- **Nom du vol** — pre-rempli (ex. "Vol 1"), modifiable.
+- **Appareil** — cliquez sur **Choisir un appareil...** pour ouvrir le catalogue et selectionner un aeronef (drone, avion ou helicoptere).
 
-## Etape 7 : Reviser et exporter
+Le bouton **Valider** reste desactive tant qu'un nom et un appareil ne sont pas renseignes. Une fois valide, le vol apparait dans la barre de vols en haut du globe.
 
-Utilisez l'onglet **Parametres** du panneau de planification a droite pour ajuster l'altitude, le recouvrement, la laterale et le cap. Ouvrez l'onglet **Bandes** pour consulter ou editer les bandes individuelles, et l'onglet **Resume** pour voir les statistiques et les indicateurs QC.
+<Note>
+  Aucun capteur ne se choisit ici : il se definit sur chaque zone (polygone / corridor) que vous allez dessiner a l'etape suivante — un meme vol peut ainsi combiner plusieurs capteurs sur des zones differentes.
+</Note>
 
-Quand vous etes satisfait, cliquez sur **Exporter** dans la barre superieure et choisissez un format — KML, PDF, CSV, GPX, XLSX ou le conteneur natif `.helix` a charger localement dans le FMS Helix.
+## Etape 4 : Tracer une zone de couverture (AOI)
+
+Les outils de dessin sont dans la colonne d'icones a gauche du globe. Ils restent grises tant qu'aucun vol n'est cree ou selectionne.
+
+<Steps>
+  <Step title="Activer l'outil polygone">
+    Cliquez sur l'icone polygone (info-bulle **Dessiner polygone**) dans la barre d'outils de dessin.
+  </Step>
+  <Step title="Poser le premier sommet">
+    **Double-cliquez** sur le globe pour poser le premier sommet — un simple clic ne demarre pas le tracé (il reste reserve a la selection / navigation).
+  </Step>
+  <Step title="Poser les sommets suivants">
+    Cliquez (simple clic) pour poser chaque sommet suivant. Un clic droit retire le dernier sommet pose.
+  </Step>
+  <Step title="Fermer le polygone">
+    Cliquez a nouveau sur l'un des sommets deja poses (pas necessairement le premier), ou double-cliquez pour fermer avec les sommets deja poses. Il faut au moins 3 sommets.
+  </Step>
+</Steps>
+
+Des que le polygone est ferme, il devient une zone du vol actif et les bandes de vol se calculent automatiquement — aucun bouton "Calculer" a presser.
+
+<Warning>
+  La fermeture est refusee si le polygone se croise lui-meme (forme en papillon) — le contour s'affiche alors en rouge pendant le tracé. Ajustez le dernier sommet avant de fermer.
+</Warning>
+
+<Tip>
+  La touche **Echap** annule l'outil de dessin en cours. Un bouton dedie, distinct du bouton polygone, permet de dessiner un **corridor** (info-bulle **Dessiner corridor** ; bande lineaire le long d'un trace) au lieu d'un polygone plein.
+</Tip>
+
+## Etape 5 : Choisir un capteur pour cette zone
+
+Dans le panneau de planification a droite, onglet **Parametres**, groupe **Vol**, cliquez sur la ligne **Capteur** (bouton **Choisir un capteur...**).
+
+La fenetre **Choisir un capteur** s'ouvre :
+
+- Un champ de recherche filtre par nom / fabricant.
+- Des filtres par categorie : **Tous**, **Photo**, **LiDAR**, **Pushbroom**, **Thermique**.
+- Si l'appareil du vol declare des capteurs compatibles, un bascule **Natif / Tous** limite d'abord la liste aux capteurs natifs de cet appareil.
+- Cliquez sur un capteur pour le selectionner. S'il accepte plusieurs focales (boitier a objectifs interchangeables), un ecran supplementaire demande de choisir ou saisir la focale montee avant de valider.
+
+## Etape 6 : Ajuster altitude, GSD et recouvrement
+
+Toujours dans l'onglet **Parametres**, groupe **Vol** :
+
+- Les champs **Altitude** et **GSD** sont tous les deux editables et lies : modifier l'un recalcule automatiquement l'autre a partir du capteur choisi. (Pour un capteur LiDAR ou pushbroom, le champ GSD est remplace par un champ **FOV**.)
+
+Juste en dessous, groupe **Recouvrement** :
+
+| Champ | Role |
+|-------|------|
+| **Avant** | Recouvrement longitudinal entre images consecutives le long d'une bande. |
+| **Lateral** | Recouvrement entre bandes voisines. |
+| **Buffer AOI** | Marge ajoutee autour du polygone avant calepinage. |
+| **Overshoot** | Distance de depassement en bout de bande. |
+| **Double grille** | Ajoute une seconde grille de bandes a 90 deg du cap principal. |
+
+Avant et Lateral s'affichent en pourcentage par defaut ; un bascule permet de les afficher / saisir en metres.
+
+<Note>
+  Le recalcul des bandes est automatique et quasi instantane a chaque modification — il n'y a pas de bouton "Calculer" a chercher.
+</Note>
+
+## Etape 7 : Exporter le plan
+
+Cliquez sur **Export** dans la barre superieure du globe. La fenetre **Exporter le plan de vol** s'ouvre ; cliquez sur la ligne **Plan de vol** pour choisir un format :
+
+| Format | Description |
+|--------|--------------|
+| **.helix (Helix Archive)** | Conteneur natif Helix. Deux modes au choix : **FMS** (une zone, format actuel du FMS cockpit) ou **Projet Flight Planner** (round-trip complet, multi-zones, y compris les trajectoires figees). |
+| **KML** | Fichier Google Earth / SIG standard. |
+| **WPML (DJI Pilot 2)** | Archive KMZ pour DJI Pilot 2. Necessite un aeronef DJI selectionne sur le vol — desactive sinon. |
+
+- Pour **.helix**, choisissez ensuite **FMS** ou **Projet Flight Planner**, puis l'emplacement du fichier dans la boite de dialogue systeme (application desktop uniquement).
+- Pour **KML** (et **WPML**), une fenetre de selection liste tous les vols exportables (ceux ayant au moins un element calcule) : cochez ceux a inclure, puis choisissez l'emplacement du fichier.
+
+<Note>
+  Si une alerte de securite est active sur le vol (typiquement une collision terrain / obstacle detectee automatiquement), la fenetre d'export affiche un verrou bloquant : il faut cocher explicitement "Je comprends les risques et souhaite exporter malgre tout" avant de pouvoir continuer.
+</Note>
+
+<Note>
+  Si un avertissement de qualite (orange) ou une information (bleu) est actif sur le vol, un bandeau non bloquant s'affiche dans la fenetre d'export mais n'empeche pas l'export.
+</Note>
 
 ## Etapes suivantes
 
@@ -111,9 +140,12 @@ Quand vous etes satisfait, cliquez sur **Exporter** dans la barre superieure et 
     Guide complet du flux de planification, des overlays QC et de l'edition de bandes.
   </Card>
   <Card title="Catalogue capteurs" icon="camera" href="/guides/sensors">
-    Recherche, filtres, vue grille/tableau et capteurs personnalises.
+    Recherche, filtres et capteurs personnalises.
   </Card>
   <Card title="Formats d'export" icon="download" href="/guides/export-formats">
     Contenu de chaque export et quand l'utiliser.
+  </Card>
+  <Card title="Modes d'altitude" icon="mountain" href="/guides/altitude-modes">
+    AMSL, iAMSL, iAGL : comprendre les references d'altitude.
   </Card>
 </CardGroup>
