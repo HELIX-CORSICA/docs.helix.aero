@@ -1,0 +1,71 @@
+---
+title: "Exporter le plan de vol"
+description: "Enregistrer le plan de vol en fichier .helix, KML ou KMZ WPML, ou l'envoyer directement vers DJI Pilot."
+icon: "download"
+---
+
+Une fois les bandes calculées, le bouton **EXPORT** transforme votre mission en fichiers utilisables sur le terrain ou dans d'autres logiciels. Tout se choisit dans la fenêtre **Exporter le plan de vol**.
+
+## Ouvrir l'export
+
+<Steps>
+<Step title="Vérifier le calcul">
+Les bandes de vol doivent être calculées sur votre zone. Sans calcul, l'export ne peut pas produire de plan.
+</Step>
+<Step title="Cliquer sur EXPORT">
+Le bouton **EXPORT** se trouve en haut à droite, dans la barre de la mission.
+</Step>
+<Step title="Choisir une destination">
+La fenêtre propose deux options : **Plan de vol** (fichier à enregistrer) et **Envoyer vers DJI Pilot**.
+</Step>
+</Steps>
+
+<Frame caption="La fenêtre Exporter le plan de vol">
+  <img src="/images/flight-planner/export.png" alt="Fenêtre Exporter le plan de vol avec les options Plan de vol et Envoyer vers DJI Pilot" />
+</Frame>
+
+Cliquez sur **Annuler** pour fermer la fenêtre sans rien exporter.
+
+## Plan de vol : les formats
+
+L'option **Plan de vol** enregistre un fichier. Choisissez le format selon ce que vous voulez en faire :
+
+| Format | Ce que c'est | À quoi il sert sur le terrain |
+|---|---|---|
+| **.helix** | Projet complet du Flight Planner | Sauvegarder la mission et la partager. Réimportable dans le Flight Planner : on retrouve exactement les options et les bandes des zones verrouillées. |
+| **KML** | Trajet affiché sur une carte, en **LineString** (une ligne) ou en **Placemark** (des points) | Visualiser le trajet dans un logiciel de cartographie, par exemple Google Earth, pour le relire ou le présenter. |
+| **KMZ WPML** | Plan de vol au format DJI | Préparer la mission d'un drone DJI. Ce fichier est destiné à DJI Pilot. |
+
+{/* CAPTURE À FAIRE : fenêtre qui s'ouvre après le choix d'un format Plan de vol, montrant l'emplacement d'enregistrement du fichier */}
+
+## Envoyer vers DJI Pilot
+
+Cette option envoie la mission directement vers l'application **DJI Pilot**, sans passer par un fichier à transporter.
+
+<Steps>
+<Step title="Cliquer sur Envoyer vers DJI Pilot">
+La ligne affiche : « Choisir le référentiel d'altitude puis Local ou Cloud ».
+</Step>
+<Step title="Choisir le référentiel d'altitude">
+Sélectionnez **AMSL absolu** ou **Relatif au décollage**. Le choix doit correspondre à la façon dont vous voulez que les altitudes soient lues dans DJI Pilot.
+</Step>
+<Step title="Choisir Local ou Cloud">
+
+| Option | Ce qu'elle fait |
+|---|---|
+| **Local** | Envoie la mission à DJI Pilot par une liaison directe, sur la même radiocommande. |
+| **Cloud** | Publie les waylines sur le portail Helix, pour DJI Pilot. |
+
+</Step>
+</Steps>
+
+<Warning>
+Cette option n'est disponible que pour un drone DJI. Avec un autre appareil, elle est désactivée et affiche « Appareil non-DJI — réservé aux drones DJI ».
+</Warning>
+
+## Voir aussi
+
+- [Importer des données](/fr/flight-planner/import-export/importer)
+- [Travailler avec DJI (Pilot et Cloud)](/fr/flight-planner/import-export/dji)
+- [Contrôle qualité (QC)](/fr/flight-planner/qualite/controle-qualite)
+- [Altitude, GSD et vitesse](/fr/flight-planner/parametres/onglet-vol)
