@@ -1,0 +1,116 @@
+---
+title: "Frequently asked questions and troubleshooting"
+description: "Solutions to the most common situations: no bands displayed, sync error, map not showing, changing language or units, updates, exporting diagnostics."
+icon: "circle-question"
+---
+
+This page answers the most common problems you may run into in Helix Flight Planner. Open the question that matches your situation. If none matches, export the diagnostics and send them to support.
+
+<AccordionGroup>
+
+  <Accordion title="No bands appear on my area">
+    Flight bands are calculated from a sensor. If the flight has no sensor, nothing can be calculated.
+
+    1. Open the **Tasks** panel, **SENSOR** tab.
+    2. In the **Sensor** field, click **Choose a sensor…**.
+    3. Select a sensor in the **Choose a sensor** window. You can filter by **All**, **Photo** or **LiDAR**, or search for its name.
+    4. Go back to the **FLIGHT** tab and check that the bands appear on the area.
+
+    <Frame caption="Choose a sensor window">
+      <img src="/images/flight-planner/choix-capteur.png" alt="Choose a sensor window with the search field and the All, Photo and LiDAR filters" />
+    </Frame>
+
+    If the **Airplane flight without a sensor** message appears, an airplane flight must have a sensor before it can be calculated. Choose one as shown above.
+
+    See also: [Choose the sensor](/flight-planner/parametres/onglet-capteur) and [Flight bands](/flight-planner/parametres/bandes).
+  </Accordion>
+
+  <Accordion title="The top bar shows “Sync error” or “Offline”">
+    These indicators concern the synchronization of your work with your account. They do not mean you have lost anything.
+
+    - **Offline**: the connection is down. Your changes stay on this computer and will be synchronized when the connection comes back.
+    - **Sync error**: the last synchronization did not complete. Check your internet connection, then wait.
+
+    While the indicator stays on screen, do not delete anything.
+
+    <Frame caption="Top right: the Sync error indicator, next to the Settings icon and the Online status">
+      <img src="/images/flight-planner/reglages-preferences.png" alt="Top bar with the Sync error and Online indicators, next to the Settings icon" />
+    </Frame>
+
+    See also: [Discover the interface](/flight-planner/demarrage/interface).
+  </Accordion>
+
+  <Accordion title="The “No valid cut” message appears">
+    The **No valid cut** message means that cutting the area does not produce any usable piece.
+
+    1. Check the drawn area: an area that is too small or too fragmented may produce nothing.
+    2. Change the cut or redraw the area, then run the cut again.
+
+    {/* CAPTURE TO MAKE: cut window showing the "No valid cut" message */}
+
+    See also: [Cut an area](/flight-planner/missions/decoupe).
+  </Accordion>
+
+  <Accordion title="The map does not display">
+    If the map stays empty or shows the message **The map could not be loaded.**, try these steps in order:
+
+    1. Check your internet connection. The basemap and the terrain are downloaded from the network.
+    2. Change the basemap in the **Basemap** panel (**Satellite**, **Map** or **Topo**) to see whether one of them displays.
+    3. Close the mission, then open it again.
+    4. If the message **Map initialization error.** appears at launch, close the application and restart it.
+
+    If the map still does not display, export the diagnostics (see below) and contact support.
+
+    See also: [Basemaps and layers](/flight-planner/carte/fonds-et-couches).
+  </Accordion>
+
+  <Accordion title="Change the language or units">
+    1. Click the **Settings** icon (gear) at the top right.
+    2. Open the **Preferences** tab.
+    3. In **Language**, choose the interface language.
+    4. In **Distance unit**, choose **METERS** or **FEET**.
+    5. In **Speed unit — drone**, choose **M/S**, **KM/H** or **KT**. In **Speed unit — airplane / helicopter**, do the same.
+
+    <Frame caption="Settings, Preferences tab">
+      <img src="/images/flight-planner/reglages-preferences.png" alt="Preferences tab with the Language, Distance unit and Speed unit fields" />
+    </Frame>
+
+    See also: [Settings](/flight-planner/reglages).
+  </Accordion>
+
+  <Accordion title="The update is not possible">
+    Updates require an active license. If the message **An active license is required for updates.** appears:
+
+    1. Open **Settings**, then the **License** tab.
+    2. Check that the status shows **Active**.
+    3. If the status shows **Inactive**, contact your administrator or support to activate the license.
+
+    <Frame caption="Settings, Updates tab: the Status shows that an active license is required">
+      <img src="/images/flight-planner/reglages-mises-a-jour.png" alt="Updates tab with the message An active license is required for updates" />
+    </Frame>
+
+    See also: [Settings](/flight-planner/reglages).
+  </Accordion>
+
+  <Accordion title="Export diagnostics for support">
+    Diagnostics help support understand a problem. The export copies the local reports into a folder, which you attach to your support request.
+
+    1. Open **Settings**, then the **Diagnostics** tab.
+    2. On the **Export diagnostics** row, click **EXPORT**.
+    3. Wait for the message **Diagnostics exported**.
+    4. Attach the contents of the folder to your support request, with a description of what you were doing when the problem appeared.
+
+    <Frame caption="Settings, Diagnostics tab">
+      <img src="/images/flight-planner/reglages-diagnostics.png" alt="Diagnostics tab with the Export diagnostics row and the EXPORT button" />
+    </Frame>
+
+    See also: [Settings](/flight-planner/reglages).
+  </Accordion>
+
+</AccordionGroup>
+
+## See also
+
+- [Discover the interface](/flight-planner/demarrage/interface)
+- [Settings](/flight-planner/reglages)
+- [Glossary](/flight-planner/aide/glossaire)
