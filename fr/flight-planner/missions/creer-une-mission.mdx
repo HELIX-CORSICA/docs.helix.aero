@@ -1,0 +1,91 @@
+---
+title: "Créer une mission"
+description: "Créer une mission en deux étapes, nommer la mission, pré-centrer la carte sur un lieu, ou importer une mission existante."
+icon: "plus"
+---
+
+Une mission regroupe les vols, les tâches et les réglages d'un même chantier. Vous la créez depuis le tableau de bord, en deux étapes : le nom, puis le lieu (facultatif).
+
+## Créer une mission
+
+<Steps>
+  <Step title="Ouvrir le tableau de bord">
+    Dans l'onglet **MISSIONS**, cliquez sur **+ NOUVELLE MISSION**, en haut à droite.
+
+    <Frame caption="Le tableau de bord, onglet MISSIONS">
+      <img src="/images/flight-planner/dashboard.png" alt="Tableau de bord, onglet MISSIONS, avec les boutons DJI CLOUD, IMPORTER UNE MISSION et + NOUVELLE MISSION" />
+    </Frame>
+  </Step>
+
+  <Step title="Étape 01 : Informations">
+    La fenêtre **Nouvelle mission** s'ouvre à l'étape **01 Informations**, avec le sous-titre « Nommez votre mission. ».
+
+    Saisissez le nom dans le champ **NOM DE LA MISSION**. Tant que le champ est vide, le bouton **SUIVANT** reste grisé.
+
+    <Frame caption="Étape 01 Informations, champ vide">
+      <img src="/images/flight-planner/nouvelle-mission.png" alt="Fenêtre Nouvelle mission à l'étape 01 Informations, champ NOM DE LA MISSION vide" />
+    </Frame>
+
+    <Frame caption="Étape 01 Informations, nom saisi">
+      <img src="/images/flight-planner/nouvelle-mission-nom.png" alt="Champ NOM DE LA MISSION rempli avec Corse - Haute-Corse lot 3, bouton SUIVANT actif" />
+    </Frame>
+
+    Cliquez sur **SUIVANT**.
+  </Step>
+
+  <Step title="Étape 02 : Lieu (facultatif)">
+    L'étape **02 Lieu** sert à pré-centrer la carte sur la zone de travail. Le champ **LIEU — optionnel** accepte une ville ou des coordonnées (par exemple `41.92 8.74`).
+
+    <Frame caption="Étape 02 Lieu, champ vide">
+      <img src="/images/flight-planner/nouvelle-mission-lieu.png" alt="Étape 02 Lieu avec le champ LIEU optionnel vide, boutons PRÉCÉDENT et CRÉER LA MISSION" />
+    </Frame>
+
+    Tapez le début du nom du lieu. Une liste de suggestions apparaît sous le champ, avec le pays ou la région de chaque résultat. La recherche est fournie par GeoNames.
+
+    <Frame caption="Recherche « Corte » et suggestions">
+      <img src="/images/flight-planner/nouvelle-mission-lieu-saisi.png" alt="Champ LIEU avec la saisie Corte et la liste des suggestions : Corte Corsica France, Corte Veneto Italy, etc." />
+    </Frame>
+
+    Cliquez sur la suggestion voulue. Le champ affiche alors le lieu retenu.
+
+    <Frame caption="Lieu choisi">
+      <img src="/images/flight-planner/nouvelle-mission-lieu-choisi.png" alt="Champ LIEU contenant Corte, Corsica, France" />
+    </Frame>
+
+    <Tip>
+      Le lieu est facultatif. Pour créer la mission sans lieu, cliquez sur **CRÉER LA MISSION** sans rien saisir dans le champ.
+    </Tip>
+  </Step>
+
+  <Step title="Créer la mission">
+    Cliquez sur **CRÉER LA MISSION** pour valider. Pour annuler à n'importe quelle étape, cliquez sur **ANNULER**.
+  </Step>
+</Steps>
+
+## Boutons de la fenêtre
+
+| Bouton | Étape | Effet |
+|---|---|---|
+| **ANNULER** | 01 et 02 | Ferme la fenêtre sans créer de mission. |
+| **SUIVANT** | 01 | Passe à l'étape 02 Lieu. Grisé tant que le nom est vide. |
+| **PRÉCÉDENT** | 02 | Revient à l'étape 01 Informations. |
+| **CRÉER LA MISSION** | 02 | Crée la mission avec le nom et, si renseigné, le lieu. |
+
+Vous pouvez fermer la fenêtre à tout moment avec le bouton **×**, en haut à droite. Dans ce cas, rien n'est créé.
+
+## Importer une mission existante
+
+Pour reprendre une mission déjà préparée, cliquez sur **IMPORTER UNE MISSION**, à côté de **+ NOUVELLE MISSION**, sur le tableau de bord.
+
+{/* CAPTURE À FAIRE : fenêtre d'import de mission, après clic sur IMPORTER UNE MISSION (champs et formats acceptés) */}
+
+<Note>
+  L'import d'une mission n'est pas décrit ici en détail. Pour importer des données dans une mission ouverte (zones, plans de vol, points d'appui), voir [Importer des données](/fr/flight-planner/import-export/importer).
+</Note>
+
+## Voir aussi
+
+- [Le tableau de bord](/fr/flight-planner/missions/tableau-de-bord)
+- [Organiser les vols](/fr/flight-planner/missions/vols)
+- [Dessiner les tâches](/fr/flight-planner/missions/taches)
+- [Importer des données](/fr/flight-planner/import-export/importer)
