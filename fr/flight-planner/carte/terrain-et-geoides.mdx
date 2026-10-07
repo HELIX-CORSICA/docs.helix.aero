@@ -23,7 +23,7 @@ Helix refuse certaines combinaisons et l'indique à l'écran :
 
 Sans MNT chargé sur la zone, le calcul ne peut pas suivre le relief. Helix affiche alors le message « MNT indisponible » : zoomez sur la zone, puis recalculez.
 
-## Les altitudes : AMSL et HAE en trois phrases
+## Les altitudes : AMSL et HAE
 
 Le GPS mesure une altitude par rapport à une surface mathématique lisse, l'**ellipsoïde** (on l'appelle **HAE**, hauteur ellipsoïdale). Cette surface ne suit pas exactement la mer ni les reliefs. Le **géoïde** est la surface qui suit le niveau moyen de la mer, et l'altitude **AMSL** se mesure par rapport à lui. Entre les deux, l'écart varie d'un endroit à l'autre : une grille de géoïde permet donc de convertir l'un en l'autre.
 
@@ -54,7 +54,7 @@ La liste **DEM actifs** indique les sources actives. La mention **Utilisé pour 
 3. Choisissez le fichier. Helix accepte un raster, un nuage de points ou une pyramide **.hdem**.
 4. Pour un nuage de points, cliquez sur **Classes…** pour choisir les classes à importer.
 5. Vérifiez le champ **SCR** (système de coordonnées). Helix le propose à partir du fichier.
-6. Vérifiez la **Référence verticale**. Elle est indiquée comme « déclarée par le fichier » ou « déduite du nom du fichier ».
+6. Vérifiez la **Référence verticale**. Elle est indiquée comme « déclaré par le fichier » ou « déduit du nom du fichier ».
 
 Pendant l'import, Helix affiche les étapes : **Analyse**, **Lecture**, **Rastérisation**, **Pyramide** puis **Enregistrement**. Le message **DEM importé** confirme la fin.
 
@@ -69,13 +69,13 @@ Pour télécharger le relief de la zone du vol à l'avance, cliquez sur **Pré-t
 Les géoïdes servent à convertir les altitudes. Ils se gèrent dans **Réglages**, onglet **Géoïdes**.
 
 <Frame caption="Réglages, onglet Géoïdes : bouton GÉRER">
-  <img src="/images/flight-planner/reglages-geoides.png" alt="Réglages, onglet Géoïdes, avec la ligne Grilles de transformation verticale et le bouton Gérer" />
+  <img src="/images/flight-planner/reglages-geoides.png" alt="Réglages, onglet Géoïdes, avec la ligne Grilles de transformation verticale et le bouton GÉRER" />
 </Frame>
 
 1. Ouvrez **Réglages**, puis l'onglet **Géoïdes**.
-2. Cliquez sur **Gérer** dans la ligne **Grilles de transformation verticale**.
-3. La fenêtre **Grilles de géoïdes** s'ouvre. Elle indique le nombre de grilles installées (**{n} local**) et le nombre disponible (**total**).
-4. Téléchargez les grilles de la zone de travail depuis le **CDN**.
+2. Cliquez sur **GÉRER** dans la ligne **Grilles de transformation verticale**.
+3. La fenêtre **Grilles de géoïdes** s'ouvre. Elle indique le nombre de grilles installées et le nombre total disponible.
+4. Cherchez la grille de votre zone de travail dans le champ de recherche (par exemple « Corse »), puis téléchargez-la.
 
 Si une grille manque, Helix affiche **Géoïde non téléchargé**. Le calcul ne peut pas convertir les altitudes tant que la grille n'est pas installée. Téléchargez-la dans cette fenêtre, puis recalculez le vol.
 
@@ -87,9 +87,9 @@ Le cache terrain garde en local les tuiles de relief et de fond de carte. Cela �
   <img src="/images/flight-planner/reglages-cache-terrain.png" alt="Réglages, onglet Cache terrain, avec l'utilisation actuelle, le dossier de cache et la taille maximale" />
 </Frame>
 
-- **Utilisation actuelle** : la place occupée, par exemple « 617 Ko / 5.0 Go ». Le bouton **Purger le cache** vide le cache.
-- **Dossier de cache** : le dossier où sont stockées les tuiles. **Parcourir** permet d'en choisir un autre, puis **Sauver**.
-- **Taille max du cache** : la limite en Go. Le minimum est de 2 Go. Quand la limite est atteinte, les tuiles les plus anciennes sont supprimées automatiquement. Cliquez sur **Sauver** après une modification.
+- **Utilisation actuelle** : la place occupée, par exemple « 617 Ko / 5.0 Go ». Le bouton **PURGER LE CACHE** vide le cache.
+- **Dossier de cache** : le dossier où sont stockées les tuiles. **PARCOURIR** permet d'en choisir un autre, puis **SAUVER**.
+- **Taille max du cache** : la limite en Go. Le minimum est de 2 Go. Quand la limite est atteinte, les tuiles les plus anciennes sont supprimées automatiquement. Cliquez sur **SAUVER** après une modification.
 
 ## Voir aussi
 

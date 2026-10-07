@@ -33,8 +33,8 @@ Ajoutez un vol avant d'importer une géométrie. Sans vol, l'import ne peut pas 
   <Step title="Choisir Zone">
     Dans le menu **Import**, cliquez sur **Zone**.
   </Step>
-  <Step title="Charger le fichier">
-    Glissez votre fichier dans la zone de dépôt, ou cliquez dessus pour le chercher sur votre ordinateur.
+  <Step title="Choisir le fichier">
+    Une fenêtre de votre ordinateur s'ouvre. Choisissez votre fichier. La fenêtre **Importer un plan de vol** s'affiche ensuite avec le contenu du fichier.
   </Step>
   <Step title="Choisir le type de chaque géométrie">
     Helix détecte les géométries du fichier et vous demande, pour chacune, ce qu'elle doit devenir. Les choix sont :
@@ -58,7 +58,7 @@ Ajoutez un vol avant d'importer une géométrie. Sans vol, l'import ne peut pas 
 </Frame>
 
 <Warning>
-Un fichier de plus de 5 Mo est refusé : Helix affiche « Fichier trop volumineux ». Découpez le fichier ou réduisez-le avant l'import.
+Un fichier de plus de 25 Mo est refusé : Helix affiche « Fichier trop volumineux. Limite : 25 Mo. » Découpez le fichier ou réduisez-le avant l'import.
 </Warning>
 
 ## Importer des GCP
@@ -69,8 +69,8 @@ Les points d'appui (GCP) servent à recaler les images. L'entrée **GCP** ouvre 
   <Step title="Choisir GCP">
     Dans le menu **Import**, cliquez sur **GCP**.
   </Step>
-  <Step title="Déposer le fichier">
-    Glissez le fichier dans la zone de dépôt, ou cliquez dessus pour le parcourir.
+  <Step title="Choisir le fichier">
+    Une fenêtre de votre ordinateur s'ouvre : choisissez votre fichier. Dans la fenêtre **Importer des GCP**, vous pouvez aussi glisser un fichier dans la zone **Glissez un fichier ou cliquez pour parcourir**. Un fichier de plus de 5 Mo est refusé.
   </Step>
   <Step title="Vérifier la détection des colonnes">
     Helix détecte les colonnes et affiche l'aperçu. Dans **Aperçu — assignez chaque colonne**, choisissez le rôle de chaque colonne : **Easting (X)**, **Northing (Y)**, **Élévation (Z)**, **Latitude**, **Longitude** ou **Non défini**.
@@ -80,7 +80,7 @@ Les points d'appui (GCP) servent à recaler les images. L'entrée **GCP** ouvre 
     Dans **Système de coordonnées source**, tapez un code EPSG (par exemple `2154`) ou un nom (Lambert, UTM, RGF93…). Si vos colonnes sont en latitude et longitude, ce champ ne sert pas : Helix l'indique.
   </Step>
   <Step title="Importer">
-    Cliquez sur **Importer**. Les points sont convertis en WGS84.
+    Cliquez sur **Importer**.
   </Step>
 </Steps>
 
@@ -89,23 +89,21 @@ Les points d'appui (GCP) servent à recaler les images. L'entrée **GCP** ouvre 
 </Frame>
 
 <Note>
-Il faut assigner au minimum **Easting (X)** et **Northing (Y)**, ou **Latitude** et **Longitude**. Sans cela, Helix refuse l'import et affiche un message.
+Il faut assigner au minimum **Easting (X)** et **Northing (Y)**, ou **Latitude** et **Longitude**. Sinon, Helix affiche « Assignez au minimum Easting + Northing (ou Latitude + Longitude). »
 </Note>
 
 Les points importés apparaissent dans la couche **GCP** du panneau des couches (voir [Fonds de carte et couches](/fr/flight-planner/carte/fonds-et-couches)). S'il n'y a aucun point, la couche affiche « Aucun GCP importé. »
 
 ## Importer des obstructions
 
-Une obstruction est une zone ou un point à éviter pendant le vol. L'entrée **Obstructions** du menu **Import** permet d'en importer depuis un fichier. Vous pouvez aussi en créer une à la main.
+Une obstruction est une zone à éviter pendant le vol. L'entrée **Obstructions** du menu **Import** ouvre une fenêtre de votre ordinateur : choisissez un fichier **KML**, **KMZ**, **GeoJSON** ou **GPX**. Chaque polygone du fichier devient une obstruction ; les lignes et les points sont ignorés. Vous pouvez aussi en créer une à la main.
 
-- Un **polygone** peut devenir une obstruction, ou être ignoré.
-- Un **point** peut devenir une obstruction (disque de 5 m), ou être ignoré.
 
 ### Créer une obstruction à la main
 
 <Steps>
-  <Step title="Ouvrir la fenêtre">
-    Ouvrez la fenêtre **Nouvelle obstruction** depuis la barre d'outils de la carte (outil **Dessiner obstruction**).
+  <Step title="Dessiner l'obstruction">
+    Choisissez l'outil **Dessiner obstruction** dans la barre d'outils de la carte, puis dessinez la zone. La fenêtre **Nouvelle obstruction** s'ouvre.
   </Step>
   <Step title="Renseigner les champs">
     - **Nom** (obligatoire) : le nom affiché dans la liste.
@@ -121,7 +119,7 @@ Une obstruction est une zone ou un point à éviter pendant le vol. L'entrée **
   <img src="/images/flight-planner/nouvelle-obstruction.png" alt="Fenêtre Nouvelle obstruction avec les champs Nom, Marge (m) et Hauteur (m)" />
 </Frame>
 
-{/* CAPTURE À FAIRE : fenêtre d'import des obstructions depuis un fichier (menu Import > Obstructions), avec le choix Obstruction ou Ignorer pour chaque géométrie */}
+{/* CAPTURE À FAIRE : notification « Import d'obstructions » après un import depuis le menu Import > Obstructions */}
 
 ## Importer une mission depuis le tableau de bord
 

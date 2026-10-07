@@ -1,65 +1,51 @@
 ---
 title: "Découper une zone"
-description: "L'outil Découpe multi-vol manuelle : tracer une ou plusieurs lignes de coupe sur une zone, puis choisir si les morceaux deviennent des vols ou des tâches."
+description: "L'outil Découpe multi-vol manuelle : tracer une ou plusieurs lignes de coupe sur une zone pour la répartir en plusieurs vols."
 icon: "scissors"
 ---
 
-L'outil **Découpe multi-vol manuelle** coupe une zone en plusieurs morceaux à l'aide de lignes que vous tracez vous-même. Utilisez-le quand une zone est trop grande pour un seul vol, ou quand vous voulez la répartir entre plusieurs vols ou plusieurs tâches.
+L'outil **Découpe multi-vol manuelle** coupe une zone en plusieurs morceaux à l'aide de lignes que vous tracez vous-même. Chaque morceau devient un vol. Utilisez-le quand une zone est trop grande pour un seul vol.
 
 ## Découper une zone pas à pas
 
 <Steps>
-  <Step title="Sélectionner la zone">
-    Cliquez sur la zone à découper pour la sélectionner.
+  <Step title="Ouvrir le vol">
+    En haut de l'écran, cliquez sur l'onglet du vol qui contient la zone à découper.
   </Step>
   <Step title="Ouvrir l'outil de découpe">
-    Dans la barre d'outils verticale, cliquez sur l'icône en forme de ciseaux. L'infobulle affiche **Découpe multi-vol manuelle**.
+    Dans la barre d'outils verticale, cliquez sur l'icône en forme de ciseaux. L'infobulle affiche **Découpe multi-vol manuelle**. Raccourci : touche **S**.
   </Step>
   <Step title="Tracer les lignes de coupe">
-    Tracez une ligne sur la carte qui traverse la zone. Pour couper plusieurs fois, tracez plusieurs lignes. Chaque ligne doit traverser la zone de part en part.
+    Cliquez sur la carte pour poser les points de la ligne. Double-cliquez pour terminer la ligne. Chaque ligne doit traverser la zone de part en part : son premier et son dernier point sont hors de la zone. Pour couper plusieurs fois, tracez plusieurs lignes.
   </Step>
   <Step title="Valider la coupe">
     Une barre apparaît au-dessus de la carte, avec le texte **Découpe : N ligne(s) tracée(s)** (par exemple **Découpe : 2 lignes tracées**). Cliquez sur **Couper**, ou appuyez sur la touche **Entrée**.
   </Step>
-  <Step title="Choisir la destination">
-    La fenêtre **Destination de la découpe** s'ouvre. Choisissez **Vol** ou **Élément** (voir ci-dessous), puis validez.
+  <Step title="Vérifier le résultat">
+    Chaque morceau devient un vol, avec ses propres bandes. La notification **Découpe effectuée** indique le nombre de vols créés.
   </Step>
 </Steps>
 
+<Frame caption="L'outil Découpe multi-vol manuelle (ciseaux) est le dernier de la barre d'outils verticale.">
+  <img src="/images/flight-planner/barre-outils-dessin.png" alt="Barre d'outils verticale de dessin, avec l'icône ciseaux en bas" />
+</Frame>
+
 {/* CAPTURE À FAIRE : barre « Découpe : N lignes tracées » avec les boutons Annuler et Couper, lignes de coupe dessinées sur la zone */}
 
-{/* CAPTURE À FAIRE : fenêtre Destination de la découpe, avec les choix Vol et Élément */}
+## Corriger ou annuler
 
-## Les deux destinations
-
-Le choix de destination décide de la structure du résultat.
-
-```mermaid
-flowchart LR
-    Z["Zone découpée en N morceaux"] --> D{"Destination de la découpe"}
-    D -->|Vol| V["Un vol par morceau<br/>le vol source est masqué"]
-    D -->|Élément| E["Les morceaux deviennent des tâches<br/>du même vol"]
-```
-
-| Destination | Résultat |
-|---|---|
-| **Vol** | Chaque morceau devient un vol distinct, avec ses propres tâches et ses propres bandes. Le vol d'origine est masqué. |
-| **Élément** | Les morceaux restent dans le même vol, sous forme de tâches séparées. |
-
-<Tip>
-Choisissez **Vol** pour obtenir un plan de vol par morceau. Choisissez **Élément** pour garder un seul vol dont les morceaux sont des tâches distinctes.
-</Tip>
-
-## Annuler sans perdre le tracé
-
-- **Annuler** dans la barre **Découpe : N ligne(s) tracée(s)** efface la découpe en cours.
-- **Annuler** ou **Échap** dans la fenêtre **Destination de la découpe** garde le tracé : vous pouvez couper à nouveau.
+- **Clic droit** : retire le dernier point posé, ou la dernière ligne terminée.
+- **Annuler** dans la barre **Découpe : N ligne(s) tracée(s)**, ou la touche **Échap** : abandonne la découpe en cours.
 
 ## Aucune coupe valide
 
-Si les lignes ne traversent pas la zone, ou si elles ne la coupent qu'à moitié, la coupe est refusée et le message **Aucune coupe valide** s'affiche. Tracez une ligne qui entre dans la zone et en sort.
+Si aucune ligne ne traverse la zone, la coupe est refusée et le message **Aucune coupe valide** s'affiche. Le détail précise le problème, par exemple **Le premier point de la ligne est dans l'AOI** ou **Les lignes ne coupent pas l'AOI**. Tracez une ligne qui entre dans la zone et en ressort, puis cliquez à nouveau sur **Couper**.
 
 {/* CAPTURE À FAIRE : message Aucune coupe valide après une ligne qui ne traverse pas la zone */}
+
+<Note>
+Si la trajectoire de la zone est figée (wayline), l'outil affiche **Découpe indisponible : trajectoire figée (wayline) — restaurez la zone pour scinder l’AOI**.
+</Note>
 
 ## Voir aussi
 

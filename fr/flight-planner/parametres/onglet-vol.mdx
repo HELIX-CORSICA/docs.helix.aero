@@ -39,25 +39,27 @@ Le GSD dépend aussi du capteur choisi. Si le GSD vous semble incohérent, véri
 
 ## Tolérance AGL
 
-Le champ **Tolérance AGL** (en mètres) indique l'écart de hauteur toléré autour de l'altitude demandée lorsque le mode est **AGL**. Une tolérance faible garde l'appareil très près de la hauteur demandée ; une tolérance plus élevée laisse plus de liberté à l'appareil sur un terrain irrégulier.
+Le champ **Tolérance AGL** (en mètres) indique l'écart de hauteur toléré autour de l'altitude demandée. Il s'affiche en mode **AGL** et **IAGL**. Une tolérance faible garde l'appareil très près de la hauteur demandée ; une tolérance plus élevée laisse plus de liberté à l'appareil sur un terrain irrégulier.
 
 ## Vitesse
 
-Le champ **Vitesse** (en m/s) fixe la vitesse de vol sur la tâche. Une vitesse trop élevée peut réduire la netteté des images ; une vitesse plafonnée est signalée par une notification.
+Le champ **Vitesse** (en m/s) fixe la vitesse de vol sur la tâche. Une vitesse trop élevée peut réduire la netteté des images ; si la vitesse saisie dépasse ce que l'appareil permet, elle est ramenée à sa limite et une notification **Vitesse plafonnée** s'affiche.
 
 ## Virage
 
-Le menu **Virage** propose deux types :
+Pour un drone, le menu **Virage** propose deux types :
 
 - **Fluide** : l'appareil tourne sans s'arrêter aux extrémités des bandes.
 - **Stop & turn** : l'appareil s'arrête à chaque extrémité, puis tourne.
+
+Pour un avion, ce menu est remplacé par le champ **Approche (avion)**.
 
 ## Drone yaw et Angle yaw
 
 Ces deux champs règlent l'orientation de l'appareil (le cap) pendant le vol. Ils ne s'affichent que pour un drone.
 
-- **Drone yaw** : le menu propose **Trajectoire** (le drone s'oriente dans le sens du vol) et **Nord** (le drone garde un cap fixe par rapport au nord).
-- **Angle yaw** : l'angle du cap, en degrés (°), utilisé avec le choix **Nord**.
+- **Drone yaw** : choisit la référence du cap. **Trajectoire** : le cap se compte à partir du sens du vol. **Nord** : le cap se compte à partir du nord.
+- **Angle yaw** : l'angle du cap, en degrés (°), à partir de cette référence. Avec **Trajectoire** et un angle de **0**, le drone regarde dans le sens du vol.
 
 ## Voir aussi
 

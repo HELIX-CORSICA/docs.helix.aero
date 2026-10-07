@@ -20,7 +20,7 @@ De haut en bas, la barre contient :
 
 | Outil | Ce qu'il fait |
 |---|---|
-| **Point de décollage** | Place le point où l'aéronef décolle et atterrit. |
+| **Point de décollage** | Place le point de décollage de l'aéronef. |
 | **Poser un waypoint** | Place un point de passage sur la carte. |
 | **Dessiner une zone** | Trace un polygone : la zone à couvrir par les bandes de vol. |
 | **Dessiner corridor** | Trace une ligne qui devient un corridor à survoler. |
@@ -47,7 +47,7 @@ Le contour ne doit pas se croiser lui-même. Si c'est le cas, l'interface signal
 
 Une fois la zone dessinée, les bandes de vol se calculent et s'affichent sur la carte.
 
-<Frame caption="Une zone dessinée avec ses bandes de vol, et le panneau Tâches à gauche">
+<Frame caption="Une zone dessinée sur la carte, avec le panneau Tâches à gauche">
   <img src="/images/flight-planner/mission-vue-generale.png" alt="Zone dessinée sur la carte, panneau Tâches onglet VOL" />
 </Frame>
 
@@ -63,7 +63,7 @@ Cliquez sur **Dessiner corridor**, puis tracez la ligne sur la carte. La tâche 
 
 Cliquez sur **Dessiner obstruction**, puis tracez la zone à éviter. Une fenêtre **Nouvelle obstruction** s'ouvre :
 
-- **Nom** (obligatoire) : le nom affiché dans la liste des obstructions.
+- **Nom** (obligatoire) : le nom de l'obstruction.
 - **Marge (m)** : la distance de sécurité autour de l'obstruction. La valeur par défaut est 1.
 - **Hauteur (m)** : la hauteur de l'obstruction. Laissez le champ vide pour indiquer une **zone à ne pas survoler**.
 
@@ -76,12 +76,12 @@ Cliquez sur **Valider** pour créer l'obstruction, ou sur **Annuler** pour l'aba
 ## Poser un waypoint et le point de décollage
 
 - **Poser un waypoint** : cliquez sur l'outil, puis sur la carte à l'endroit voulu.
-- **Point de décollage** : cliquez sur l'outil, puis sur la carte. Le point apparaît dans la liste **Tâches** sous le libellé **Point de décollage**.
+- **Point de décollage** : cliquez sur l'outil, puis sur la carte à l'endroit du décollage.
 
 ## Terminer, annuler, modifier
 
 - **Terminer** une zone : double-clic sur la carte.
-- **Annuler** un tracé en cours : clic droit sur la carte. Le bandeau de dessin en mode hors ligne rappelle ces deux gestes : « double-clic pour fermer · clic droit pour annuler ».
+- **Annuler** un tracé en cours : clic droit sur la carte.
 - **Changer de forme** : une zone terminée se modifie en déplaçant ses sommets jaunes. Les petits points gris au milieu de chaque côté servent à ajouter un sommet sur ce côté.
 
 {/* CAPTURE À FAIRE : zone sélectionnée avec ses sommets et ses points intermédiaires, en gros plan */}

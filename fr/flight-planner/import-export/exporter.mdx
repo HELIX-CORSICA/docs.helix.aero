@@ -10,7 +10,7 @@ Une fois les bandes calculées, le bouton **EXPORT** transforme votre mission en
 
 <Steps>
 <Step title="Vérifier le calcul">
-Les bandes de vol doivent être calculées sur votre zone. Sans calcul, l'export ne peut pas produire de plan.
+Les bandes de vol doivent être calculées sur votre zone. Sinon, l'application affiche « Calculez la mission avant d'exporter. ».
 </Step>
 <Step title="Cliquer sur EXPORT">
 Le bouton **EXPORT** se trouve en haut à droite, dans la barre de la mission.
@@ -28,13 +28,17 @@ Cliquez sur **Annuler** pour fermer la fenêtre sans rien exporter.
 
 ## Plan de vol : les formats
 
-L'option **Plan de vol** enregistre un fichier. Choisissez le format selon ce que vous voulez en faire :
+L'option **Plan de vol** enregistre un fichier. La fenêtre **Format du plan de vol** s'ouvre. Choisissez le format selon ce que vous voulez en faire :
 
 | Format | Ce que c'est | À quoi il sert sur le terrain |
 |---|---|---|
-| **.helix** | Projet complet du Flight Planner | Sauvegarder la mission et la partager. Réimportable dans le Flight Planner : on retrouve exactement les options et les bandes des zones verrouillées. |
-| **KML** | Trajet affiché sur une carte, en **LineString** (une ligne) ou en **Placemark** (des points) | Visualiser le trajet dans un logiciel de cartographie, par exemple Google Earth, pour le relire ou le présenter. |
-| **KMZ WPML** | Plan de vol au format DJI | Préparer la mission d'un drone DJI. Ce fichier est destiné à DJI Pilot. |
+| **.helix (Helix Archive)** | **Projet Flight Planner** complet | Sauvegarder la mission et la partager. Réimportable dans le Flight Planner : vous retrouvez exactement les options et les bandes des zones verrouillées. |
+| **KML** | Trajet affiché sur une carte. Le **Mode KML** propose **LineString** (une ligne) ou **Placemark** (des points). | Visualiser le trajet dans un logiciel de cartographie, par exemple Google Earth, pour le relire ou le présenter. |
+| **WPML (DJI Pilot)** | Plan de vol au format DJI (fichier KMZ) | Préparer la mission d'un drone DJI dans DJI Pilot. |
+
+<Note>
+Le format **WPML (DJI Pilot)** est réservé aux drones DJI. Sans appareil choisi, l'application affiche « Sélectionnez un drone DJI pour activer cet export. ».
+</Note>
 
 {/* CAPTURE À FAIRE : fenêtre qui s'ouvre après le choix d'un format Plan de vol, montrant l'emplacement d'enregistrement du fichier */}
 
@@ -53,8 +57,8 @@ Sélectionnez **AMSL absolu** ou **Relatif au décollage**. Le choix doit corres
 
 | Option | Ce qu'elle fait |
 |---|---|
-| **Local** | Envoie la mission à DJI Pilot par une liaison directe, sur la même radiocommande. |
-| **Cloud** | Publie les waylines sur le portail Helix, pour DJI Pilot. |
+| **Local** | Envoie la mission à DJI Pilot sur la radiocommande, par le réseau local. |
+| **Cloud** | Publie la mission sur le portail Helix. DJI Pilot la récupère ensuite en ligne. |
 
 </Step>
 </Steps>
@@ -62,6 +66,10 @@ Sélectionnez **AMSL absolu** ou **Relatif au décollage**. Le choix doit corres
 <Warning>
 Cette option n'est disponible que pour un drone DJI. Avec un autre appareil, elle est désactivée et affiche « Appareil non-DJI — réservé aux drones DJI ».
 </Warning>
+
+## Si un problème est détecté sur le vol
+
+Avant l'export, l'application peut afficher « Des problèmes majeurs sur votre vol sont détectés. », par exemple **Collision terrain détectée !**. Corrigez le vol de préférence. Pour exporter quand même, cochez « Je comprends les risques et souhaite exporter malgré tout. » puis cliquez sur **Continuer malgré tout**.
 
 ## Voir aussi
 

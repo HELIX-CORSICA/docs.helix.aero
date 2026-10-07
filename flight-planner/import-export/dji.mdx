@@ -1,0 +1,87 @@
+---
+title: "Working with DJI (Pilot and Cloud)"
+description: "Send a mission to DJI Pilot locally or through the Cloud, choose the altitude reference, and find the missions of your DJI account."
+icon: "plane"
+---
+
+For a DJI drone, you can send the flight plan directly to **DJI Pilot**, either locally or through the **Cloud**. You can also browse the missions of your DJI account from the dashboard.
+
+## Before you send
+
+- The mission must be **computed**. Otherwise, you see the message *"Compute the mission before exporting."*
+- The flight must use a **DJI aircraft**. For a non-DJI aircraft, **Send** is greyed out with the message *"Non-DJI aircraft — reserved for DJI drones"*.
+
+## Send to DJI Pilot
+
+<Steps>
+  <Step title="Open the export">
+    Click **Export** at the top right of the mission.
+  </Step>
+  <Step title="Choose the DJI destination">
+    Click **Send to DJI Pilot**. The subtitle reads: *"Choose the altitude reference then Local or Cloud"*.
+  </Step>
+  <Step title="Choose the altitude reference">
+    In **Altitude reference (DJI WPML)**, choose:
+    - **Absolute AMSL**: altitudes are expressed above sea level.
+    - **Relative to takeoff**: altitudes are expressed relative to the takeoff point.
+  </Step>
+  <Step title="Choose Local or Cloud">
+    - **Local**: *"LAN bridge to DJI Pilot on the same remote controller"*. The plan arrives in DJI Pilot on the remote controller connected to your local network.
+    - **Cloud**: *"Publishes waylines on the Helix portal for DJI Pilot"*. The plan is published to the portal, then picked up by DJI Pilot.
+  </Step>
+  <Step title="Send">
+    Confirm with **Send**.
+  </Step>
+</Steps>
+
+<Frame caption="Export the flight plan window: Flight plan and Send to DJI Pilot">
+  <img src="/images/flight-planner/export.png" alt="Export the flight plan window with the Flight plan and Send to DJI Pilot options" />
+</Frame>
+
+{/* CAPTURE TO DO: "Send to DJI Pilot" window open, showing the altitude reference choice (Absolute AMSL / Relative to takeoff) and the Local / Cloud choice */}
+
+### Local or Cloud: what is the difference?
+
+| Option | When to choose it | What you need |
+|---|---|---|
+| **Local** | You are in the field, with the DJI remote controller on the same network as this computer. | The DJI Pilot bridge must be started on this computer. |
+| **Cloud** | You want to publish the plan to the Helix portal and find it from DJI Pilot. | A license that allows DJI cloud publishing. |
+
+If your license does not allow it, Helix shows: *"Your license does not allow DJI cloud publishing."*
+
+### The DJI Pilot bridge (Local)
+
+For a **Local** send, the bridge window shows **Start** and **Stop**, the **Address** to enter in DJI Pilot, a 6-digit **Code**, and the detected **Remote controller**.
+
+{/* CAPTURE TO DO: DJI Pilot bridge window (Start / Stop buttons, Address, Code, Remote controller) */}
+
+In DJI Pilot, the address is entered under **Cloud Service → Open Platforms**, and then the local password is requested.
+
+## DJI account missions (DJI Cloud)
+
+The **DJI Cloud** button on the dashboard opens the list of missions in your DJI account.
+
+<Frame caption="Dashboard: DJI Cloud button next to Import a mission">
+  <img src="/images/flight-planner/dashboard.png" alt="Dashboard with the DJI Cloud, Import a mission and + New mission buttons" />
+</Frame>
+
+If no mission is found, you see the message *"No mission from this account is on the DJI server."*
+
+{/* CAPTURE TO DO: DJI Cloud window with the list of missions in the DJI account */}
+
+## Waylines
+
+The DJI Pilot bridge window has a **Waylines** section. Waylines are the flight plans as DJI Pilot stores them in its library.
+
+{/* CAPTURE TO DO: Waylines list in the DJI Pilot bridge window */}
+
+## WPML export for DJI Pilot (file)
+
+To save a file instead of sending it, open **Export**, then **Flight plan**, and choose **WPML (DJI Pilot)**. This option is only enabled when a DJI drone is selected. Otherwise, you see *"Select a DJI drone to enable this export."*
+
+## See also
+
+- [Export the flight plan](/flight-planner/import-export/exporter)
+- [Import data](/flight-planner/import-export/importer)
+- [Choose the sensor (SENSOR tab)](/flight-planner/parametres/onglet-capteur)
+- [FAQ and troubleshooting](/flight-planner/aide/faq)

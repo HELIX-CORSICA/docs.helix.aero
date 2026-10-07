@@ -1,0 +1,108 @@
+---
+title: "Draw tasks"
+description: "Draw the tasks of a flight on the map: area, corridor, obstruction, waypoint and takeoff point."
+icon: "draw-polygon"
+---
+
+A flight contains **tasks**: the area to cover, a corridor, an obstruction to avoid, a waypoint or the takeoff point. You draw them directly on the map with the vertical toolbar, on the left side of the map. The flight line calculation then starts from these tasks.
+
+## Before you draw
+
+Select or create a flight from the top bar (**+ FLIGHT**). Without a selected flight, the drawing tools do not respond and the interface shows the message "Create or select a flight to draw".
+
+<Frame caption="Vertical drawing toolbar, with the Draw area tooltip">
+  <img src="/images/flight-planner/barre-outils-dessin.png" alt="Vertical drawing toolbar, Draw area tooltip" />
+</Frame>
+
+## The tools in the vertical toolbar
+
+From top to bottom, the toolbar contains:
+
+| Tool | What it does |
+|---|---|
+| **Takeoff point** | Places the takeoff point of the aircraft. |
+| **Place a waypoint** | Places a waypoint on the map. |
+| **Draw area** | Draws a polygon: the area to cover with the flight lines. |
+| **Draw corridor** | Draws a line that becomes a corridor to fly over. |
+| **Draw obstruction** | Draws an area to avoid (building, terrain, restricted airspace). |
+| **Manual multi-flight split** | Splits the area between several flights. See [Split an area](/flight-planner/missions/decoupe). |
+
+## Draw an area
+
+<Steps>
+  <Step title="Choose the tool">
+    Click **Draw area** in the vertical toolbar.
+  </Step>
+  <Step title="Place the vertices">
+    Click on the map, one click per vertex. An area needs at least three vertices.
+  </Step>
+  <Step title="Close the shape">
+    To finish, double-click. The outline closes and the task appears in the **Tasks** list.
+  </Step>
+</Steps>
+
+<Note>
+The outline must not cross itself. If it does, the interface shows a "bow-tie polygon" warning: move or remove a vertex.
+</Note>
+
+Once the area is drawn, the flight lines are calculated and shown on the map.
+
+<Frame caption="An area drawn on the map, with the Tasks panel on the left">
+  <img src="/images/flight-planner/mission-vue-generale.png" alt="Area drawn on the map, Tasks panel, FLIGHT tab" />
+</Frame>
+
+## Draw a corridor
+
+Click **Draw corridor**, then trace the line on the map. The task appears in the **Tasks** list with the corridor icon. A flight can contain several tasks, for example an area and a corridor.
+
+<Frame caption="A flight with two tasks: an area and a corridor">
+  <img src="/images/flight-planner/dessin-corridor.png" alt="Flight with an area and a corridor in the Tasks list" />
+</Frame>
+
+## Draw an obstruction
+
+Click **Draw obstruction**, then trace the area to avoid. A **New obstruction** window opens:
+
+- **Name** (required): the name of the obstruction.
+- **Margin (m)**: the safety distance around the obstruction. The default value is 1.
+- **Height (m)**: the height of the obstruction. Leave the field empty to mark an **area not to fly over**.
+
+Click **Confirm** to create the obstruction, or **Cancel** to discard it.
+
+<Frame caption="New obstruction window">
+  <img src="/images/flight-planner/nouvelle-obstruction.png" alt="New obstruction window with Name, Margin and Height" />
+</Frame>
+
+## Place a waypoint and the takeoff point
+
+- **Place a waypoint**: click the tool, then click the map where you want the waypoint.
+- **Takeoff point**: click the tool, then click the map where the aircraft takes off.
+
+## Finish, cancel, edit
+
+- **Finish** an area: double-click on the map.
+- **Cancel** a drawing in progress: right-click on the map.
+- **Change the shape**: a finished area is edited by moving its yellow vertices. The small grey points in the middle of each side add a vertex on that side.
+
+{/* CAPTURE À FAIRE : area selected with its vertices and midpoints, close-up */}
+
+## Select a task
+
+The tasks of a flight appear in the **Tasks** panel, at the top left of the map. Each task has a number and an icon. Click a task in the list to select it. Its settings then appear in the **FLIGHT**, **SENSOR** and **GEOMETRY** tabs.
+
+## Task context menu
+
+A right-click on a task opens a menu. The entries you can see include **Copy**, **Cut**, **Paste**, **Group**, **Ungroup**, **Enable**, **Disable** and **Delete**. Some entries only appear for certain task types, for example **Restore corridor** or **Restore area**.
+
+{/* CAPTURE À FAIRE : context menu (right-click) open on a task in the list */}
+
+<Warning>
+Deleting a task is permanent, and the flight path that depends on it is deleted with it. Check the selection before you confirm.
+</Warning>
+
+## See also
+
+- [Create a mission](/flight-planner/missions/creer-une-mission)
+- [Organize flights](/flight-planner/missions/vols)
+- [Split an area](/flight-planner/missions/decoupe)
+- [Altitude, GSD and speed (FLIGHT tab)](/flight-planner/parametres/onglet-vol)

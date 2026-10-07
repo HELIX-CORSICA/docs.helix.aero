@@ -26,7 +26,7 @@ L'onglet **GÉOMÉTRIE** règle la façon dont les bandes de vol recouvrent la z
 
 ## Recouvrement avant et latéral
 
-Un drone ne prend pas une seule photo : il en prend une toutes les quelques mètres, et les bandes sont voisines les unes des autres. Le recouvrement indique la part de chaque image qui se retrouve dans la suivante. Plus le recouvrement est élevé, plus il y a de photos et plus la mission est longue, mais l'assemblage (la mosaïque, le modèle 3D) est plus solide.
+Un drone ne prend pas une seule photo : il en prend une tous les quelques mètres, et les bandes sont voisines les unes des autres. Le recouvrement indique la part de chaque image qui se retrouve dans la suivante. Plus le recouvrement est élevé, plus il y a de photos et plus la mission est longue, mais l'assemblage (la mosaïque, le modèle 3D) est plus solide.
 
 | Champ | Ce qu'il règle | Unité | Valeur affichée par défaut |
 |---|---|---|---|
@@ -46,13 +46,9 @@ flowchart LR
   Selon le type de capteur choisi dans l'onglet **CAPTEUR**, les libellés peuvent devenir **Recouvrement avant (photo)**, **Recouvrement latéral (photo)** ou **Recouvrement latéral (LiDAR)**. Le rôle reste le même.
 </Note>
 
-<Tip>
-  Les valeurs par défaut affichées sont **80 %** (avant) et **60 %** (latéral).
-</Tip>
-
 ## Direction et bouton AUTO
 
-- Le curseur **Direction** fait tourner l'orientation des bandes sur la zone. Le champ à droite affiche la valeur numérique.
+- Le curseur **Direction** fait tourner l'orientation des bandes sur la zone. Le champ à droite affiche l'angle, en degrés (**°**).
 - Le bouton vert **AUTO**, à côté de **Direction**, laisse Helix proposer l'orientation.
 - Pour régler l'orientation vous-même, utilisez le curseur ou le champ de valeur. Comparez les résultats dans l'encart **Durée / Distance**.
 
@@ -65,11 +61,11 @@ Ces deux champs s'expriment en mètres (**m**) et valent **0** par défaut, donc
 
 ## Double grille
 
-Le bouton **Double grille** active une seconde série de bandes. Sur la carte, les bandes forment alors une grille à deux familles de lignes.
+L'interrupteur **Double grille** active une seconde série de bandes. Sur la carte, les bandes forment alors une grille à deux familles de lignes.
 
 ## Zone stricte
 
-Le bouton **Zone stricte** cadre les bandes sur le contour tracé. Vérifiez la carte après l'avoir activé ou désactivé.
+L'interrupteur **Zone stricte** cadre les bandes sur le contour tracé. Vérifiez la carte après l'avoir activé ou désactivé.
 
 ## Effet visible sur les bandes
 

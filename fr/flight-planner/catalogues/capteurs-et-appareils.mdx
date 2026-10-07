@@ -1,0 +1,167 @@
+---
+title: "Catalogues capteurs et appareils"
+description: "Parcourir, rechercher, filtrer et ajouter les capteurs et les appareils (avions, hélicoptères, drones) depuis le tableau de bord."
+icon: "camera"
+---
+
+Les catalogues regroupent les **capteurs** (caméras, LiDAR) et les **appareils** (avions, hélicoptères, drones) utilisés dans vos missions. Ils se consultent depuis le tableau de bord, dans les onglets **CAPTEURS** et **APPAREILS**. Vous pouvez aussi y ajouter un capteur ou un appareil qui n'existe pas encore dans la liste.
+
+## Ouvrir un catalogue
+
+<Steps>
+  <Step title="Ouvrir le tableau de bord">
+    Le tableau de bord s'affiche à l'ouverture de l'application. Il contient trois onglets en haut : **MISSIONS**, **CAPTEURS** et **APPAREILS**.
+  </Step>
+  <Step title="Choisir l'onglet">
+    Cliquez sur **CAPTEURS** pour voir les capteurs, ou sur **APPAREILS** pour voir les appareils.
+  </Step>
+</Steps>
+
+<Frame caption="Onglet CAPTEURS : catalogue en grille">
+  <img src="/images/flight-planner/dashboard-capteurs.png" alt="Onglet CAPTEURS du tableau de bord, avec la liste des capteurs en grille" />
+</Frame>
+
+<Frame caption="Onglet APPAREILS : catalogue des avions, hélicoptères et drones">
+  <img src="/images/flight-planner/dashboard-appareils.png" alt="Onglet APPAREILS du tableau de bord, avec la liste des appareils en grille" />
+</Frame>
+
+## Parcourir et rechercher
+
+Chaque onglet a la même barre de commandes, en haut de la liste :
+
+| Élément | Rôle |
+|---|---|
+| Champ de recherche | Tapez un nom. Il s'affiche **Rechercher un capteur…** dans l'onglet CAPTEURS et **Rechercher un appareil…** dans l'onglet APPAREILS. |
+| **Toutes les marques** | Liste déroulante pour ne garder qu'une marque. |
+| **Tous les types** | Liste déroulante pour ne garder qu'un type. |
+| Icônes de vue | Deux boutons pour changer l'affichage : **Cartes** (grille) ou **Liste**. |
+| **Sync** | Met le catalogue à jour (voir plus bas). |
+| **+ NOUVEAU CAPTEUR** / **+ NOUVEL APPAREIL** | Ajoute une fiche (voir plus bas). |
+
+Les résultats se réduisent au fur et à mesure de votre saisie et des filtres. Si rien ne correspond, le message **Aucun résultat.** s'affiche.
+
+### Grille et liste
+
+- En vue **Cartes**, chaque capteur ou appareil est une vignette avec son nom et son type. Les vignettes de capteurs portent un badge **3D**.
+- En vue **Liste**, les mêmes entrées s'affichent ligne par ligne, ce qui permet de comparer plus de références à l'écran.
+
+{/* CAPTURE À FAIRE : onglet CAPTEURS en vue Liste, avec une recherche saisie et un filtre de marque actif */}
+
+### Filtrer les capteurs
+
+Dans l'onglet **CAPTEURS**, la liste **Tous les types** permet de ne garder qu'une catégorie de capteurs. Chaque vignette affiche la catégorie du capteur sous son nom (par exemple **Photo**).
+
+### Filtrer les appareils
+
+Dans l'onglet **APPAREILS**, la liste **Tous les types** permet de ne garder que les avions, les hélicoptères ou les drones. Chaque vignette affiche le type de l'appareil sous son nom (**Avion**, **Hélicoptère**, **Drone**).
+
+## Mettre un capteur ou un appareil en favori
+
+Cliquez sur l'étoile en haut à droite d'une vignette pour la mettre en favori. Les étoiles sont aussi présentes dans la fenêtre **Choisir un capteur**.
+
+## Fiche détaillée
+
+{/* CAPTURE À FAIRE : fiche détaillée d'un capteur ou d'un appareil ouverte depuis le catalogue, avec le bouton « ← Fermer » et l'aperçu 3D */}
+
+Une fiche détaillée présente les caractéristiques d'un capteur ou d'un appareil. Le bouton **← Fermer** revient à la liste.
+
+## Ajouter un capteur : + NOUVEAU CAPTEUR
+
+Utilisez **+ NOUVEAU CAPTEUR** lorsque votre capteur n'apparaît pas dans la liste. La fenêtre s'intitule **Nouveau capteur**.
+
+<Steps>
+  <Step title="Ouvrir la fenêtre">
+    Dans l'onglet **CAPTEURS**, cliquez sur **+ NOUVEAU CAPTEUR**.
+  </Step>
+  <Step title="Renseigner les champs">
+    Remplissez les champs. Les champs obligatoires sont signalés par un astérisque (*). Principaux champs :
+
+    | Champ | Exemple de contenu |
+    |---|---|
+    | **Fabricant** | Nom de la marque |
+    | **Type de capteur** | Catégorie du capteur |
+    | **Largeur capteur (mm)** et **Hauteur capteur (mm)** | Dimensions du capteur |
+    | **Focales (mm)** | Focale ou focales de l'objectif |
+    | **Pixel (µm)** | Taille d'un pixel. Si vous laissez ce champ vide, la taille est déduite de la largeur du capteur et de la largeur de l'image. |
+    | **Largeur image (px)** et **Hauteur image (px)** | Résolution de l'image |
+    | **Champ de vision transversal (°)** | Angle de vue perpendiculaire à la route |
+    | **Intervalomètre min (s) *** | Délai minimum entre deux prises de vue |
+
+  </Step>
+  <Step title="Enregistrer">
+    Cliquez sur **Enregistrer**. Si un champ obligatoire est vide, le message **Complétez les champs requis avant d'enregistrer** s'affiche et l'enregistrement ne se fait pas. Le message **Champs requis manquants :** indique lesquels compléter.
+  </Step>
+</Steps>
+
+{/* CAPTURE À FAIRE : fenêtre « Nouveau capteur » ouverte, avec les champs obligatoires marqués d'un astérisque */}
+
+## Ajouter un appareil : + NOUVEL APPAREIL
+
+Utilisez **+ NOUVEL APPAREIL** pour ajouter un avion, un hélicoptère ou un drone absent de la liste. La fenêtre s'intitule **Nouvel appareil**.
+
+<Steps>
+  <Step title="Ouvrir la fenêtre">
+    Dans l'onglet **APPAREILS**, cliquez sur **+ NOUVEL APPAREIL**.
+  </Step>
+  <Step title="Renseigner les champs">
+    Remplissez les champs. Principaux champs :
+
+    | Champ | Contenu |
+    |---|---|
+    | **Indicatif** | Nom court de l'appareil |
+    | **Croisière (km/h)** | Vitesse de croisière |
+    | **Autonomie (min)** | Durée de vol maximale |
+    | **Plafond (m)** | Altitude maximale |
+    | **Charge utile max (kg)** | Masse maximale embarquée |
+    | **Taux de montée (m/s)** et **Taux de descente (m/s)** | Vitesses verticales |
+    | **Vitesse de décrochage (m/s)** | Vitesse minimale de vol (avion) |
+    | **Rayon de virage min (m)** | Rayon de virage le plus serré |
+    | **Garde au sol min (m)** | Hauteur minimale au-dessus du sol |
+    | **Type de drone** | Pour un drone : **Multicoptère**, **Voilure fixe**, **Mono-rotor**, **VTOL** ou **Autre** |
+    | **Plateforme technique** | **Générique** ou **Propriétaire** |
+
+    Les champs obligatoires sont signalés par un astérisque (*).
+  </Step>
+  <Step title="Enregistrer">
+    Cliquez sur **Enregistrer**. Comme pour un capteur, les champs obligatoires doivent être complétés.
+  </Step>
+</Steps>
+
+{/* CAPTURE À FAIRE : fenêtre « Nouvel appareil » ouverte, avec la liste complète des champs */}
+
+## Sync du catalogue
+
+Le catalogue se met à jour automatiquement lorsque vous vous connectez. Pour récupérer les dernières mises à jour à tout moment, cliquez sur **Sync**.
+
+- Pendant la synchronisation, le bouton affiche **Synchronisation…**.
+- Après une synchronisation, le bouton passe en attente : il affiche **Sync (Ns)**, où N est le compte à rebours en secondes. Une nouvelle synchronisation n'est possible qu'à la fin du compte à rebours.
+- En cas d'échec, le message **Échec de la synchronisation :** suivi de la raison s'affiche. Si la barre du haut affiche **Erreur sync**, vérifiez votre connexion internet puis cliquez sur **Sync**.
+
+<Tip>
+Si la liste est vide, le message **Aucun capteur dans le catalogue.** ou **Aucun appareil dans le catalogue.** s'affiche avec le conseil de vérifier votre connexion internet puis de lancer **Sync**.
+</Tip>
+
+## Choisir un capteur ou un appareil dans une mission
+
+Les mêmes listes servent lorsque vous choisissez le capteur ou l'appareil d'un vol.
+
+- **Choisir un capteur** s'ouvre depuis le champ **Capteur** de l'onglet **CAPTEUR**. La fenêtre propose une recherche, les filtres **Tous**, **Photo** et **LiDAR**, les étoiles de favoris et le bouton **Annuler**.
+- **Choisir un appareil** s'ouvre depuis la fenêtre **Paramètres du vol**. Elle propose une recherche, les filtres **Tous**, **Avion**, **Hélico** et **Drone**, les étoiles de favoris et le bouton **Annuler**. Chaque ligne indique le type, la vitesse de croisière et l'autonomie.
+- Le nombre affiché à côté de chaque filtre indique combien d'entrées il contient.
+
+<Frame caption="Fenêtre Choisir un capteur, depuis l'onglet CAPTEUR">
+  <img src="/images/flight-planner/choix-capteur.png" alt="Fenêtre Choisir un capteur avec recherche, filtres Tous, Photo et LiDAR, et étoiles de favoris" />
+</Frame>
+
+<Frame caption="Fenêtre Choisir un appareil">
+  <img src="/images/flight-planner/choix-appareil.png" alt="Fenêtre Choisir un appareil avec recherche, filtres Tous, Avion, Hélico et Drone, et étoiles de favoris" />
+</Frame>
+
+Pour la suite de la configuration, voir [Choisir le capteur](/fr/flight-planner/parametres/onglet-capteur) et [Créer une mission](/fr/flight-planner/missions/creer-une-mission).
+
+## Voir aussi
+
+- [Le tableau de bord](/fr/flight-planner/missions/tableau-de-bord)
+- [Choisir le capteur (onglet CAPTEUR)](/fr/flight-planner/parametres/onglet-capteur)
+- [Créer une mission](/fr/flight-planner/missions/creer-une-mission)
+- [Glossaire](/fr/flight-planner/aide/glossaire)

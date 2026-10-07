@@ -26,7 +26,7 @@ Le panneau **QC** (bouton **Contrôle qualité** dans la barre de droite de la c
     Sous **SEUILS (cm)**, ajustez les curseurs ou cliquez sur **Préréglages** pour appliquer un jeu de valeurs prêt à l'emploi.
   </Step>
   <Step title="Lancer le calcul">
-    Cliquez sur **Calculer**. Les couleurs apparaissent sur la zone une fois le calcul terminé.
+    Cliquez sur **Calculer**, le bouton vert qui apparaît en haut de la carte. Le pourcentage d'avancement s'affiche pendant le calcul, puis les couleurs apparaissent sur la zone.
   </Step>
   <Step title="Lire la carte">
     Lisez la carte de couleurs en comparant chaque zone aux seuils (voir plus bas).
@@ -44,8 +44,8 @@ Le panneau **QC** (bouton **Contrôle qualité** dans la barre de droite de la c
 - **Vol** / **Tâche** : la portée de l'analyse. Le panneau affiche le vol ou la tâche sélectionné.
 - **CRITÈRE** :
   - **GSD** : la taille au sol d'un pixel de photo, en centimètres. Plus le chiffre est petit, plus le détail est fin.
-  - **Passes** : le nombre de passages de vol qui survolent chaque zone.
-  - **Empreinte** : la zone couverte par l'empreinte d'une photo.
+  - **Passes** : le nombre de bandes qui couvrent chaque zone.
+  - **Empreinte** : la surface au sol couverte par les photos du capteur.
 
 ### GSD multi-clichés
 
@@ -60,12 +60,13 @@ Quand le GSD est le critère, **GSD MULTI-CLICHÉS** détermine quelle valeur es
 Sous **GÉOMÉTRIE GSD**, choisissez :
 
 - **Standard** : la géométrie habituelle de prise de vue.
-- **Oblique** : la géométrie de prise de vue inclinée (disponible selon le capteur).
+- **Oblique** : la géométrie de prise de vue inclinée.
 
 ### Seuils (cm)
 
-- La barre **SEUILS (cm)** va du rouge (valeurs élevées) au vert (valeurs faibles). Les repères chiffrés indiquent les valeurs en centimètres (par exemple 5, 7,5 et 10 cm).
-- **Préréglages** ouvre la liste des jeux de seuils prédéfinis. Une fois le calcul fait, l'icône d'histogramme à côté de **Préréglages** montre la répartition des valeurs sur la zone.
+- La barre **SEUILS (cm)** va du rouge (valeurs élevées, à gauche) au vert (valeurs faibles, à droite). Les repères chiffrés indiquent les valeurs en centimètres (par exemple 5, 7,5 et 10 cm).
+- **Préréglages** ouvre la fenêtre **Préréglages de seuils**, avec des jeux de valeurs prêts à l'emploi.
+- Une fois le calcul fait, un petit histogramme s'affiche sous **Préréglages**. Il montre la répartition des valeurs sur la zone.
 
 ### Opacité
 
@@ -73,16 +74,16 @@ Le curseur **OPACITÉ** règle la transparence de la couleur posée sur la carte
 
 ### Comparer
 
-Le bouton **Comparer** ouvre la fenêtre **Comparer les hypothèses**. Il n'est disponible qu'après un calcul : tant que la carte QC n'est pas calculée, il reste inactif.
+Le bouton **Comparer**, en bas du panneau, ouvre la fenêtre **Comparer les hypothèses**. Il reste grisé tant que la carte QC n'est pas calculée.
 
 {/* CAPTURE À FAIRE : fenêtre « Comparer les hypothèses » après calcul de deux hypothèses */}
 
 ## Lire la carte de couleurs
 
 - **Vert** : la valeur respecte le seuil. La zone est bonne.
-- **Orange** à **rouge** : la valeur dépasse le seuil. La zone est à revoir : rapprochez les lignes de vol, changez l'altitude ou la vitesse, puis recalculez.
+- **Orange** à **rouge** : la valeur dépasse le seuil. La zone est à revoir : ajustez par exemple l'altitude ou le recouvrement, puis recalculez.
 
-Après une modification du plan (altitude, capteur, recouvrement, tâche), cliquez à nouveau sur **Calculer** pour mettre la carte à jour.
+Après une modification du plan (altitude, capteur, recouvrement, tâche), cliquez à nouveau sur **Calculer** pour mettre la carte à jour. Le bouton passe à l'orange quand la carte n'est plus à jour.
 
 ## Voir aussi
 
