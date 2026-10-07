@@ -1,0 +1,137 @@
+---
+title: "Réglages"
+description: "Parcourir les réglages du Flight Planner : compte, licence, préférences, apparence, géoïdes, cache terrain, performance, mises à jour et diagnostics."
+icon: "gear"
+---
+
+La fenêtre **Réglages** regroupe les paramètres de l'application : votre compte, votre licence, la langue et les unités, l'affichage, le cache des données de terrain et les diagnostics. Vous y passez rarement, sauf pour changer la langue, les unités ou le dossier du cache.
+
+## Ouvrir les réglages
+
+1. Repérez l'icône en forme de **roue dentée** en haut à droite de la fenêtre, à gauche du statut de connexion.
+2. Cliquez dessus. La fenêtre **Réglages** s'ouvre.
+3. Choisissez une section dans la colonne de gauche. Le contenu s'affiche à droite.
+
+Pour fermer la fenêtre, cliquez sur la croix **×** en haut à droite.
+
+## Compte
+
+Cette section affiche l'adresse e-mail du compte connecté et permet de vous déconnecter.
+
+<Frame caption="Réglages, section Compte">
+  <img src="/images/flight-planner/reglages-compte.png" alt="Section Compte des réglages avec l'e-mail, le champ Jeton Cesium ion et le bouton Se déconnecter" />
+</Frame>
+
+- **Email** : l'adresse du compte. Elle s'affiche **Non connecté** si aucune session n'est ouverte.
+- **Jeton Cesium ion** : champ masqué pour saisir votre jeton. Cliquez sur l'icône en forme d'œil pour l'afficher. Le jeton reste stocké uniquement sur cet appareil.
+- **Se déconnecter** : ferme la session sur cet appareil.
+
+Si la session expire, l'application vous demande de vous reconnecter depuis **Réglages → Compte**. Voir [Se connecter](/fr/flight-planner/demarrage/connexion).
+
+## Licence
+
+Cette section indique le statut de la licence de l'ordinateur et son type.
+
+<Frame caption="Réglages, section Licence">
+  <img src="/images/flight-planner/reglages-licence.png" alt="Section Licence avec le statut, le type de licence, l'organisation et le bouton Désactiver" />
+</Frame>
+
+- **Statut** : **Active** ou **Inactive**.
+- **Type de licence** et **Organisation** : les informations de votre licence.
+- **Désactiver cette machine ?** : le bouton **Désactiver** retire l'activation de la licence sur cet ordinateur.
+
+## Préférences
+
+Cette section règle la langue et les unités affichées.
+
+<Frame caption="Réglages, section Préférences">
+  <img src="/images/flight-planner/reglages-preferences.png" alt="Section Préférences avec la langue, l'unité de distance et les unités de vitesse" />
+</Frame>
+
+- **Langue** : liste déroulante. Les choix sont **Français** et **English**.
+- **Unité de distance** : **Mètres** ou **Pieds**.
+- **Unité de vitesse — drone** : **M/S**, **KM/H** ou **KT**.
+- **Unité de vitesse — avion / hélico** : **KT**, **KM/H** ou **M/S**.
+
+Les deux unités de vitesse sont indépendantes. Vous pouvez donc afficher les drones en mètres par seconde et les avions en nœuds.
+
+## Apparence
+
+<Frame caption="Réglages, section Apparence">
+  <img src="/images/flight-planner/reglages-apparence.png" alt="Section Apparence avec la liste déroulante Thème réglée sur Sombre" />
+</Frame>
+
+La liste déroulante **Thème** propose trois choix :
+
+- **Système** : suit le thème de votre ordinateur.
+- **Clair** : fond clair en permanence.
+- **Sombre** : fond sombre en permanence.
+
+## Géoïdes
+
+Les géoïdes servent à convertir les altitudes. Ils sont nécessaires pour que les hauteurs soient exactes. Le détail se trouve dans [Terrain (MNT) et géoïdes](/fr/flight-planner/carte/terrain-et-geoides).
+
+<Frame caption="Réglages, section Géoïdes">
+  <img src="/images/flight-planner/reglages-geoides.png" alt="Section Géoïdes avec la ligne Grilles de transformation verticale et le bouton GÉRER" />
+</Frame>
+
+Cliquez sur **Gérer** pour ouvrir la fenêtre **Grilles de géoïdes**.
+
+## Cache terrain
+
+Le cache conserve sur votre disque les données de terrain et les fonds de carte déjà téléchargés. Ainsi, elles s'affichent plus vite la fois suivante.
+
+<Frame caption="Réglages, section Cache terrain">
+  <img src="/images/flight-planner/reglages-cache-terrain.png" alt="Section Cache terrain avec l'utilisation actuelle, le dossier de cache et la taille maximale" />
+</Frame>
+
+- **Utilisation actuelle** : la place occupée par le cache, par exemple **617 Ko / 5.0 Go**. Le bouton **Purger le cache** le vide. L'application demande une confirmation. Le dossier et la taille maximale ne changent pas.
+- **Dossier de cache** : le dossier actuel s'affiche. Cliquez sur **Parcourir** pour en choisir un autre, puis sur **Sauver** pour l'appliquer.
+- **Taille max du cache** : saisissez la taille en Go, puis cliquez sur **Sauver**. La valeur minimale est de **2 Go**. Quand la limite est atteinte, les tuiles les plus anciennes sont supprimées automatiquement.
+
+## Performance
+
+Cette section règle l'affichage du viewer 3D. Les réglages par défaut conviennent à la plupart des ordinateurs. Ne les modifiez que si l'affichage est lent ou saccadé.
+
+<Frame caption="Réglages, section Performance">
+  <img src="/images/flight-planner/reglages-performance.png" alt="Section Performance avec le backend, l'adaptateur GPU, l'anti-crénelage, la fréquence maximale et la synchronisation verticale" />
+</Frame>
+
+- **Backend** : le moteur graphique utilisé par l'application. Le choix **Rendu logiciel** est un mode de secours pour un ordinateur sans carte graphique adaptée. Il est plus lent. Ce choix n'est pas disponible sur macOS.
+- **Adapter GPU** : la carte graphique à utiliser. Si votre ordinateur en possède plusieurs, la liste les montre toutes. Le mot **intégré** indique une carte graphique intégrée au processeur.
+- **Anti-crénelage** : lisse les bords des formes à l'écran. **FXAA (défaut)** est recommandé. **Désactivé (arêtes non lissées)** rend l'image un peu plus rapide, avec des bords plus crénelés.
+- **Fréquence maximale du viewer** : limite le nombre d'images par seconde. **Fréquence écran (auto)** suit l'écran. **Illimité** n'impose aucune limite. **Personnalisé** permet de fixer une valeur. Une limite plus basse réduit la charge de l'ordinateur.
+- **Synchronisation verticale** : évite que l'image se déchire pendant les mouvements rapides. Les choix sont **Activée (défaut)**, **Désactivée** et **Sans blocage**.
+- **GPU** : bloc d'information en lecture seule. Il indique la carte utilisée, son constructeur et si le rendu des **RT cores** est disponible.
+
+Si un changement demande un redémarrage, un bouton **Redémarrer** apparaît. Le changement prend effet après ce redémarrage.
+
+## Mises à jour
+
+Cette section affiche la version installée et permet de vérifier s'il existe une nouvelle version.
+
+<Frame caption="Réglages, section Mises à jour">
+  <img src="/images/flight-planner/reglages-mises-a-jour.png" alt="Section Mises à jour avec la version actuelle, le statut et le bouton Vérifier" />
+</Frame>
+
+- **Version actuelle** : le numéro de la version installée.
+- **Statut** : indique si la vérification est possible. Le message **Une licence active est requise pour les mises à jour.** s'affiche quand la licence n'est pas active. Voir la section [Licence](#licence).
+- **Action** : le bouton **Vérifier** lance la recherche d'une nouvelle version.
+
+## Diagnostics
+
+Cette section gère l'envoi des rapports d'erreur à Helix. Elle est utile si le support vous demande des informations sur un incident.
+
+<Frame caption="Réglages, section Diagnostics">
+  <img src="/images/flight-planner/reglages-diagnostics.png" alt="Section Diagnostics avec l'interrupteur Activer les diagnostics et le bouton Exporter" />
+</Frame>
+
+- **Activer les diagnostics** : interrupteur. Une fois activé, l'application envoie les rapports de plantage et d'erreur à Helix. Ces rapports ne contiennent aucune donnée de vol. Les plantages natifs ne sont pris en compte qu'au prochain démarrage. Les rapports locaux sont supprimés après 30 jours.
+- **Exporter les diagnostics** : cliquez sur **Exporter** pour copier les rapports locaux dans un dossier. Joignez ce dossier à votre demande d'assistance.
+
+## Voir aussi
+
+- [Se connecter](/fr/flight-planner/demarrage/connexion)
+- [Terrain (MNT) et géoïdes](/fr/flight-planner/carte/terrain-et-geoides)
+- [Questions fréquentes et dépannage](/fr/flight-planner/aide/faq)
+- [Glossaire](/fr/flight-planner/aide/glossaire)
