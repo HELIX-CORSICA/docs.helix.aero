@@ -1,0 +1,116 @@
+---
+title: "Questions fréquentes et dépannage"
+description: "Solutions aux situations les plus courantes : pas de bandes affichées, erreur de synchronisation, carte qui ne s'affiche pas, changement de langue ou d'unités, mises à jour, export des diagnostics."
+icon: "circle-question"
+---
+
+Cette page répond aux problèmes les plus fréquents rencontrés dans Helix Flight Planner. Ouvrez la question qui correspond à votre situation. Si rien ne correspond, exportez les diagnostics et envoyez-les au support.
+
+<AccordionGroup>
+
+  <Accordion title="Aucune bande ne s'affiche sur ma zone">
+    Les bandes de vol sont calculées à partir d'un capteur. Si le vol n'en a pas, rien ne se calcule.
+
+    1. Ouvrez le panneau **Tâches**, onglet **CAPTEUR**.
+    2. Dans le champ **Capteur**, cliquez sur **Choisir un capteur…**.
+    3. Sélectionnez un capteur dans la fenêtre **Choisir un capteur**. Vous pouvez filtrer par **Tous**, **Photo** ou **LiDAR**, ou chercher son nom.
+    4. Revenez à l'onglet **VOL** et vérifiez que les bandes apparaissent sur la zone.
+
+    <Frame caption="Fenêtre Choisir un capteur">
+      <img src="/images/flight-planner/choix-capteur.png" alt="Fenêtre Choisir un capteur avec la recherche et les filtres Tous, Photo et LiDAR" />
+    </Frame>
+
+    Si le message **Vol avion sans capteur** apparaît, un vol avion doit avoir un capteur pour être calculé. Choisissez-le comme ci-dessus.
+
+    Voir aussi : [Choisir le capteur](/fr/flight-planner/parametres/onglet-capteur) et [Les bandes de vol](/fr/flight-planner/parametres/bandes).
+  </Accordion>
+
+  <Accordion title="La barre du haut affiche « Erreur sync » ou « Hors ligne »">
+    Ces indications concernent la synchronisation de votre travail avec le compte. Elles ne signifient pas que vous avez perdu quoi que ce soit.
+
+    - **Hors ligne** : la connexion est coupée. Vos modifications restent enregistrées sur cet ordinateur. Elles sont mises en attente et partent dès que la connexion revient.
+    - **Erreur sync** : la dernière synchronisation n'a pas abouti. Vérifiez votre connexion internet. Une fois le réseau rétabli, le travail en attente est envoyé.
+
+    Tant que l'indication persiste, gardez la mission ouverte et n'effacez rien : les modifications sont conservées localement.
+
+    <Frame caption="La barre du haut avec l'indication Erreur sync">
+      <img src="/images/flight-planner/reglages-preferences.png" alt="Barre du haut avec les indications Erreur sync et En ligne, à côté de l'icône Réglages" />
+    </Frame>
+
+    Voir aussi : [Découvrir l'interface](/fr/flight-planner/demarrage/interface).
+  </Accordion>
+
+  <Accordion title="Le message « Aucune coupe valide » apparaît">
+    Le message **Aucune coupe valide** signifie que la découpe de la zone ne donne aucun morceau utilisable.
+
+    1. Vérifiez la zone dessinée : une zone trop petite ou trop découpée peut ne rien donner.
+    2. Modifiez la découpe ou redessinez la zone, puis relancez la découpe.
+
+    {/* CAPTURE À FAIRE : fenêtre de découpe affichant le message « Aucune coupe valide » */}
+
+    Voir aussi : [Découper une zone](/fr/flight-planner/missions/decoupe).
+  </Accordion>
+
+  <Accordion title="La carte ne s'affiche pas">
+    Si la carte reste vide ou affiche le message **La carte n'a pas pu être chargée.**, essayez dans cet ordre :
+
+    1. Vérifiez votre connexion internet. Le fond de carte et le terrain se téléchargent depuis le réseau.
+    2. Changez de fond de carte dans le panneau **Fond de carte** (**Satellite**, **Plan** ou **Topo**) pour voir si l'un d'eux s'affiche.
+    3. Fermez puis rouvrez la mission.
+    4. Si le message **Erreur d'initialisation de la carte.** apparaît au lancement, fermez l'application et relancez-la.
+
+    Si la carte ne s'affiche toujours pas, exportez les diagnostics (voir plus bas) et contactez le support.
+
+    Voir aussi : [Fonds de carte et couches](/fr/flight-planner/carte/fonds-et-couches).
+  </Accordion>
+
+  <Accordion title="Changer la langue ou les unités">
+    1. Cliquez sur l'icône **Réglages** (roue dentée) en haut à droite.
+    2. Ouvrez l'onglet **Préférences**.
+    3. Dans **Langue**, choisissez la langue de l'interface.
+    4. Dans **Unité de distance**, choisissez **MÈTRES** ou **PIEDS**.
+    5. Dans **Unité de vitesse — drone**, choisissez **M/S**, **KM/H** ou **KT**. Dans **Unité de vitesse — avion / hélico**, faites de même.
+
+    <Frame caption="Réglages, onglet Préférences">
+      <img src="/images/flight-planner/reglages-preferences.png" alt="Onglet Préférences avec les champs Langue, Unité de distance et Unités de vitesse" />
+    </Frame>
+
+    Voir aussi : [Réglages](/fr/flight-planner/reglages).
+  </Accordion>
+
+  <Accordion title="La mise à jour est impossible">
+    Les mises à jour exigent une licence active. Si le message **Une licence active est requise pour les mises à jour.** s'affiche :
+
+    1. Ouvrez **Réglages**, puis l'onglet **Licence**.
+    2. Vérifiez que le statut indique **Active**.
+    3. Si le statut est **Inactive**, contactez votre administrateur ou le support pour activer la licence.
+
+    <Frame caption="Réglages, onglet Mises à jour">
+      <img src="/images/flight-planner/reglages-mises-a-jour.png" alt="Onglet Mises à jour de la fenêtre Réglages" />
+    </Frame>
+
+    Voir aussi : [Réglages](/fr/flight-planner/reglages).
+  </Accordion>
+
+  <Accordion title="Exporter les diagnostics pour le support">
+    Les diagnostics aident le support à comprendre un problème. Ils ne contiennent que le rapport d'erreur et les données de diagnostic locales.
+
+    1. Ouvrez **Réglages**, puis l'onglet **Diagnostics**.
+    2. Cliquez sur **Exporter les diagnostics**.
+    3. Attendez le message **Diagnostics exportés**.
+    4. Envoyez le fichier obtenu à **support@helix.aero**, avec une description de ce que vous faisiez quand le problème est apparu.
+
+    <Frame caption="Réglages, onglet Diagnostics">
+      <img src="/images/flight-planner/reglages-diagnostics.png" alt="Onglet Diagnostics avec le bouton Exporter les diagnostics" />
+    </Frame>
+
+    Voir aussi : [Réglages](/fr/flight-planner/reglages).
+  </Accordion>
+
+</AccordionGroup>
+
+## Voir aussi
+
+- [Découvrir l'interface](/fr/flight-planner/demarrage/interface)
+- [Réglages](/fr/flight-planner/reglages)
+- [Glossaire](/fr/flight-planner/aide/glossaire)
