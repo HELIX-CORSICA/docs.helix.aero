@@ -1,0 +1,135 @@
+---
+title: "Découvrir l'interface"
+description: "Visite guidée de l'écran de mission du Flight Planner, zone par zone."
+icon: "map"
+---
+
+Une mission s'ouvre sur une carte entourée de panneaux et de barres de commande. Cette page
+parcourt l'écran de mission zone par zone, pour que vous sachiez où se trouve chaque commande
+avant de commencer.
+
+<Frame caption="Écran de mission : vue générale">
+  <img src="/images/flight-planner/mission-vue-generale.png" alt="Écran de mission de la mission corte-lot3 : onglet de vol, panneau Tâches ouvert sur l'onglet VOL, zone dessinée sur la carte" />
+</Frame>
+
+Les sections ci-dessous suivent l'ordre de la liste, de haut en bas et de gauche à droite :
+
+1. La barre du haut
+2. La rangée des vols
+3. Le panneau Tâches
+4. La barre d'outils de dessin
+5. Les outils de mesure
+6. Le fond de carte et le contrôle qualité
+7. La boussole et l'encart Durée / Distance
+8. La barre d'état
+
+## 1. La barre du haut
+
+Tout en haut de l'écran, de gauche à droite :
+
+- **Logo et bouton maison** : revient au tableau de bord.
+- **Cloche** : affiche les notifications. Un chiffre rouge indique le nombre de notifications en attente.
+- **Indicateur de synchronisation** : affiche l'état de la synchronisation. Il indique **Erreur sync** lorsque la synchronisation a échoué.
+- **Engrenage** : ouvre les **Réglages**.
+- **En ligne** : indique que le logiciel est connecté.
+
+## 2. La rangée des vols
+
+Sous la barre du haut, une mission contient un ou plusieurs vols. Chaque vol a son onglet.
+
+- **Onglets numérotés** : chaque vol apparaît avec son numéro et son nom. Cliquez sur un onglet pour l'ouvrir.
+- **Œil** : à droite de l'onglet, il masque le vol sur la carte. Le vol reste dans la mission.
+- **+ VOL** : ajoute un vol à la mission. Voir [Organiser les vols](/fr/flight-planner/missions/vols).
+- **Import** : menu qui propose **Zone**, **GCP** et **Obstructions**. Voir [Importer des données](/fr/flight-planner/import-export/importer).
+
+<Frame caption="Menu Import">
+  <img src="/images/flight-planner/menu-import.png" alt="Menu Import ouvert avec les entrées Zone, GCP et Obstructions" />
+</Frame>
+
+- **EXPORT** : bouton vert, à droite. Il ouvre l'export du plan de vol. Voir [Exporter le plan de vol](/fr/flight-planner/import-export/exporter).
+
+## 3. Le panneau Tâches
+
+Le panneau **Tâches**, à gauche de la carte, liste les tâches du vol sélectionné.
+
+- **Tâches** : la liste numérotée des tâches. Cliquez sur une tâche pour la sélectionner.
+- **Flèche de repli** (<) : en haut à droite du panneau, réduit le panneau pour libérer la carte.
+- **BANDES** : liste repliée des bandes de vol, avec leur nombre. Elle apparaît une fois les bandes calculées. Cliquez dessus pour la déplier et voir chaque bande, avec son altitude et sa longueur. Voir [Les bandes de vol](/fr/flight-planner/parametres/bandes).
+- **VOL**, **CAPTEUR**, **GÉOMÉTRIE** : trois onglets qui regroupent les réglages de la tâche.
+  - **VOL** : mode d'altitude, altitude, GSD et vitesse. Voir [Altitude, GSD et vitesse](/fr/flight-planner/parametres/onglet-vol).
+  - **CAPTEUR** : capteur, pitch de nacelle et déclenchement. Voir [Choisir le capteur](/fr/flight-planner/parametres/onglet-capteur).
+  - **GÉOMÉTRIE** : recouvrement et orientation. Voir [Recouvrement et orientation](/fr/flight-planner/parametres/onglet-geometrie).
+
+<Frame caption="Panneau Tâches, onglet CAPTEUR">
+  <img src="/images/flight-planner/onglet-capteur.png" alt="Panneau Tâches sur l'onglet CAPTEUR avec les champs Capteur, Pitch nacelle, Déclenchement et Capture en virage" />
+</Frame>
+
+## 4. La barre d'outils de dessin
+
+La barre verticale, sur le bord gauche de la carte, regroupe les outils de dessin. Survolez une icône pour voir son nom. De haut en bas :
+
+1. **Point de décollage**
+2. **Poser un waypoint**
+3. **Dessiner une zone**
+4. **Dessiner corridor**
+5. **Dessiner obstruction**
+6. **Découpe multi-vol manuelle**
+
+<Frame caption="Infobulle de l'outil Dessiner une zone">
+  <img src="/images/flight-planner/barre-outils-dessin.png" alt="Barre d'outils de dessin verticale avec l'infobulle Dessiner une zone" />
+</Frame>
+
+Activer un outil désactive le précédent. Voir [Dessiner les tâches](/fr/flight-planner/missions/taches) et [Découper une zone](/fr/flight-planner/missions/decoupe).
+
+{/* CAPTURE À FAIRE : fenêtre de découpe multi-vol manuelle (Vol / Élément) */}
+
+## 5. Les outils de mesure
+
+En haut à droite de la carte, quatre outils permettent de mesurer directement sur la carte : **Distance**, **Surface**, **Altitude** et **Profil altimétrique**. Survolez une icône pour afficher son nom. Voir [Mesurer sur la carte](/fr/flight-planner/carte/mesures).
+
+## 6. Le fond de carte et le contrôle qualité
+
+À droite de la carte, deux boutons ouvrent des panneaux :
+
+- **Fond de carte** : choisit le fond (**Satellite**, **Plan** ou **Topo**) et affiche ou masque les couches (**Bandes de vol**, **Obstructions**, **Aéroports**, **GCP**, **Aéronautique**). Voir [Fonds de carte et couches](/fr/flight-planner/carte/fonds-et-couches).
+- **Contrôle qualité** (QC) : ouvre le panneau de contrôle qualité. Voir [Contrôle qualité (QC)](/fr/flight-planner/qualite/controle-qualite).
+
+<Frame caption="Panneau Fond de carte">
+  <img src="/images/flight-planner/panneau-couches.png" alt="Panneau Fond de carte avec Satellite, Plan, Topo et la liste des couches" />
+</Frame>
+
+<Frame caption="Panneau QC">
+  <img src="/images/flight-planner/panneau-qc.png" alt="Panneau QC avec les champs Vol/Tâche, Critère, Seuils et Opacité" />
+</Frame>
+
+## 7. La boussole et l'encart Durée / Distance
+
+- **Boussole** : en bas à droite de la carte, elle indique le nord.
+- **Durée / Distance** : encart au-dessus de la boussole. Il affiche la durée et la distance du plan de vol une fois les bandes calculées.
+
+<Frame caption="Bandes calculées et encart Durée / Distance">
+  <img src="/images/flight-planner/mission-bandes-calculees.png" alt="Bandes calculées sur la zone, encart Durée et Distance en bas à droite, liste BANDES repliée" />
+</Frame>
+
+## 8. La barre d'état
+
+La barre tout en bas de l'écran affiche en permanence :
+
+- **Zoom** : niveau de zoom de la carte.
+- **Vue** : étendue visible à l'écran.
+- **UTM** : zone et système de coordonnées.
+- **Lat** et **Lon** : latitude et longitude.
+- **AMSL** et **HAE** : altitudes.
+- **Surface** : surface de la zone.
+
+## Naviguer sur la carte à la souris
+
+- **Molette** : zoom avant et arrière.
+- **Clic gauche maintenu et glissement** sur un fond vide : déplace la carte.
+
+## Voir aussi
+
+- [Votre première mission en 10 minutes](/fr/flight-planner/demarrage/premiere-mission)
+- [Le tableau de bord](/fr/flight-planner/missions/tableau-de-bord)
+- [Organiser les vols](/fr/flight-planner/missions/vols)
+- [Fonds de carte et couches](/fr/flight-planner/carte/fonds-et-couches)
