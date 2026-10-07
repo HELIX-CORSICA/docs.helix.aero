@@ -1,0 +1,115 @@
+---
+title: "Organiser les vols"
+description: "Ajouter, renommer, masquer, dupliquer et supprimer les vols d'une mission, et régler les paramètres de chaque vol."
+icon: plane
+---
+
+Une mission regroupe un ou plusieurs **vols**. Chaque vol porte ses propres tâches (zones, corridors, points) et ses propres paramètres d'appareil. Cette page explique comment gérer les vols depuis la barre du haut de la mission.
+
+<Frame caption="Une mission ouverte : l'onglet du vol, le bouton + VOL et le panneau Tâches">
+  <img src="/images/flight-planner/mission-vue-generale.png" alt="Mission ouverte avec l'onglet de vol corte-lot3, le bouton + VOL et le panneau Tâches" />
+</Frame>
+
+## Les onglets de vol
+
+Les vols apparaissent sous forme d'onglets dans la barre du haut, à côté du logo. Chaque onglet porte un numéro et une couleur, et affiche le nom du vol. Le vol actif est celui dont l'onglet est sélectionné : c'est sur lui que s'affichent le panneau **Tâches** et les tâches dessinées sur la carte.
+
+Pour changer de vol actif, cliquez sur son onglet.
+
+## Ajouter un vol
+
+<Steps>
+  <Step title="Cliquer sur + VOL">
+    Le bouton **+ VOL** est placé juste après le dernier onglet. Son infobulle indique **Ajouter un vol**.
+  </Step>
+  <Step title="Dessiner dans le nouveau vol">
+    Le nouveau vol devient actif. Dessinez ensuite vos tâches : elles seront rattachées à ce vol.
+  </Step>
+</Steps>
+
+<Tip>
+Dans une même mission, chaque vol peut avoir ses propres tâches et son propre appareil. Pour découper une zone en plusieurs vols, voir [Découper une zone](/fr/flight-planner/missions/decoupe).
+</Tip>
+
+## Renommer un vol
+
+Double-cliquez sur le nom de l'onglet. L'infobulle affiche **Double-clic pour renommer**. Saisissez le nouveau nom.
+
+## Masquer et afficher un vol
+
+L'icône en forme d'œil à droite du nom de l'onglet masque ou affiche le vol sur la carte. Le vol reste dans la mission ; seul son affichage sur la carte change.
+
+Pour agir sur tous les vols d'un coup, les infobulles correspondantes sont **Masquer tous les vols** et **Afficher tous les vols**.
+
+{/* CAPTURE À FAIRE : barre du haut avec un vol masqué (œil barré) et l'infobulle « Masquer ce vol » */}
+
+## Menu d'un vol
+
+Faites un clic droit sur l'onglet d'un vol pour ouvrir son menu. Il propose :
+
+| Entrée du menu | Effet |
+|---|---|
+| **Paramètres du vol…** | Ouvre la fenêtre des paramètres du vol (voir plus bas). |
+| **Dupliquer le vol** | Duplique le vol. |
+| **Coller les attributs du vol…** | Reprend les attributs d'un autre vol sur celui-ci, après confirmation. |
+| **Supprimer le vol** | Supprime le vol et ses tâches. Si plusieurs vols sont sélectionnés, l'entrée devient **Supprimer {n} vols**. |
+
+<Warning>
+**Supprimer le vol** retire le vol et les tâches qu'il contient. Vérifiez l'onglet avant de supprimer, et masquez le vol plutôt que de le supprimer si vous pensez en avoir encore besoin.
+</Warning>
+
+{/* CAPTURE À FAIRE : clic droit sur un onglet de vol, menu ouvert */}
+
+### Coller les attributs d'un vol
+
+Faites un clic droit sur l'onglet du vol à régler, puis choisissez **Coller les attributs du vol…**. La fenêtre affiche le résumé **Copier les attributs de {source} vers {dest}** : vérifiez-le avant de valider.
+
+{/* CAPTURE À FAIRE : fenêtre « Coller les attributs du vol » avec le résumé source vers cible */}
+
+## Paramètres du vol
+
+La fenêtre **Paramètres du vol** regroupe les réglages propres au vol. Ouvrez-la avec **Paramètres du vol…** dans le menu du vol.
+
+<Frame caption="Fenêtre Paramètres du vol">
+  <img src="/images/flight-planner/parametres-du-vol.png" alt="Fenêtre Paramètres du vol avec Appareil, Vitesse de démarrage, Offset d'altitude, Imposer, Télémètre et Anticipation du virage" />
+</Frame>
+
+| Champ | Ce qu'il faut savoir |
+|---|---|
+| **APPAREIL** (obligatoire) | Cliquez sur le champ **Choisir un appareil…** pour ouvrir le catalogue. Voir ci-dessous. |
+| **Vitesse de démarrage** | Valeur en m/s (3.0 par défaut dans la capture). |
+| **Offset d'altitude** | Valeur en mètres (0.0 dans la capture). |
+| **Imposer** | Case à cocher. Tant qu'elle n'est pas cochée, le champ à droite est grisé. Le texte sous la case indique : « Désactivé : le preset RTH de la télécommande DJI de l'opérateur est conservé. » |
+| **Télémètre (suivi de terrain temps réel)** | Case à cocher. Elle affiche **Non disponible sur cet appareil** si l'appareil choisi ne la supporte pas. |
+| **Anticipation du virage** | Valeur en mètres (20.0 dans la capture). |
+
+Les boutons **Annuler** et **Valider** ferment la fenêtre. **Valider** n'est actif qu'une fois l'appareil renseigné.
+
+### Choisir l'appareil
+
+Cliquez sur le champ **Choisir un appareil…** pour ouvrir **Choisir un appareil**.
+
+<Frame caption="Fenêtre Choisir un appareil">
+  <img src="/images/flight-planner/choix-appareil.png" alt="Fenêtre Choisir un appareil avec le champ de recherche et les filtres Tous, Avion, Hélico et Drone" />
+</Frame>
+
+- Tapez dans **Rechercher un appareil…** pour filtrer la liste.
+- Les filtres **Tous**, **Avion**, **Hélico** et **Drone** restreignent la liste au type d'appareil, avec le nombre d'appareils de chaque type.
+- Chaque ligne indique le type, la vitesse de croisière et la durée de vol.
+- Cliquez sur l'étoile à droite d'un appareil pour l'ajouter à vos favoris.
+- **Annuler** ferme la fenêtre sans rien changer.
+
+<Note>
+L'appareil se règle aussi depuis le catalogue **Appareils** du tableau de bord. Voir [Le tableau de bord](/fr/flight-planner/missions/tableau-de-bord).
+</Note>
+
+## Réglages propres à la tâche, pas au vol
+
+Les paramètres de mode d'altitude, d'altitude, de GSD, de vitesse et de virage se règlent dans le panneau **Tâches**, par tâche, et non dans la fenêtre **Paramètres du vol**. Voir [Altitude, GSD et vitesse](/fr/flight-planner/parametres/onglet-vol).
+
+## Voir aussi
+
+- [Créer une mission](/fr/flight-planner/missions/creer-une-mission)
+- [Dessiner les tâches](/fr/flight-planner/missions/taches)
+- [Altitude, GSD et vitesse](/fr/flight-planner/parametres/onglet-vol)
+- [Choisir le capteur](/fr/flight-planner/parametres/onglet-capteur)
