@@ -1,0 +1,46 @@
+---
+title: "Les bandes de vol"
+description: "Lire les bandes de vol calculées sur la carte, la liste BANDES et l'encart Durée / Distance."
+icon: map
+---
+
+Les **bandes** sont les lignes de vol que l'appareil suivra pour couvrir la zone d'une tâche. Elles apparaissent sur la carte dès que le calcul est fait, avec la durée et la distance totales du vol.
+
+## Le résultat sur la carte
+
+Une fois le calcul terminé, la zone est recouverte de **bandes vertes**. Chaque bande porte des **flèches de sens** qui indiquent le sens de parcours de l'appareil.
+
+<Frame caption="Bandes calculées sur la zone, avec l'encart Durée / Distance en bas à droite">
+  <img src="/images/flight-planner/mission-bandes-calculees.png" alt="Carte avec une zone couverte de bandes vertes fléchées, la liste BANDES repliée dans le panneau Tâches et l'encart Durée et Distance en bas à droite" />
+</Frame>
+
+Les bandes se recalculent automatiquement quand vous modifiez un paramètre de la tâche ou la forme de la zone. Vous n'avez rien à relancer.
+
+## La liste BANDES
+
+Le panneau **Tâches** affiche, sous la tâche sélectionnée, une ligne **BANDES** avec le nombre de bandes calculées. Cliquez sur la flèche à gauche de **BANDES** pour déplier la liste.
+
+Chaque ligne correspond à une bande, identifiée par une lettre et un numéro (**A1**, **A2**, **A3**…). Elle indique :
+
+- la **plage d'altitude** de la bande, par exemple `120→120 m` ;
+- la **longueur** de la bande, à droite, par exemple `864 m` ou `1.1 km`.
+
+<Frame caption="Liste BANDES dépliée : chaque bande affiche son altitude et sa longueur">
+  <img src="/images/flight-planner/liste-bandes.png" alt="Liste BANDES dépliée avec les bandes A1 à A8, chacune avec sa plage d'altitude et sa longueur" />
+</Frame>
+
+## Durée et Distance
+
+L'encart en bas à droite de la carte donne le total du vol calculé :
+
+- **Durée** : le temps de vol estimé, par exemple `30 min 42 s` ;
+- **Distance** : la distance totale à parcourir, par exemple `20 km`.
+
+Ces deux valeurs changent à chaque recalcul.
+
+## Voir aussi
+
+- [Altitude, GSD et vitesse (onglet VOL)](/fr/flight-planner/parametres/onglet-vol)
+- [Recouvrement et orientation (onglet GÉOMÉTRIE)](/fr/flight-planner/parametres/onglet-geometrie)
+- [Choisir le capteur (onglet CAPTEUR)](/fr/flight-planner/parametres/onglet-capteur)
+- [Contrôle qualité (QC)](/fr/flight-planner/qualite/controle-qualite)
