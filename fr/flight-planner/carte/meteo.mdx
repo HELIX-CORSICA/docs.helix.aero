@@ -1,0 +1,84 @@
+---
+title: "Météo"
+description: "Consulter le lever et le coucher du soleil, les METAR et les TAF d'un aéroport ou du vol actif, à une date donnée."
+icon: "cloud-sun"
+---
+
+L'écran **Météo** rassemble les informations utiles avant de voler : heures de lumière du jour, dernier METAR et TAF de l'aéroport concerné. Vous pouvez regarder le vol actif ou chercher n'importe quel aéroport par son code OACI.
+
+<Frame caption="L'écran Météo, pour le vol actif corte-lot3">
+  <img src="/images/flight-planner/meteo.png" alt="Écran Météo avec la fenêtre du jour, les METAR et TAF et la barre de recherche" />
+</Frame>
+
+## Ouvrir la météo
+
+1. Repérez la rangée des vols en haut de la mission, au-dessus de la carte.
+2. Cliquez sur le bouton **nuage** de la rangée des vols.
+3. L'écran **Météo** s'ouvre pour le vol sélectionné.
+
+Pour revenir à la mission, cliquez sur la croix **×** en haut à droite de l'écran.
+
+## Lire l'écran
+
+**La barre du haut** affiche le titre **Météo** et le nom du vol concerné. Le bouton **Actualiser** recharge les données.
+
+**La barre de sélection** contient :
+
+- le bouton vert, qui indique le vol actif ;
+- le champ de recherche **ICAO (ex. LFPG) ou « lat, lon »…** ;
+- le champ **Départ (ICAO)** ;
+- le champ **Arrivée (ICAO)** ;
+- le champ **Date de vol**.
+
+**La fenêtre du jour** affiche, pour la date choisie :
+
+- **Lever du soleil** ;
+- **Coucher du soleil** ;
+- **Midi solaire** ;
+- **Durée d'ensoleillement**, en heures et minutes.
+
+Les heures sont données en UTC. La date et l'heure UTC actuelles s'affichent à droite du nom du vol.
+
+**Les blocs METAR et TAF** affichent le dernier bulletin reçu pour l'aéroport. Si aucun bulletin n'est disponible, l'écran l'indique, par exemple **Pas de données METAR pour le vol actif.**
+
+Les sources sont indiquées en bas de l'écran : les METAR et TAF viennent d'AVWX, et les données des aéroports viennent d'OpenAIP.
+
+## Chercher un aéroport
+
+1. Dans le champ **ICAO (ex. LFPG) ou « lat, lon »…**, tapez le code OACI de l'aéroport, par exemple **LFKC**.
+2. Ou tapez une position sous la forme « latitude, longitude ».
+3. Choisissez le résultat dans la liste. Si rien ne correspond, l'écran affiche **Aucun résultat.**
+
+Pendant la recherche, le champ affiche **Recherche…**.
+
+## Départ et arrivée
+
+Les champs **Départ (ICAO)** et **Arrivée (ICAO)** permettent d'afficher la météo de la route :
+
+1. Saisissez le code OACI de l'aéroport de départ dans **Départ (ICAO)**.
+2. Saisissez le code OACI de l'aéroport d'arrivée dans **Arrivée (ICAO)**.
+3. Cliquez sur **Actualiser** pour charger les informations.
+
+## Choisir la date de vol
+
+Le champ **Date de vol** détermine le jour analysé. Par défaut, c'est la date du jour. Changez-la pour voir les heures de lumière et les bulletins d'un autre jour.
+
+Le texte sous la fenêtre indique ce qui est disponible pour la date choisie :
+
+- **METAR filtrés sur la journée UTC ; TAF actuel applicable.** Pour aujourd'hui.
+- **METAR indisponibles (jour à venir) ; TAF actuel affiché.** Pour un jour futur.
+- **METAR du jour filtrés ; TAF actuel non représentatif.** Pour un jour passé.
+- **Aucune donnée disponible (date au-delà de l'horizon TAF).** Si la date est trop éloignée.
+
+<Tip>
+Actualisez l'écran avant le départ. Les bulletins météo changent régulièrement, et le bouton **Actualiser** récupère les derniers.
+</Tip>
+
+{/* CAPTURE À FAIRE : écran Météo avec Départ et Arrivée renseignés et une date future (message « METAR indisponibles (jour à venir) ») */}
+
+## Voir aussi
+
+- [Fonds de carte et couches](/fr/flight-planner/carte/fonds-et-couches)
+- [Mesurer sur la carte](/fr/flight-planner/carte/mesures)
+- [Terrain (MNT) et géoïdes](/fr/flight-planner/carte/terrain-et-geoides)
+- [Organiser les vols](/fr/flight-planner/missions/vols)
