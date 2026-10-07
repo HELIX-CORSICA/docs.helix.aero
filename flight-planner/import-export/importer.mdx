@@ -1,0 +1,134 @@
+---
+title: "Import data"
+description: "Import an area, GCP points, obstructions or a full mission into Helix Flight Planner."
+icon: "file-import"
+---
+
+Import files created elsewhere into a mission: a flight plan, ground control points (GCP) or obstructions. The **Import** menu is in the top bar, on the right, next to **Export**.
+
+## Open the Import menu
+
+<Steps>
+  <Step title="Open a mission">
+    From the dashboard, open the mission. Check that the flight tab is displayed.
+  </Step>
+  <Step title="Click Import">
+    Click **Import** in the top bar. The menu offers three entries: **Area**, **GCP** and **Obstructions**.
+  </Step>
+</Steps>
+
+<Frame caption="The Import menu: Area, GCP, Obstructions">
+  <img src="/images/flight-planner/menu-import.png" alt="Import menu open with the Area, GCP and Obstructions entries" />
+</Frame>
+
+## Import an area (flight plan)
+
+The **Area** entry opens the **Import a flight plan** window. It accepts **KML**, **KMZ**, **GeoJSON** and **GPX** files in WGS84.
+
+<Note>
+Add a flight before importing a geometry. Without a flight, the import cannot be placed.
+</Note>
+
+<Steps>
+  <Step title="Choose Area">
+    In the **Import** menu, click **Area**.
+  </Step>
+  <Step title="Choose the file">
+    A file window from your computer opens. Choose your file. The **Import a flight plan** window then shows the content of the file.
+  </Step>
+  <Step title="Choose the type of each geometry">
+    Helix detects the geometries in the file and asks you, for each one, what it should become. The choices are:
+
+    | Choice | Effect |
+    |---|---|
+    | **Area (coverage)** | The geometry becomes an area to cover |
+    | **Corridor** | The geometry becomes a corridor |
+    | **Waypoint** | The geometry becomes a waypoint |
+    | **Waypoints (each vertex)** | Each vertex becomes a waypoint |
+    | **Obstruction** | The geometry becomes an obstruction (see below) |
+    | **Skip** | The geometry is not imported |
+  </Step>
+  <Step title="Confirm the import">
+    Click **Import**. To cancel without importing anything, click **Cancel**.
+  </Step>
+</Steps>
+
+<Frame caption="Import a flight plan window">
+  <img src="/images/flight-planner/import-plan-de-vol.png" alt="Import a flight plan window with the Cancel and Import buttons" />
+</Frame>
+
+<Warning>
+A file larger than 25 MB is rejected. Helix shows "File too large. Limit: 25 MB." Split the file or reduce its size before importing.
+</Warning>
+
+## Import GCPs
+
+Ground control points (GCP) are used to register the images. The **GCP** entry opens the **Import GCPs** window. It accepts **CSV**, **TXT**, **XYZ** and **PTS** files.
+
+<Steps>
+  <Step title="Choose GCP">
+    In the **Import** menu, click **GCP**.
+  </Step>
+  <Step title="Choose the file">
+    A file window from your computer opens: choose your file. In the **Import GCPs** window, you can also drag a file into the area labeled **Drop a file or click to browse**. A file larger than 5 MB is rejected.
+  </Step>
+  <Step title="Check the column detection">
+    Helix detects the columns and shows a preview. In **Preview — assign each column**, choose the role of each column: **Easting (X)**, **Northing (Y)**, **Elevation (Z)**, **Latitude**, **Longitude** or **Undefined**.
+    If needed, change the **Field separator** (**Comma**, **Semicolon**, **Space**, **Tab**) and the **Decimal separator** (**Dot** or **Comma**).
+  </Step>
+  <Step title="Choose the coordinate system">
+    In **Source coordinate system**, type an EPSG code (for example `2154`) or a name (Lambert, UTM, RGF93…). If your columns are in latitude and longitude, this field is not used: Helix tells you so.
+  </Step>
+  <Step title="Import">
+    Click **Import**.
+  </Step>
+</Steps>
+
+<Frame caption="Import GCPs window">
+  <img src="/images/flight-planner/import-gcp.png" alt="Import GCPs window with the drop zone and the Cancel and Import buttons" />
+</Frame>
+
+<Note>
+You must assign at least **Easting (X)** and **Northing (Y)**, or **Latitude** and **Longitude**. Otherwise, Helix shows "Assign at least Easting + Northing (or Latitude + Longitude)."
+</Note>
+
+Imported points appear in the **GCP** layer of the layers panel (see [Base maps and layers](/flight-planner/carte/fonds-et-couches)). If there are no points, the layer shows "No GCP imported."
+
+## Import obstructions
+
+An obstruction is an area to avoid during the flight. The **Obstructions** entry in the **Import** menu opens a file window on your computer: choose a **KML**, **KMZ**, **GeoJSON** or **GPX** file. Each polygon in the file becomes an obstruction; lines and points are ignored. You can also create one by hand.
+
+### Create an obstruction by hand
+
+<Steps>
+  <Step title="Draw the obstruction">
+    Choose the **Draw obstruction** tool in the map toolbar, then draw the area. The **New obstruction** window opens.
+  </Step>
+  <Step title="Fill in the fields">
+    - **Name** (required): the name shown in the list.
+    - **Margin (m)**: the safety distance around the obstruction. The default value is **1**.
+    - **Height (m)**: the height of the obstruction. If you leave this field empty, the obstruction becomes a **no-fly zone**.
+  </Step>
+  <Step title="Confirm">
+    Click **Confirm**, or **Cancel** to close the window without creating an obstruction.
+  </Step>
+</Steps>
+
+<Frame caption="New obstruction window">
+  <img src="/images/flight-planner/nouvelle-obstruction.png" alt="New obstruction window with the Name, Margin (m) and Height (m) fields" />
+</Frame>
+
+{/* CAPTURE TO DO: "Obstruction import" notification after an import from the Import > Obstructions menu */}
+
+## Import a mission from the dashboard
+
+A full mission is imported from the dashboard, not from the **Import** menu of an open mission. From the dashboard, click **Import a mission**.
+
+{/* CAPTURE TO DO: the Import a mission button on the dashboard and the file choice window for the mission */}
+
+## See also
+
+- [The dashboard](/flight-planner/missions/tableau-de-bord)
+- [Organizing flights](/flight-planner/missions/vols)
+- [Export the flight plan](/flight-planner/import-export/exporter)
+- [Base maps and layers](/flight-planner/carte/fonds-et-couches)
