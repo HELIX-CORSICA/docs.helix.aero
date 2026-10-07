@@ -1,0 +1,122 @@
+---
+title: "Votre première mission en 10 minutes"
+description: "Créez une mission, dessinez une zone, choisissez un capteur, contrôlez le résultat et exportez le plan de vol, de bout en bout."
+icon: "rocket"
+---
+
+Cette page vous guide pas à pas, de la création d'une mission jusqu'à l'export du plan de vol. Il vous faut une connexion active et un capteur disponible dans le catalogue. Les exemples utilisent la mission « Corse - Haute-Corse lot 3 » et le capteur **DJI Matrice 4E (Wide)**.
+
+<Steps>
+  <Step title="Créer la mission">
+    Sur le tableau de bord, onglet **MISSIONS**, cliquez sur **+ NOUVELLE MISSION**.
+
+    Dans l'étape **01 Informations**, saisissez un nom dans le champ **NOM DE LA MISSION**, puis cliquez sur **SUIVANT**.
+
+    <Frame caption="Étape 01 Informations, avec un nom saisi">
+      <img src="/images/flight-planner/nouvelle-mission-nom.png" alt="Étape Informations de la fenêtre Nouvelle mission, avec un nom de mission saisi et le bouton SUIVANT" />
+    </Frame>
+  </Step>
+
+  <Step title="Choisir le lieu (facultatif)">
+    L'étape **02 Lieu** sert à pré-centrer la carte. Le champ est **facultatif** : vous pouvez le laisser vide.
+
+    Tapez une ville ou des coordonnées, par exemple « Corte », puis choisissez la proposition dans la liste. Le globe se pré-centre sur ce lieu.
+
+    <Frame caption="Lieu « Corte, Corsica, France » sélectionné">
+      <img src="/images/flight-planner/nouvelle-mission-lieu-choisi.png" alt="Étape Lieu avec Corte, Corsica, France sélectionné et les boutons PRÉCÉDENT et CRÉER LA MISSION" />
+    </Frame>
+
+    Cliquez sur **CRÉER LA MISSION**. La mission s'ouvre.
+  </Step>
+
+  <Step title="Dessiner la zone à couvrir">
+    Dans la barre d'outils verticale à gauche de la carte, cliquez sur l'outil **Dessiner une zone** (icône de polygone). Placez les sommets de la zone sur la carte pour en dessiner le contour.
+
+    <Frame caption="Infobulle « Dessiner une zone » sur la barre d'outils">
+      <img src="/images/flight-planner/barre-outils-dessin.png" alt="Barre d'outils verticale avec l'infobulle Dessiner une zone" />
+    </Frame>
+
+    La zone apparaît dans la liste **Tâches**, à gauche de l'écran.
+
+  </Step>
+
+  <Step title="Régler le vol (onglet VOL)">
+    Dans le panneau **Tâches**, ouvrez l'onglet **VOL**. Vous y réglez la hauteur de vol :
+
+    - **Mode** : **AMSL**, **AGL** ou **IAGL**, selon la référence d'altitude que vous voulez utiliser.
+    - **Altitude** (en m) ou **GSD** (en cm) : l'altitude de vol et la résolution au sol sont deux façons de fixer la même hauteur de vol. Renseignez celle qui vous intéresse.
+    - **Vitesse** (en m/s), puis **Virage** et **Drone yaw** si votre opération l'exige.
+
+    <Frame caption="Onglet VOL : mode, altitude, GSD et vitesse">
+      <img src="/images/flight-planner/mission-vue-generale.png" alt="Panneau Tâches, onglet VOL, avec Mode AGL, Altitude 120 m, GSD 4.0 cm et Vitesse 11.1 m/s, zone dessinée sur la carte" />
+    </Frame>
+
+    Pour le détail de chaque champ, voir [Altitude, GSD et vitesse](/fr/flight-planner/parametres/onglet-vol).
+  </Step>
+
+  <Step title="Choisir le capteur (onglet CAPTEUR)">
+    Ouvrez l'onglet **CAPTEUR** du même panneau, puis cliquez sur le champ **Capteur**. La fenêtre **Choisir un capteur** s'ouvre.
+
+    Tapez le nom du capteur dans la recherche, ou filtrez avec **Tous**, **Photo** ou **LiDAR**. Sélectionnez votre capteur. Vous pouvez le mettre en favori avec l'étoile.
+
+    <Frame caption="Fenêtre Choisir un capteur">
+      <img src="/images/flight-planner/choix-capteur.png" alt="Fenêtre Choisir un capteur avec la recherche, les filtres Tous, Photo et LiDAR, et la liste des capteurs" />
+    </Frame>
+
+    Vérifiez ensuite les réglages de déclenchement : **Pitch nacelle**, **Déclenchement** et **Intervalle min (s)**. Pour le détail, voir [Choisir le capteur](/fr/flight-planner/parametres/onglet-capteur).
+
+    <Tip>
+      Les bandes ne se calculent qu'une fois un capteur choisi. Sans capteur, l'application affiche le message « Choisissez un capteur pour calculer les bandes. »
+    </Tip>
+  </Step>
+
+  <Step title="Vérifier les bandes calculées">
+    Dès que le capteur est choisi, les **bandes de vol** apparaissent sur la zone. Elles sont tracées en vert, avec le sens de vol indiqué par des flèches.
+
+    En bas à droite de la carte, l'encart **Durée** et **Distance** donne le temps et la longueur totale du vol. La liste **BANDES**, dans le panneau **Tâches**, indique le nombre de bandes ; cliquez dessus pour la déplier.
+
+    <Frame caption="Bandes calculées sur la zone, avec Durée et Distance">
+      <img src="/images/flight-planner/mission-bandes-calculees.png" alt="Bandes de vol vertes sur la zone, encart Durée 30 min 42 s et Distance 20 km, liste BANDES repliée à 16" />
+    </Frame>
+
+    Si le résultat ne vous convient pas, revenez aux onglets **VOL**, **CAPTEUR** ou **GÉOMÉTRIE** pour modifier les réglages.
+
+    Pour le recouvrement et l'orientation des bandes, voir [Recouvrement et orientation](/fr/flight-planner/parametres/onglet-geometrie).
+  </Step>
+
+  <Step title="Ouvrir le contrôle qualité">
+    Cliquez sur le bouton **Contrôle qualité** à droite de la carte (icône cube, infobulle « Contrôle qualité »). Le panneau **QC** s'ouvre.
+
+    Dans le panneau, choisissez l'onglet **Vol** ou **Tâche**, puis le critère à contrôler. Les **Seuils (cm)** fixent les limites de couleur affichées sur la carte.
+
+    <Frame caption="Panneau QC (contrôle qualité)">
+      <img src="/images/flight-planner/panneau-qc.png" alt="Panneau QC avec les onglets Vol et Tâche, le critère, GSD multi-clichés, Géométrie GSD, les seuils en cm et l'opacité" />
+    </Frame>
+
+    Pour le détail des critères et des seuils, voir [Contrôle qualité (QC)](/fr/flight-planner/qualite/controle-qualite).
+  </Step>
+
+  <Step title="Exporter le plan de vol">
+    Cliquez sur **EXPORT**, en haut à droite. La fenêtre **Exporter le plan de vol** s'ouvre avec deux options :
+
+    - **Plan de vol** : fichiers **.helix**, **KML** (line/waypoint) ou **KMZ WPML**, à enregistrer sur votre ordinateur.
+    - **Envoyer vers DJI Pilot** : choisissez le référentiel d'altitude, puis **Local** ou **Cloud**.
+
+    <Frame caption="Fenêtre Exporter le plan de vol">
+      <img src="/images/flight-planner/export.png" alt="Fenêtre Exporter le plan de vol avec les options Plan de vol et Envoyer vers DJI Pilot" />
+    </Frame>
+
+    Pour le détail de chaque format, voir [Exporter le plan de vol](/fr/flight-planner/import-export/exporter). Pour l'envoi à DJI, voir [Travailler avec DJI](/fr/flight-planner/import-export/dji).
+  </Step>
+</Steps>
+
+## Et ensuite
+
+Votre mission est prête. Pour aller plus loin, reprenez les étapes avec vos propres zones : ajoutez des vols avec **+ VOL**, dessinez des tâches supplémentaires, et contrôlez chaque vol avant l'export.
+
+## Voir aussi
+
+- [Découvrir l'interface](/fr/flight-planner/demarrage/interface)
+- [Créer une mission](/fr/flight-planner/missions/creer-une-mission)
+- [Les bandes de vol](/fr/flight-planner/parametres/bandes)
+- [Contrôle qualité (QC)](/fr/flight-planner/qualite/controle-qualite)
