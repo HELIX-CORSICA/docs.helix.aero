@@ -1,0 +1,67 @@
+---
+title: "Altitude, GSD et vitesse (onglet VOL)"
+description: "Régler le mode d'altitude, l'altitude, le GSD, la vitesse, le virage et le cap du drone dans l'onglet VOL du panneau Tâches."
+icon: plane
+---
+
+L'onglet **VOL** du panneau **Tâches** règle la façon dont l'appareil suit le terrain, à quelle hauteur il vole, à quelle vitesse et comment il tourne. Ces réglages s'appliquent à la tâche sélectionnée, dans le vol en cours.
+
+<Frame caption="Onglet VOL du panneau Tâches, mode AGL">
+  <img src="/images/flight-planner/mission-vue-generale.png" alt="Panneau Tâches, onglet VOL, avec les champs Mode, Altitude, GSD, Tolérance AGL, Vitesse, Virage, Drone yaw et Angle yaw" />
+</Frame>
+
+## Mode d'altitude
+
+Le champ **Mode** détermine la référence de l'altitude de vol. Trois choix sont proposés :
+
+| Mode | Ce que cela veut dire |
+|---|---|
+| **AMSL** | L'altitude est mesurée au-dessus du niveau de la mer. L'appareil garde la même altitude absolue, même si le sol monte ou descend. |
+| **AGL** | L'altitude est une hauteur fixe au-dessus du sol. L'appareil garde la même distance au sol. |
+| **IAGL** | L'appareil suit le relief du terrain en permanence, à la hauteur demandée. |
+
+<Tip>
+Pour un vol en terrain plat, **AMSL** ou **AGL** suffisent. Pour un relief marqué, choisissez **IAGL** : l'appareil reste à hauteur constante au-dessus du sol, même dans les vallées et sur les crêtes.
+</Tip>
+
+Le mode **AGL** est réservé aux drones. Pour un avion, utilisez **IAGL** (suivi du relief) ou **AMSL** (altitude constante).
+
+## Altitude et GSD
+
+Les champs **Altitude** (en mètres) et **GSD** (en centimètres) sont liés : modifier l'un met automatiquement à jour l'autre.
+
+- **Altitude** : la hauteur de vol demandée, dans le mode choisi.
+- **GSD** : le GSD (*Ground Sample Distance*) est la taille au sol d'un pixel de l'image. Par exemple, un GSD de **4,0 cm** signifie qu'un pixel de la photo couvre 4 cm sur le terrain. Plus le GSD est petit, plus l'image est détaillée, et plus l'appareil doit voler bas.
+
+Pour obtenir un GSD précis, saisissez-le dans **GSD** : **Altitude** se recalcule. Pour voler à une hauteur précise, saisissez-la dans **Altitude** : le **GSD** se recalcule.
+
+Le GSD dépend aussi du capteur choisi. Si le GSD vous semble incohérent, vérifiez l'onglet **CAPTEUR**.
+
+## Tolérance AGL
+
+Le champ **Tolérance AGL** (en mètres) indique l'écart de hauteur toléré autour de l'altitude demandée lorsque le mode est **AGL**. Une tolérance faible garde l'appareil très près de la hauteur demandée ; une tolérance plus élevée laisse plus de liberté à l'appareil sur un terrain irrégulier.
+
+## Vitesse
+
+Le champ **Vitesse** (en m/s) fixe la vitesse de vol sur la tâche. Une vitesse trop élevée peut réduire la netteté des images ; une vitesse plafonnée est signalée par une notification.
+
+## Virage
+
+Le menu **Virage** propose deux types :
+
+- **Fluide** : l'appareil tourne sans s'arrêter aux extrémités des bandes.
+- **Stop & turn** : l'appareil s'arrête à chaque extrémité, puis tourne.
+
+## Drone yaw et Angle yaw
+
+Ces deux champs règlent l'orientation de l'appareil (le cap) pendant le vol. Ils ne s'affichent que pour un drone.
+
+- **Drone yaw** : le menu propose **Trajectoire** (le drone s'oriente dans le sens du vol) et **Nord** (le drone garde un cap fixe par rapport au nord).
+- **Angle yaw** : l'angle du cap, en degrés (°), utilisé avec le choix **Nord**.
+
+## Voir aussi
+
+- [Choisir le capteur (onglet CAPTEUR)](/fr/flight-planner/parametres/onglet-capteur)
+- [Recouvrement et orientation (onglet GÉOMÉTRIE)](/fr/flight-planner/parametres/onglet-geometrie)
+- [Les bandes de vol](/fr/flight-planner/parametres/bandes)
+- [Terrain (MNT) et géoïdes](/fr/flight-planner/carte/terrain-et-geoides)
