@@ -1,0 +1,108 @@
+---
+title: "Dessiner les tâches"
+description: "Dessiner les tâches d'un vol sur la carte : zone, corridor, obstruction, waypoint et point de décollage."
+icon: "draw-polygon"
+---
+
+Un vol contient des **tâches** : la zone à couvrir, un corridor, une obstruction à éviter, un waypoint ou le point de décollage. Vous les dessinez directement sur la carte avec la barre d'outils verticale, à gauche de la carte. Le calcul des bandes de vol part ensuite de ces tâches.
+
+## Avant de dessiner
+
+Sélectionnez ou créez un vol depuis la barre du haut (**+ VOL**). Sans vol sélectionné, les outils de dessin ne répondent pas et l'interface affiche le message « Créez ou sélectionnez un vol pour dessiner ».
+
+<Frame caption="Barre d'outils verticale, avec l'infobulle « Dessiner une zone »">
+  <img src="/images/flight-planner/barre-outils-dessin.png" alt="Barre d'outils verticale de dessin, infobulle Dessiner une zone" />
+</Frame>
+
+## Les outils de la barre verticale
+
+De haut en bas, la barre contient :
+
+| Outil | Ce qu'il fait |
+|---|---|
+| **Point de décollage** | Place le point où l'aéronef décolle et atterrit. |
+| **Poser un waypoint** | Place un point de passage sur la carte. |
+| **Dessiner une zone** | Trace un polygone : la zone à couvrir par les bandes de vol. |
+| **Dessiner corridor** | Trace une ligne qui devient un corridor à survoler. |
+| **Dessiner obstruction** | Trace une zone à éviter (bâtiment, relief, espace interdit). |
+| **Découpe multi-vol manuelle** | Découpe la zone entre plusieurs vols. Voir [Découper une zone](/fr/flight-planner/missions/decoupe). |
+
+## Dessiner une zone
+
+<Steps>
+  <Step title="Choisir l'outil">
+    Cliquez sur **Dessiner une zone** dans la barre verticale.
+  </Step>
+  <Step title="Poser les sommets">
+    Cliquez sur la carte, un clic par sommet. Une zone demande au moins trois sommets.
+  </Step>
+  <Step title="Fermer la forme">
+    Pour terminer, faites un double-clic. Le contour se ferme et la tâche apparaît dans la liste **Tâches**.
+  </Step>
+</Steps>
+
+<Note>
+Le contour ne doit pas se croiser lui-même. Si c'est le cas, l'interface signale un « polygone papillon » : déplacez ou retirez un sommet.
+</Note>
+
+Une fois la zone dessinée, les bandes de vol se calculent et s'affichent sur la carte.
+
+<Frame caption="Une zone dessinée avec ses bandes de vol, et le panneau Tâches à gauche">
+  <img src="/images/flight-planner/mission-vue-generale.png" alt="Zone dessinée sur la carte, panneau Tâches onglet VOL" />
+</Frame>
+
+## Dessiner un corridor
+
+Cliquez sur **Dessiner corridor**, puis tracez la ligne sur la carte. La tâche apparaît dans la liste **Tâches** avec l'icône de corridor. Un vol peut contenir plusieurs tâches, par exemple une zone et un corridor.
+
+<Frame caption="Un vol avec deux tâches : une zone et un corridor">
+  <img src="/images/flight-planner/dessin-corridor.png" alt="Vol avec une zone et un corridor dans la liste Tâches" />
+</Frame>
+
+## Dessiner une obstruction
+
+Cliquez sur **Dessiner obstruction**, puis tracez la zone à éviter. Une fenêtre **Nouvelle obstruction** s'ouvre :
+
+- **Nom** (obligatoire) : le nom affiché dans la liste des obstructions.
+- **Marge (m)** : la distance de sécurité autour de l'obstruction. La valeur par défaut est 1.
+- **Hauteur (m)** : la hauteur de l'obstruction. Laissez le champ vide pour indiquer une **zone à ne pas survoler**.
+
+Cliquez sur **Valider** pour créer l'obstruction, ou sur **Annuler** pour l'abandonner.
+
+<Frame caption="Fenêtre Nouvelle obstruction">
+  <img src="/images/flight-planner/nouvelle-obstruction.png" alt="Fenêtre Nouvelle obstruction avec Nom, Marge et Hauteur" />
+</Frame>
+
+## Poser un waypoint et le point de décollage
+
+- **Poser un waypoint** : cliquez sur l'outil, puis sur la carte à l'endroit voulu.
+- **Point de décollage** : cliquez sur l'outil, puis sur la carte. Le point apparaît dans la liste **Tâches** sous le libellé **Point de décollage**.
+
+## Terminer, annuler, modifier
+
+- **Terminer** une zone : double-clic sur la carte.
+- **Annuler** un tracé en cours : clic droit sur la carte. Le bandeau de dessin en mode hors ligne rappelle ces deux gestes : « double-clic pour fermer · clic droit pour annuler ».
+- **Changer de forme** : une zone terminée se modifie en déplaçant ses sommets jaunes. Les petits points gris au milieu de chaque côté servent à ajouter un sommet sur ce côté.
+
+{/* CAPTURE À FAIRE : zone sélectionnée avec ses sommets et ses points intermédiaires, en gros plan */}
+
+## Sélectionner une tâche
+
+Les tâches d'un vol s'affichent dans le panneau **Tâches**, en haut à gauche de la carte. Chaque tâche a un numéro et une icône. Cliquez sur une tâche dans la liste pour la sélectionner. Ses paramètres s'affichent alors dans les onglets **VOL**, **CAPTEUR** et **GÉOMÉTRIE**.
+
+## Menu contextuel d'une tâche
+
+Un clic droit sur une tâche ouvre un menu. Les entrées visibles incluent **Copier**, **Couper**, **Coller**, **Grouper**, **Dégrouper**, **Activer**, **Désactiver** et **Supprimer**. Certaines entrées n'apparaissent que pour certains types de tâches, par exemple **Restaurer le corridor** ou **Restaurer la zone**.
+
+{/* CAPTURE À FAIRE : menu contextuel (clic droit) ouvert sur une tâche de la liste */}
+
+<Warning>
+La suppression d'une tâche est définitive, et la trajectoire qui en dépend est supprimée avec elle. Vérifiez la sélection avant de confirmer.
+</Warning>
+
+## Voir aussi
+
+- [Créer une mission](/fr/flight-planner/missions/creer-une-mission)
+- [Organiser les vols](/fr/flight-planner/missions/vols)
+- [Découper une zone](/fr/flight-planner/missions/decoupe)
+- [Altitude, GSD et vitesse (onglet VOL)](/fr/flight-planner/parametres/onglet-vol)
