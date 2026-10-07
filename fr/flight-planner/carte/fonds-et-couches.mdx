@@ -1,0 +1,86 @@
+---
+title: "Fonds de carte et couches"
+description: "Le panneau Fond de carte : choisir Satellite, Plan ou Topo, afficher ou masquer chaque couche avec son curseur d'opacité, et ajouter votre propre orthophoto ou un flux WMS / WMTS."
+icon: "map"
+---
+
+Le panneau **Fond de carte** règle ce que la carte affiche en dessous de vos vols : le fond lui-même (**Satellite**, **Plan** ou **Topo**), et les couches superposées (bandes de vol, obstructions, aéroports, points d'appui GCP, aéronautique). Vous pouvez aussi y ajouter une source de données de votre choix.
+
+## Ouvrir le panneau Fond de carte
+
+<Steps>
+  <Step title="Ouvrir la carte">
+    Dans la barre verticale à droite de l'écran, cliquez sur l'icône de carte. Son infobulle affiche **Carte / Sources**.
+  </Step>
+  <Step title="Lire le panneau">
+    Le panneau **Fond de carte** s'ouvre à droite. Il comporte trois zones : le choix du fond, la liste **Couches**, et le bouton **+ Ajouter une source** en bas.
+  </Step>
+</Steps>
+
+<Frame caption="Le panneau Fond de carte, avec le fond Satellite et la liste des couches">
+  <img src="/images/flight-planner/panneau-couches.png" alt="Panneau Fond de carte : fonds Satellite, Plan et Topo, liste des couches avec curseurs d'opacité, bouton Ajouter une source" />
+</Frame>
+
+## Choisir le fond de carte
+
+Trois fonds sont proposés en haut du panneau. Cliquez sur une vignette pour l'activer. Le fond sélectionné est mis en évidence en vert.
+
+| Fond | Usage |
+|---|---|
+| **Satellite** | Image aérienne. Pour repérer le terrain réel, les bâtiments et la végétation. |
+| **Plan** | Carte routière. Pour situer les routes et les noms de lieux. |
+| **Topo** | Carte topographique. Pour lire le relief. |
+
+Le choix du fond ne modifie pas vos vols ni vos tâches : il change seulement l'image de référence.
+
+## Afficher et régler les couches
+
+La liste **Couches** contient cinq couches. Chacune a la même commande :
+
+- **L'œil** à gauche du nom : cliquez dessus pour afficher ou masquer la couche. Un œil barré signifie que la couche est masquée.
+- **Le curseur** sous le nom : il règle l'opacité de la couche, de 0 % (invisible) à **100%** (opaque).
+
+| Couche | Ce qu'elle affiche |
+|---|---|
+| **Bandes de vol** | Les lignes de vol calculées pour vos tâches. |
+| **Obstructions** | Les obstacles que vous avez dessinés ou importés. |
+| **Aéroports** | Les aéroports présents sur la carte. |
+| **GCP** | Les points d'appui au sol (GCP). |
+| **Aéronautique** | Le fond aéronautique. |
+
+<Tip>
+Réduisez l'opacité de **Satellite** ou de **Topo** pour mieux voir les bandes de vol par-dessus. Masquez **Bandes de vol** pour voir le fond sans les lignes.
+</Tip>
+
+{/* CAPTURE À FAIRE : liste Couches avec une couche masquée (œil barré, par exemple Aéroports) et un curseur d'opacité réduit */}
+
+## Ajouter une source
+
+Le bouton **+ Ajouter une source** permet de superposer vos propres données au fond de carte. Deux types de source sont acceptés :
+
+- une **orthophoto GeoTIFF** : une image aérienne géoréférencée que vous possédez déjà ;
+- un **flux WMS / WMTS** : un service de cartes en ligne.
+
+<Steps>
+  <Step title="Ouvrir la fenêtre">
+    Dans le panneau **Fond de carte**, cliquez sur **+ Ajouter une source**.
+  </Step>
+  <Step title="Choisir le fichier">
+    La fenêtre **Ajouter une source** s'ouvre, avec le texte **Orthophoto GeoTIFF ou flux WMS / WMTS, superposé au fond de carte.** Cliquez sur **Choisir le fichier...** et sélectionnez votre orthophoto.
+  </Step>
+</Steps>
+
+<Frame caption="La fenêtre Ajouter une source">
+  <img src="/images/flight-planner/ajouter-source-carte.png" alt="Fenêtre Ajouter une source avec les boutons Annuler et Choisir le fichier" />
+</Frame>
+
+Pour annuler sans rien ajouter, cliquez sur **Annuler**.
+
+{/* CAPTURE À FAIRE : après ajout, la source superposée au fond de carte et sa couche dans la liste Couches */}
+
+## Voir aussi
+
+- [Mesurer sur la carte](/fr/flight-planner/carte/mesures)
+- [Terrain (MNT) et géoïdes](/fr/flight-planner/carte/terrain-et-geoides)
+- [Météo](/fr/flight-planner/carte/meteo)
+- [Contrôle qualité (QC)](/fr/flight-planner/qualite/controle-qualite)
