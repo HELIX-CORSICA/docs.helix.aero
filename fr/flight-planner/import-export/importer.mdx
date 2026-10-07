@@ -1,0 +1,137 @@
+---
+title: "Importer des données"
+description: "Importer une zone, des points GCP, des obstructions ou une mission complète dans Helix Flight Planner."
+icon: "file-import"
+---
+
+Importez dans une mission des fichiers créés ailleurs : un plan de vol, des points d'appui (GCP) ou des obstructions. Le menu **Import** se trouve dans la barre du haut, à droite, à côté de **EXPORT**.
+
+## Ouvrir le menu Import
+
+<Steps>
+  <Step title="Ouvrir une mission">
+    Depuis le tableau de bord, ouvrez la mission. Vérifiez que l'onglet de vol est affiché.
+  </Step>
+  <Step title="Cliquer sur Import">
+    Cliquez sur **Import** dans la barre du haut. Le menu propose trois entrées : **Zone**, **GCP** et **Obstructions**.
+  </Step>
+</Steps>
+
+<Frame caption="Le menu Import : Zone, GCP, Obstructions">
+  <img src="/images/flight-planner/menu-import.png" alt="Menu Import ouvert avec les entrées Zone, GCP et Obstructions" />
+</Frame>
+
+## Importer une zone (plan de vol)
+
+L'entrée **Zone** ouvre la fenêtre **Importer un plan de vol**. Elle accepte les fichiers **KML**, **KMZ**, **GeoJSON** et **GPX** en WGS84.
+
+<Note>
+Ajoutez un vol avant d'importer une géométrie. Sans vol, l'import ne peut pas être placé.
+</Note>
+
+<Steps>
+  <Step title="Choisir Zone">
+    Dans le menu **Import**, cliquez sur **Zone**.
+  </Step>
+  <Step title="Charger le fichier">
+    Glissez votre fichier dans la zone de dépôt, ou cliquez dessus pour le chercher sur votre ordinateur.
+  </Step>
+  <Step title="Choisir le type de chaque géométrie">
+    Helix détecte les géométries du fichier et vous demande, pour chacune, ce qu'elle doit devenir. Les choix sont :
+
+    | Choix | Effet |
+    |---|---|
+    | **Zone (couverture)** | La géométrie devient une zone à couvrir |
+    | **Corridor** | La géométrie devient un corridor |
+    | **Waypoint** | La géométrie devient un point de passage |
+    | **Waypoints (chaque sommet)** | Chaque sommet devient un point de passage |
+    | **Obstruction** | La géométrie devient une obstruction (voir plus bas) |
+    | **Ignorer** | La géométrie n'est pas importée |
+  </Step>
+  <Step title="Valider">
+    Cliquez sur **Importer**. Pour annuler sans rien importer, cliquez sur **Annuler**.
+  </Step>
+</Steps>
+
+<Frame caption="Fenêtre Importer un plan de vol">
+  <img src="/images/flight-planner/import-plan-de-vol.png" alt="Fenêtre Importer un plan de vol avec les boutons Annuler et Importer" />
+</Frame>
+
+<Warning>
+Un fichier de plus de 5 Mo est refusé : Helix affiche « Fichier trop volumineux ». Découpez le fichier ou réduisez-le avant l'import.
+</Warning>
+
+## Importer des GCP
+
+Les points d'appui (GCP) servent à recaler les images. L'entrée **GCP** ouvre la fenêtre **Importer des GCP**. Elle accepte les fichiers **CSV**, **TXT**, **XYZ** et **PTS**.
+
+<Steps>
+  <Step title="Choisir GCP">
+    Dans le menu **Import**, cliquez sur **GCP**.
+  </Step>
+  <Step title="Déposer le fichier">
+    Glissez le fichier dans la zone de dépôt, ou cliquez dessus pour le parcourir.
+  </Step>
+  <Step title="Vérifier la détection des colonnes">
+    Helix détecte les colonnes et affiche l'aperçu. Dans **Aperçu — assignez chaque colonne**, choisissez le rôle de chaque colonne : **Easting (X)**, **Northing (Y)**, **Élévation (Z)**, **Latitude**, **Longitude** ou **Non défini**.
+    Si besoin, changez le **Séparateur de champs** (**Virgule**, **Point-virgule**, **Espace**, **Tabulation**) et le **Séparateur décimal** (**Point** ou **Virgule**).
+  </Step>
+  <Step title="Choisir le système de coordonnées">
+    Dans **Système de coordonnées source**, tapez un code EPSG (par exemple `2154`) ou un nom (Lambert, UTM, RGF93…). Si vos colonnes sont en latitude et longitude, ce champ ne sert pas : Helix l'indique.
+  </Step>
+  <Step title="Importer">
+    Cliquez sur **Importer**. Les points sont convertis en WGS84.
+  </Step>
+</Steps>
+
+<Frame caption="Fenêtre Importer des GCP">
+  <img src="/images/flight-planner/import-gcp.png" alt="Fenêtre Importer des GCP avec la zone de dépôt et les boutons Annuler et Importer" />
+</Frame>
+
+<Note>
+Il faut assigner au minimum **Easting (X)** et **Northing (Y)**, ou **Latitude** et **Longitude**. Sans cela, Helix refuse l'import et affiche un message.
+</Note>
+
+Les points importés apparaissent dans la couche **GCP** du panneau des couches (voir [Fonds de carte et couches](/fr/flight-planner/carte/fonds-et-couches)). S'il n'y a aucun point, la couche affiche « Aucun GCP importé. »
+
+## Importer des obstructions
+
+Une obstruction est une zone ou un point à éviter pendant le vol. L'entrée **Obstructions** du menu **Import** permet d'en importer depuis un fichier. Vous pouvez aussi en créer une à la main.
+
+- Un **polygone** peut devenir une obstruction, ou être ignoré.
+- Un **point** peut devenir une obstruction (disque de 5 m), ou être ignoré.
+
+### Créer une obstruction à la main
+
+<Steps>
+  <Step title="Ouvrir la fenêtre">
+    Ouvrez la fenêtre **Nouvelle obstruction** depuis la barre d'outils de la carte (outil **Dessiner obstruction**).
+  </Step>
+  <Step title="Renseigner les champs">
+    - **Nom** (obligatoire) : le nom affiché dans la liste.
+    - **Marge (m)** : la distance de sécurité autour de l'obstruction. La valeur par défaut est **1**.
+    - **Hauteur (m)** : la hauteur de l'obstruction. Si vous laissez ce champ vide, l'obstruction devient une **zone à ne pas survoler**.
+  </Step>
+  <Step title="Valider">
+    Cliquez sur **Valider**, ou sur **Annuler** pour fermer sans créer d'obstruction.
+  </Step>
+</Steps>
+
+<Frame caption="Fenêtre Nouvelle obstruction">
+  <img src="/images/flight-planner/nouvelle-obstruction.png" alt="Fenêtre Nouvelle obstruction avec les champs Nom, Marge (m) et Hauteur (m)" />
+</Frame>
+
+{/* CAPTURE À FAIRE : fenêtre d'import des obstructions depuis un fichier (menu Import > Obstructions), avec le choix Obstruction ou Ignorer pour chaque géométrie */}
+
+## Importer une mission depuis le tableau de bord
+
+Une mission complète s'importe depuis le tableau de bord, et non depuis le menu **Import** d'une mission ouverte. Depuis le tableau de bord, cliquez sur **IMPORTER UNE MISSION**.
+
+{/* CAPTURE À FAIRE : bouton IMPORTER UNE MISSION sur le tableau de bord et fenêtre de choix du fichier de mission */}
+
+## Voir aussi
+
+- [Le tableau de bord](/fr/flight-planner/missions/tableau-de-bord)
+- [Organiser les vols](/fr/flight-planner/missions/vols)
+- [Exporter le plan de vol](/fr/flight-planner/import-export/exporter)
+- [Fonds de carte et couches](/fr/flight-planner/carte/fonds-et-couches)
