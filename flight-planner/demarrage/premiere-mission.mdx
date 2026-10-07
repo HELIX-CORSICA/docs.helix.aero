@@ -1,0 +1,122 @@
+---
+title: "Your first mission in 10 minutes"
+description: "Create a mission, draw an area, choose a sensor, check the result and export the flight plan, from start to finish."
+icon: "rocket"
+---
+
+This page walks you through the process step by step, from creating a mission to exporting the flight plan. You need an active connection and a sensor available in the catalog. The examples use the mission "Corse - Haute-Corse lot 3" and the sensor **DJI Matrice 4E (Wide)**.
+
+<Steps>
+  <Step title="Create the mission">
+    On the dashboard, open the **Missions** tab and click **+ New mission**.
+
+    In step **01 Information**, type a name in the **Mission name** field, then click **Next**.
+
+    <Frame caption="Step 01 Information, with a name entered">
+      <img src="/images/flight-planner/nouvelle-mission-nom.png" alt="Information step of the New mission window, with a mission name entered and the Next button" />
+    </Frame>
+  </Step>
+
+  <Step title="Choose the place (optional)">
+    Step **02 Place** is used to pre-center the map. The field is **optional**: you can leave it empty.
+
+    Type a city or coordinates, for example "Corte", then pick the suggestion from the list. The globe pre-centers on that place.
+
+    <Frame caption="Place “Corte, Corsica, France” selected">
+      <img src="/images/flight-planner/nouvelle-mission-lieu-choisi.png" alt="Place step with Corte, Corsica, France selected and the Previous and Create mission buttons" />
+    </Frame>
+
+    Click **Create mission**. The mission opens.
+  </Step>
+
+  <Step title="Draw the area to cover">
+    In the vertical toolbar on the left side of the map, click the **Draw area** tool (polygon icon). Place the vertices of the area on the map to draw its outline.
+
+    <Frame caption="Tooltip “Draw area” on the toolbar">
+      <img src="/images/flight-planner/barre-outils-dessin.png" alt="Vertical toolbar with the Draw area tooltip" />
+    </Frame>
+
+    The area appears in the **Tasks** list, on the left side of the screen.
+
+  </Step>
+
+  <Step title="Set the flight (FLIGHT tab)">
+    In the **Tasks** panel, open the **FLIGHT** tab. There you set the flight height:
+
+    - **Mode**: **AMSL**, **AGL** or **IAGL**, depending on the altitude reference you want to use.
+    - **Altitude** (in m) or **GSD** (in cm): the flight altitude and the ground sampling distance are two ways of setting the same flight height. Fill in the one you care about.
+    - **Speed** (in m/s), then **Turn** and **Drone yaw** if your operation requires them.
+
+    <Frame caption="FLIGHT tab: mode, altitude, GSD and speed">
+      <img src="/images/flight-planner/mission-vue-generale.png" alt="Tasks panel, FLIGHT tab, with Mode AGL, Altitude 120 m, GSD 4.0 cm and Speed 11.1 m/s, and the area drawn on the map" />
+    </Frame>
+
+    For the details of each field, see [Altitude, GSD and speed](/flight-planner/parametres/onglet-vol).
+  </Step>
+
+  <Step title="Choose the sensor (SENSOR tab)">
+    Open the **SENSOR** tab in the same panel, then click the **Sensor** field. The **Choose a sensor** window opens.
+
+    Type the sensor name in the search box, or filter with **All**, **Photo** or **LiDAR**. Select your sensor. You can mark it as a favorite with the star.
+
+    <Frame caption="Choose a sensor window">
+      <img src="/images/flight-planner/choix-capteur.png" alt="Choose a sensor window with the search box, the All, Photo and LiDAR filters, and the sensor list" />
+    </Frame>
+
+    Then check the trigger settings: **Gimbal pitch**, **Trigger** and **Min interval (s)**. For details, see [Choose the sensor](/flight-planner/parametres/onglet-capteur).
+
+    <Tip>
+      Strips are only computed once a sensor is chosen. Without a sensor, the application shows the message "Choose a sensor to compute the strips."
+    </Tip>
+  </Step>
+
+  <Step title="Check the calculated strips">
+    As soon as the sensor is chosen, the **flight strips** appear on the area. They are drawn in green, with the flight direction shown by arrows.
+
+    At the bottom right of the map, the **Duration** and **Distance** box gives the time and the total length of the flight. The **STRIPS** list, in the **Tasks** panel, shows the number of strips; click it to expand the list.
+
+    <Frame caption="Strips calculated on the area, with Duration and Distance">
+      <img src="/images/flight-planner/mission-bandes-calculees.png" alt="Green flight strips on the area, Duration box showing 30 min 42 s and Distance 20 km, STRIPS list collapsed at 16" />
+    </Frame>
+
+    If the result does not suit you, go back to the **FLIGHT**, **SENSOR** or **GEOMETRY** tabs to change the settings.
+
+    For overlap and direction of the strips, see [Overlap and direction](/flight-planner/parametres/onglet-geometrie).
+  </Step>
+
+  <Step title="Open quality control">
+    Click the **Quality control** button on the right side of the map (cube icon, tooltip "Quality control"). The **QC** panel opens.
+
+    In the panel, choose the **Flight** or **Task** tab, then the criterion to check. The **THRESHOLDS** (cm) set the color limits shown on the map.
+
+    <Frame caption="QC (quality control) panel">
+      <img src="/images/flight-planner/panneau-qc.png" alt="QC panel with the Flight and Task tabs, the criterion, multi-image GSD, GSD geometry, thresholds in cm and opacity" />
+    </Frame>
+
+    For the details of the criteria and thresholds, see [Quality control (QC)](/flight-planner/qualite/controle-qualite).
+  </Step>
+
+  <Step title="Export the flight plan">
+    Click **Export**, at the top right. The **Export the flight plan** window opens with two options:
+
+    - **Flight plan**: **.helix**, **KML** (line/waypoint) or **KMZ WPML** files, to save on your computer.
+    - **Send to DJI Pilot**: choose the altitude reference, then **Local** or **Cloud**.
+
+    <Frame caption="Export the flight plan window">
+      <img src="/images/flight-planner/export.png" alt="Export the flight plan window with the Flight plan and Send to DJI Pilot options" />
+    </Frame>
+
+    For the details of each format, see [Export the flight plan](/flight-planner/import-export/exporter). To send a plan to DJI, see [Working with DJI](/flight-planner/import-export/dji).
+  </Step>
+</Steps>
+
+## What's next
+
+Your mission is ready. To go further, repeat these steps with your own areas: add flights with **+ FLIGHT**, draw more tasks, and check each flight before you export.
+
+## See also
+
+- [Explore the interface](/flight-planner/demarrage/interface)
+- [Create a mission](/flight-planner/missions/creer-une-mission)
+- [Flight strips](/flight-planner/parametres/bandes)
+- [Quality control (QC)](/flight-planner/qualite/controle-qualite)
