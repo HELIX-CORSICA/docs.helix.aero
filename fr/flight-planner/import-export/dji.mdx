@@ -1,0 +1,87 @@
+---
+title: "Travailler avec DJI (Pilot et Cloud)"
+description: "Envoyer une mission vers DJI Pilot en local ou via le Cloud, choisir le référentiel d'altitude et retrouver les missions du compte DJI."
+icon: "plane"
+---
+
+Pour un drone DJI, vous pouvez envoyer le plan de vol directement vers **DJI Pilot**, soit en local, soit via le **Cloud**. Vous pouvez aussi consulter les missions du compte DJI depuis le tableau de bord.
+
+## Avant d'envoyer
+
+- La mission doit être **calculée** : le message *« Calculez la mission avant d'exporter. »* apparaît sinon.
+- Le vol doit utiliser un **aéronef DJI**. Pour un appareil non DJI, l'envoi est grisé avec le message *« Appareil non-DJI — réservé aux drones DJI »*.
+
+## Envoyer vers DJI Pilot
+
+<Steps>
+  <Step title="Ouvrir l'export">
+    Cliquez sur **EXPORT** en haut à droite de la mission.
+  </Step>
+  <Step title="Choisir la destination DJI">
+    Cliquez sur **Envoyer vers DJI Pilot**. Le sous-titre indique : *« Choisir le référentiel d'altitude puis Local ou Cloud »*.
+  </Step>
+  <Step title="Choisir le référentiel d'altitude">
+    Dans **Référentiel d'altitude (DJI WPML)**, choisissez :
+    - **AMSL absolu** : les altitudes sont exprimées au-dessus du niveau de la mer.
+    - **Relatif au décollage** : les altitudes sont exprimées par rapport au point de décollage.
+  </Step>
+  <Step title="Choisir Local ou Cloud">
+    - **Local** : *« Pont LAN vers DJI Pilot sur la même radiocommande »*. Le plan arrive dans DJI Pilot sur la radiocommande reliée à votre réseau local.
+    - **Cloud** : *« Publie les waylines sur le portail Helix pour DJI Pilot »*. Le plan est publié sur le portail, puis récupéré par DJI Pilot.
+  </Step>
+  <Step title="Envoyer">
+    Validez avec **Envoyer**.
+  </Step>
+</Steps>
+
+<Frame caption="Fenêtre Exporter le plan de vol : Plan de vol et Envoyer vers DJI Pilot">
+  <img src="/images/flight-planner/export.png" alt="Fenêtre Exporter le plan de vol avec les options Plan de vol et Envoyer vers DJI Pilot" />
+</Frame>
+
+{/* CAPTURE À FAIRE : fenêtre « Envoyer à DJI Pilot » ouverte, avec le choix du référentiel d'altitude (AMSL absolu / Relatif au décollage) et le choix Local / Cloud */}
+
+### Local ou Cloud : quelle différence ?
+
+| Option | Quand la choisir | Ce qu'il faut |
+|---|---|---|
+| **Local** | Vous êtes sur le terrain, avec la radiocommande DJI sur le même réseau que ce poste. | Le pont DJI Pilot doit être démarré sur ce poste. |
+| **Cloud** | Vous voulez publier le plan sur le portail Helix et le retrouver depuis DJI Pilot. | Une licence qui autorise la publication cloud DJI. |
+
+Si la licence ne le permet pas, Helix affiche : *« Votre licence ne permet pas la publication cloud DJI. »*
+
+### Le pont DJI Pilot (Local)
+
+Pour l'envoi **Local**, la fenêtre du pont affiche notamment **Démarrer** et **Arrêter**, l'**Adresse** à saisir dans DJI Pilot, un **Code** à 6 chiffres et la **Radiocommande** détectée.
+
+{/* CAPTURE À FAIRE : fenêtre du pont DJI Pilot (boutons Démarrer / Arrêter, Adresse, Code, Radiocommande) */}
+
+Dans DJI Pilot, l'adresse s'ouvre dans **Cloud Service → Open Platforms**, puis le mot de passe local est demandé.
+
+## Missions du compte DJI (DJI CLOUD)
+
+Le bouton **DJI CLOUD**, sur le tableau de bord, ouvre la liste des missions présentes sur le serveur DJI pour votre compte.
+
+<Frame caption="Tableau de bord : bouton DJI CLOUD à côté de IMPORTER UNE MISSION">
+  <img src="/images/flight-planner/dashboard.png" alt="Tableau de bord avec les boutons DJI CLOUD, IMPORTER UNE MISSION et + NOUVELLE MISSION" />
+</Frame>
+
+Si aucune mission n'est présente, le message *« Aucune mission de ce compte n'est sur le serveur DJI. »* s'affiche.
+
+{/* CAPTURE À FAIRE : fenêtre DJI Cloud avec la liste des missions du compte DJI */}
+
+## Waylines
+
+Le libellé **Waylines** apparaît dans la fenêtre du pont DJI, avec les missions envoyées. Les waylines sont les plans de vol tels qu'ils sont rangés côté DJI Pilot.
+
+{/* CAPTURE À FAIRE : liste Waylines dans la fenêtre du pont DJI Pilot */}
+
+## Export WPML pour DJI Pilot (fichier)
+
+Pour enregistrer un fichier plutôt que d'envoyer, ouvrez **EXPORT**, puis **Plan de vol**, et choisissez **WPML (DJI Pilot)**. Cette option n'est active que si un drone DJI est sélectionné ; sinon elle affiche *« Sélectionnez un drone DJI pour activer cet export. »*
+
+## Voir aussi
+
+- [Exporter le plan de vol](/fr/flight-planner/import-export/exporter)
+- [Importer des données](/fr/flight-planner/import-export/importer)
+- [Choisir le capteur (onglet CAPTEUR)](/fr/flight-planner/parametres/onglet-capteur)
+- [Questions fréquentes et dépannage](/fr/flight-planner/aide/faq)
