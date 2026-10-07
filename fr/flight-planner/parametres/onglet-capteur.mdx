@@ -1,0 +1,80 @@
+---
+title: "Choisir le capteur (onglet CAPTEUR)"
+description: "Choisir le capteur de la tâche, régler le pitch de la nacelle, le déclenchement et l'intervalle des photos dans l'onglet CAPTEUR."
+icon: "camera"
+---
+
+L'onglet **CAPTEUR** du panneau **Tâches** définit l'appareil de prise de vue utilisé pour une tâche : quel capteur, comment la caméra déclenche, et à quel intervalle. C'est à partir de ces réglages que les bandes de vol sont calculées.
+
+## Ouvrir l'onglet
+
+1. Ouvrez une mission, puis le vol concerné.
+2. Sélectionnez la tâche sur la carte ou dans la liste **Tâches**.
+3. Dans le panneau **Tâches**, cliquez sur l'onglet **CAPTEUR**.
+
+<Frame caption="L'onglet CAPTEUR du panneau Tâches">
+  <img src="/images/flight-planner/onglet-capteur.png" alt="Onglet CAPTEUR du panneau Tâches avec les champs Capteur, Pitch nacelle, Déclenchement et Capture en virage" />
+</Frame>
+
+## Choisir le capteur
+
+1. Cliquez sur le champ **Capteur** (placeholder **Choisir un capteur…**).
+2. La fenêtre **Choisir un capteur** s'ouvre.
+3. Cliquez sur le capteur voulu : il s'affiche dans le champ **Capteur**.
+
+<Frame caption="La fenêtre Choisir un capteur, avec les filtres et les favoris">
+  <img src="/images/flight-planner/choix-capteur.png" alt="Fenêtre Choisir un capteur avec le champ de recherche, les filtres Tous, Photo et LiDAR, et les étoiles de favoris" />
+</Frame>
+
+Dans cette fenêtre :
+
+- **Rechercher** : tapez une partie du nom du capteur dans le champ **Rechercher un capteur…**. La liste se réduit en direct.
+
+<Frame caption="Recherche d'un capteur par son nom">
+  <img src="/images/flight-planner/choix-capteur-recherche.png" alt="Fenêtre Choisir un capteur avec la recherche Matrice 4E et trois résultats" />
+</Frame>
+
+- **Filtres** : **Tous**, **Photo** ou **LiDAR**. Chaque filtre affiche le nombre de capteurs qu'il contient.
+- **Favoris** : cliquez sur l'étoile à droite d'un capteur pour le marquer comme favori.
+- **Annuler** : ferme la fenêtre sans changer le capteur.
+
+## Régler les paramètres de prise de vue
+
+| Champ | Ce qu'il fait |
+|---|---|
+| **Pitch nacelle** | Angle de la caméra en degrés. La valeur affichée dans l'exemple est **-90** (caméra à la verticale). |
+| **Déclenchement** | Mode de déclenchement des photos : **Distance** ou **Temps**. |
+| **Intervalle min (s)** | Intervalle minimal entre deux photos, en secondes. Le champ apparaît une fois le capteur choisi. |
+| **Capture en virage** | Interrupteur : active ou désactive la prise de vue pendant les virages. |
+
+### Déclenchement
+
+- **Distance** : une photo est déclenchée à intervalle régulier le long du tracé (une toutes les X m).
+- **Temps** : une photo est déclenchée à intervalle régulier de temps (une toutes les X s).
+
+### Intervalle min
+
+Le champ **Intervalle min (s)** affiche sous lui la **plage** autorisée pour le capteur choisi, par exemple **Plage 0.5–2 s**. Saisissez une valeur dans cette plage.
+
+### Capture en virage
+
+L'interrupteur **Capture en virage** s'active ou se désactive d'un clic.
+
+<Warning>
+Sans capteur, il n'y a pas de calcul de bandes. Le message **« Choisissez un capteur pour calculer les bandes. »** reste affiché tant que le champ **Capteur** est vide.
+</Warning>
+
+## Une fois le capteur choisi
+
+Quand le capteur et les paramètres sont renseignés, les bandes de vol apparaissent sur la zone de la tâche. Le bloc **Durée / Distance** en bas à droite de la carte donne une estimation du temps de vol et de la longueur du tracé.
+
+<Frame caption="Bandes calculées sur la zone, avec la durée et la distance du vol">
+  <img src="/images/flight-planner/mission-bandes-calculees.png" alt="Bandes de vol calculées sur la zone, champ Capteur rempli avec DJI Matrice 4E Wide, bloc Durée et Distance" />
+</Frame>
+
+## Voir aussi
+
+- [Altitude, GSD et vitesse (onglet VOL)](/fr/flight-planner/parametres/onglet-vol)
+- [Recouvrement et orientation (onglet GÉOMÉTRIE)](/fr/flight-planner/parametres/onglet-geometrie)
+- [Les bandes de vol](/fr/flight-planner/parametres/bandes)
+- [Catalogues capteurs et appareils](/fr/flight-planner/catalogues/capteurs-et-appareils)
