@@ -1,0 +1,46 @@
+---
+title: "Flight strips"
+description: "Read the flight strips calculated on the map, the STRIPS list and the Duration / Distance panel."
+icon: map
+---
+
+The **strips** are the flight lines the aircraft will follow to cover the area of a task. They appear on the map as soon as the calculation is done, together with the total flight duration and distance.
+
+## The result on the map
+
+Once the calculation is complete, the area is covered with **green strips**. Each strip carries **direction arrows** that show the way the aircraft will fly.
+
+<Frame caption="Strips calculated over the area, with the Duration / Distance panel at the bottom right">
+  <img src="/images/flight-planner/mission-bandes-calculees.png" alt="Map with an area covered by green strips with direction arrows, the STRIPS list collapsed in the Tasks panel, and the Duration and Distance panel at the bottom right" />
+</Frame>
+
+The strips recalculate automatically when you change a task setting or the shape of the area. You don't need to run anything again.
+
+## The STRIPS list
+
+Under the selected task, the **Tasks** panel shows a **STRIPS** line with the number of calculated strips. Click the arrow to the left of **STRIPS** to expand the list.
+
+Each line is one strip, identified by a letter and a number (**A1**, **A2**, **A3**…). It shows:
+
+- the **altitude range** of the strip, for example `120→120 m`;
+- the **length** of the strip, on the right, for example `864 m` or `1.1 km`.
+
+<Frame caption="Expanded STRIPS list: each strip shows its altitude and its length">
+  <img src="/images/flight-planner/liste-bandes.png" alt="Expanded STRIPS list with strips A1 to A8, each showing its altitude range and its length" />
+</Frame>
+
+## Duration and Distance
+
+The panel at the bottom right of the map shows the total for the calculated flight:
+
+- **Duration**: the estimated flight time, for example `30 min 42 s`;
+- **Distance**: the total distance to fly, for example `20 km`.
+
+These two values change each time the strips are recalculated.
+
+## See also
+
+- [Altitude, GSD and speed (FLIGHT tab)](/flight-planner/parametres/onglet-vol)
+- [Overlap and orientation (GEOMETRY tab)](/flight-planner/parametres/onglet-geometrie)
+- [Choosing the sensor (SENSOR tab)](/flight-planner/parametres/onglet-capteur)
+- [Quality control (QC)](/flight-planner/qualite/controle-qualite)
