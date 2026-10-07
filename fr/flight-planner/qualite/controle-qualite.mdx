@@ -1,0 +1,92 @@
+---
+title: "Contrôle qualité (QC)"
+description: "Vérifier, sur la carte, la résolution et le recouvrement prévus par le plan de vol grâce au panneau Contrôle qualité."
+icon: "gauge-high"
+---
+
+Le panneau **QC** (bouton **Contrôle qualité** dans la barre de droite de la carte) colore la zone selon la qualité de prise de vue attendue. Il sert à repérer, avant le vol, les secteurs où la résolution est trop grossière ou où les clichés se recouvrent mal.
+
+<Frame caption="Panneau QC avant calcul">
+  <img src="/images/flight-planner/panneau-qc.png" alt="Panneau QC avant calcul, avec les onglets Vol et Tâche, le critère, les seuils et l'opacité" />
+</Frame>
+
+## Comment faire
+
+<Steps>
+  <Step title="Ouvrir le panneau QC">
+    Cliquez sur le bouton **Contrôle qualité** (icône de cube, à droite de la carte). Le panneau **QC** s'affiche à droite.
+  </Step>
+  <Step title="Choisir la portée">
+    En haut du panneau, choisissez **Vol** pour analyser tout le vol, ou **Tâche** pour analyser une seule tâche.
+  </Step>
+  <Step title="Choisir le critère">
+    Sous **CRITÈRE**, sélectionnez **GSD**, **Passes** ou **Empreinte**. Le critère choisi détermine la couleur affichée sur la carte.
+  </Step>
+  <Step title="Régler les seuils">
+    Sous **SEUILS (cm)**, ajustez les curseurs ou cliquez sur **Préréglages** pour appliquer un jeu de valeurs prêt à l'emploi.
+  </Step>
+  <Step title="Lancer le calcul">
+    Cliquez sur **Calculer**. Les couleurs apparaissent sur la zone une fois le calcul terminé.
+  </Step>
+  <Step title="Lire la carte">
+    Lisez la carte de couleurs en comparant chaque zone aux seuils (voir plus bas).
+  </Step>
+</Steps>
+
+<Frame caption="Carte de couleurs GSD après calcul, avec l'histogramme des seuils">
+  <img src="/images/flight-planner/qc-carte-gsd.png" alt="Panneau QC après calcul, critère GSD sélectionné, carte colorée et histogramme des seuils" />
+</Frame>
+
+## Le panneau en détail
+
+### Portée et critère
+
+- **Vol** / **Tâche** : la portée de l'analyse. Le panneau affiche le vol ou la tâche sélectionné.
+- **CRITÈRE** :
+  - **GSD** : la taille au sol d'un pixel de photo, en centimètres. Plus le chiffre est petit, plus le détail est fin.
+  - **Passes** : le nombre de passages de vol qui survolent chaque zone.
+  - **Empreinte** : la zone couverte par l'empreinte d'une photo.
+
+### GSD multi-clichés
+
+Quand le GSD est le critère, **GSD MULTI-CLICHÉS** détermine quelle valeur est retenue lorsqu'une même zone est photographiée plusieurs fois :
+
+- **Max** : la valeur la plus grossière est affichée. C'est la vérification la plus sévère.
+- **Moyen** : la moyenne des valeurs est affichée.
+- **Min** : la valeur la plus fine est affichée.
+
+### Géométrie GSD
+
+Sous **GÉOMÉTRIE GSD**, choisissez :
+
+- **Standard** : la géométrie habituelle de prise de vue.
+- **Oblique** : la géométrie de prise de vue inclinée (disponible selon le capteur).
+
+### Seuils (cm)
+
+- La barre **SEUILS (cm)** va du rouge (valeurs élevées) au vert (valeurs faibles). Les repères chiffrés indiquent les valeurs en centimètres (par exemple 5, 7,5 et 10 cm).
+- **Préréglages** ouvre la liste des jeux de seuils prédéfinis. Une fois le calcul fait, l'icône d'histogramme à côté de **Préréglages** montre la répartition des valeurs sur la zone.
+
+### Opacité
+
+Le curseur **OPACITÉ** règle la transparence de la couleur posée sur la carte (la valeur par défaut affichée est 75 %).
+
+### Comparer
+
+Le bouton **Comparer** ouvre la fenêtre **Comparer les hypothèses**. Il n'est disponible qu'après un calcul : tant que la carte QC n'est pas calculée, il reste inactif.
+
+{/* CAPTURE À FAIRE : fenêtre « Comparer les hypothèses » après calcul de deux hypothèses */}
+
+## Lire la carte de couleurs
+
+- **Vert** : la valeur respecte le seuil. La zone est bonne.
+- **Orange** à **rouge** : la valeur dépasse le seuil. La zone est à revoir : rapprochez les lignes de vol, changez l'altitude ou la vitesse, puis recalculez.
+
+Après une modification du plan (altitude, capteur, recouvrement, tâche), cliquez à nouveau sur **Calculer** pour mettre la carte à jour.
+
+## Voir aussi
+
+- [Altitude, GSD et vitesse (onglet VOL)](/fr/flight-planner/parametres/onglet-vol)
+- [Recouvrement et orientation (onglet GÉOMÉTRIE)](/fr/flight-planner/parametres/onglet-geometrie)
+- [Les bandes de vol](/fr/flight-planner/parametres/bandes)
+- [Glossaire](/fr/flight-planner/aide/glossaire)
