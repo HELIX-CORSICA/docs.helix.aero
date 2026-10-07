@@ -1,0 +1,80 @@
+---
+title: "Choosing the sensor (SENSOR tab)"
+description: "Choose the task's sensor, set the gimbal pitch, the trigger mode and the minimum interval between photos in the SENSOR tab."
+icon: "camera"
+---
+
+The **SENSOR** tab of the **Tasks** panel defines the camera used for a task: which sensor it is, how the camera triggers, and at what interval. The flight strips are calculated from these settings.
+
+## Open the tab
+
+1. Open a mission, then the flight concerned.
+2. Select the task on the map or in the **Tasks** list.
+3. In the **Tasks** panel, click the **SENSOR** tab.
+
+<Frame caption="The SENSOR tab of the Tasks panel">
+  <img src="/images/flight-planner/onglet-capteur.png" alt="SENSOR tab of the Tasks panel with the Sensor, Gimbal pitch, Trigger and Capture in turns fields" />
+</Frame>
+
+## Choose the sensor
+
+1. Click the **Sensor** field (it shows **Choose a sensor…** while it is empty).
+2. The **Choose a sensor** window opens.
+3. Click the sensor you want: it appears in the **Sensor** field.
+
+<Frame caption="The Choose a sensor window, with the filters and favorites">
+  <img src="/images/flight-planner/choix-capteur.png" alt="Choose a sensor window with the search field, the All, Photo and LiDAR filters, and the favorite stars" />
+</Frame>
+
+In this window:
+
+- **Search**: type part of the sensor name in the **Search a sensor…** field. The list narrows as you type.
+
+<Frame caption="Searching a sensor by name">
+  <img src="/images/flight-planner/choix-capteur-recherche.png" alt="Choose a sensor window with the search Matrice 4E and three results" />
+</Frame>
+
+- **Filters**: **All**, **Photo** or **LiDAR**. Each filter shows how many sensors it contains.
+- **Favorites**: click the star on the right of a sensor to mark it as a favorite.
+- **Cancel**: closes the window without changing the sensor.
+
+## Set the capture parameters
+
+| Field | What it does |
+|---|---|
+| **Gimbal pitch** | Camera angle in degrees. The value shown in the example is **-90** (camera pointing straight down). |
+| **Trigger** | How photos are triggered: **Distance** or **Time**. |
+| **Min interval (s)** | Minimum interval between two photos, in seconds. The field appears once a sensor is chosen. |
+| **Capture in turns** | Toggle: turns photo capture on or off during turns. |
+
+### Trigger
+
+- **Distance**: a photo is triggered at regular intervals along the path (one every X m).
+- **Time**: a photo is triggered at regular time intervals (one every X s).
+
+### Min interval
+
+Below the **Min interval (s)** field, the **Range** allowed for the chosen sensor is shown, for example **Range 0.5–2 s**. Enter a value within that range.
+
+### Capture in turns
+
+Click the **Capture in turns** toggle to turn it on or off.
+
+<Warning>
+Without a sensor, no strips are calculated. The message **"Choose a sensor to compute the strips."** stays displayed as long as the **Sensor** field is empty.
+</Warning>
+
+## Once the sensor is chosen
+
+When the sensor and parameters are filled in, the flight strips appear over the task area. The **Duration / Distance** block at the bottom right of the map gives an estimate of the flight time and the length of the path.
+
+<Frame caption="Strips calculated over the area, with the flight duration and distance">
+  <img src="/images/flight-planner/mission-bandes-calculees.png" alt="Flight strips calculated over the area, Sensor field filled with DJI Matrice 4E (Wide), Duration and Distance block" />
+</Frame>
+
+## See also
+
+- [Altitude, GSD and speed (FLIGHT tab)](/flight-planner/parametres/onglet-vol)
+- [Overlap and orientation (GEOMETRY tab)](/flight-planner/parametres/onglet-geometrie)
+- [Flight strips](/flight-planner/parametres/bandes)
+- [Sensor and aircraft catalogs](/flight-planner/catalogues/capteurs-et-appareils)
