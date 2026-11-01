@@ -1,0 +1,10 @@
+---
+// Pied du menu mobile : les mêmes liens que l'en-tête (la bascule de langue de Starlight mènerait à une page absente).
+import SiteLinks from './SiteLinks.astro';
+---
+
+<div class="mobile-preferences sl-flex"><SiteLinks /></div>
+
+<style>
+  .mobile-preferences { border-top: 1px solid var(--sl-color-gray-6); padding: 0.75rem var(--sl-sidebar-pad-x) 0; }
+</style>
