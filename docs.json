@@ -63,21 +63,89 @@
                 ]
               },
               {
-                "group": "Guide utilisateur",
+                "group": "Compte et licence",
                 "pages": [
-                  "fr/guides/mission-planning",
-                  "fr/guides/export-formats",
-                  "fr/guides/sensors"
+                  "fr/compte/connexion",
+                  "fr/compte/licence",
+                  "fr/compte/offres-et-droits",
+                  "fr/compte/synchronisation"
                 ]
               },
               {
-                "group": "Concepts",
+                "group": "Tableau de bord",
                 "pages": [
-                  "fr/guides/gsd-and-footprint",
-                  "fr/guides/altitude-modes",
-                  "fr/guides/strip-generation",
-                  "fr/guides/leading-lines",
-                  "fr/guides/quality-control"
+                  "fr/dashboard/missions",
+                  "fr/dashboard/catalogue-capteurs-appareils"
+                ]
+              },
+              {
+                "group": "Mission",
+                "pages": [
+                  "fr/mission/dessiner-une-zone",
+                  "fr/mission/editer-une-zone",
+                  "fr/mission/importer-des-donnees",
+                  "fr/mission/vols-et-appareils"
+                ]
+              },
+              {
+                "group": "Planification",
+                "pages": [
+                  "fr/planification/couverture-et-capteur",
+                  "fr/planification/direction-et-virages",
+                  "fr/planification/mode-altitude",
+                  "fr/planification/terrain-mnt",
+                  "fr/planification/waylines",
+                  "fr/planification/decoupe-multi-vol",
+                  "fr/planification/edition-multiple-et-validation"
+                ]
+              },
+              {
+                "group": "Capteurs et appareils",
+                "pages": [
+                  "fr/capteurs/choisir-capteur-et-appareil",
+                  "fr/capteurs/autonomie-et-charge-utile",
+                  "fr/capteurs/calibration-imu-lidar"
+                ]
+              },
+              {
+                "group": "Globe",
+                "pages": [
+                  "fr/globe/navigation-et-selection",
+                  "fr/globe/calques-et-fond-de-carte",
+                  "fr/globe/mesure-et-profil-altimetrique"
+                ]
+              },
+              {
+                "group": "Météo et espace aérien",
+                "pages": [
+                  "fr/meteo/panneau-meteo-notam",
+                  "fr/meteo/espace-aerien-sur-le-globe"
+                ]
+              },
+              {
+                "group": "Contrôle qualité",
+                "pages": [
+                  "fr/qc/alertes-securite-et-validation",
+                  "fr/qc/cartes-qualite-visuelles"
+                ]
+              },
+              {
+                "group": "Export",
+                "pages": [
+                  "fr/export/vue-densemble",
+                  "fr/export/kmz-wpml-dji-pilot2",
+                  "fr/export/plan-de-vol-helix-et-kml",
+                  "fr/export/pont-dji-pilot2"
+                ]
+              },
+              {
+                "group": "Réglages",
+                "pages": [
+                  "fr/reglages/preferences-et-apparence",
+                  "fr/reglages/cache-performance-mises-a-jour",
+                  "fr/reglages/geoides",
+                  "fr/reglages/raccourcis-et-prerequis",
+                  "fr/reglages/serveur-mcp-et-cli"
                 ]
               }
             ]
