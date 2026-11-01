@@ -117,3 +117,10 @@ a.hx-card:hover { border-color: rgb(17 18 20 / 0.2); box-shadow: 0 1px 2px rgb(1
 .hx-accordion summary { cursor: pointer; padding: 1rem 1.25rem; font: 500 1rem/1.4 var(--hx-font-head); color: var(--hx-ink); }
 .hx-accordion summary:hover { background: var(--hx-cream); }
 .hx-accordion > div { padding: 0 1.25rem 1rem; color: var(--hx-mute); }
+
+/* diagrammes mermaid : code masqué le temps du dessin (src/components/Mermaid.astro), affiché si le dessin échoue */
+.expressive-code:has(pre[data-language='mermaid']):not(.hx-mermaid-erreur) { visibility: hidden; height: 6rem; overflow: hidden; }
+.hx-mermaid { margin-block: 1.5rem; padding: 1.25rem; border: 1px solid var(--sl-color-hairline); border-radius: 16px; background: #fff; overflow-x: auto; text-align: center; }
+.hx-mermaid svg { max-width: 100%; height: auto; }
+.hx-mermaid svg { display: block; margin-inline: auto; }
+.hx-mermaid .node :is(rect, polygon) { rx: 10px; ry: 10px; }

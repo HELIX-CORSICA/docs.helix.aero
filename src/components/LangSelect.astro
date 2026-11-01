@@ -1,0 +1,39 @@
+---
+// Sélecteur de langue (EN / FR) en pilule, comme celui de la vitrine : dans l'en-tête sur ordinateur et sur mobile.
+import { getCollection } from 'astro:content';
+import { home } from '../nav';
+
+const route = Astro.locals.starlightRoute;
+const fr = route.locale === 'fr';
+// Même page dans l'autre langue si elle existe, sinon son accueil (les deux arborescences diffèrent).
+const ids = new Set((await getCollection('docs')).map((e) => e.id));
+const base = fr ? route.id.replace(/^fr\//, '') : route.id;
+const en = `/${fr ? (ids.has(base) ? base : home('en')) : route.id}/`;
+const frHref = `/${fr ? route.id : ids.has(`fr/${base}`) ? `fr/${base}` : home('fr')}/`;
+---
+
+<label class="hx-lang">
+  <span class="sr-only">{fr ? 'Langue' : 'Language'}</span>
+  <select data-hx-lang>
+    <option value={en} lang="en" selected={!fr}>EN</option>
+    <option value={frHref} lang="fr" selected={fr}>FR</option>
+  </select>
+  <svg aria-hidden="true" viewBox="0 0 16 16" width="12" height="12"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
+</label>
+
+<script>
+  document.querySelectorAll<HTMLSelectElement>('select[data-hx-lang]').forEach((s) =>
+    s.addEventListener('change', () => (window.location.pathname = s.value)),
+  );
+</script>
+
+<style>
+  .hx-lang { position: relative; display: inline-flex; align-items: center; color: var(--hx-ink); }
+  .hx-lang select {
+    appearance: none; cursor: pointer; background: transparent; color: inherit;
+    border: 1px solid rgb(17 18 20 / 0.14); border-radius: 999px; padding: 0.4rem 1.75rem 0.4rem 0.875rem;
+    font: 500 0.875rem/1.2 var(--hx-font-head);
+  }
+  .hx-lang select:hover { border-color: var(--hx-ink); }
+  .hx-lang svg { position: absolute; inset-inline-end: 0.7rem; pointer-events: none; }
+</style>
