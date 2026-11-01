@@ -22,7 +22,8 @@ export const onRequest = defineRouteMiddleware((context) => {
     label: g.group,
     collapsed: false,
     badge: undefined,
-    entries: g.pages.map((id) => {
+    // « dossier/index » dans docs.json = page dossier/index.mdx, dont l'id Astro est « dossier »
+    entries: g.pages.map((page) => page.replace(/\/?index$/, '')).map((id) => {
       const link: SidebarLink = { type: 'link', label: titles.get(id) ?? id, href: `/${id}/`, isCurrent: id === route.id, badge: undefined, attrs: {} };
       links.push(link);
       return link;
