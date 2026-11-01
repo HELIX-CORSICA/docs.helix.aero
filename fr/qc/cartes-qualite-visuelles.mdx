@@ -1,105 +1,82 @@
 ---
-title: "Cartes de qualité : GSD, densité LiDAR et recouvrement"
-description: "Nappes de couleur pour visualiser la résolution, la densité et le recouvrement."
+title: "Cartes de qualité : GSD, densité, recouvrement"
+description: "Calculer et lire les cartes de contrôle qualité drapées sur le terrain, régler les seuils et comparer les résultats."
 ---
 
-En plus des bandes de vol et de l'empreinte capteur, le globe peut afficher une **nappe de couleur** drapée sur le terrain qui traduit, cellule par cellule, la qualité réelle de la couverture attendue. Trois nappes existent, une par métrique — la résolution image (GSD), la densité de points (LiDAR) et le recouvrement entre bandes — et **une seule peut être affichée à la fois** : elles occupent le même emplacement visuel et se liraient mal superposées.
-
-Les trois nappes partagent le même code couleur : **vert** = objectif atteint, **ambre** = zone intermédiaire, **rouge** = objectif manqué. Une cellule qui n'a jamais été survolée (hors de la zone couverte) n'est pas rouge : elle reste **transparente**, laissant voir le fond de carte ou le terrain tel quel.
+Le panneau **Contrôle qualité** calcule sur GPU une carte de couleur drapée sur le terrain, qui traduit cellule par cellule la qualité attendue de la couverture. Une seule carte est affichée à la fois, choisie par le critère actif.
 
 <CardGroup cols={3}>
   <Card title="GSD" icon="camera">
-    Résolution au sol en cm/pixel, pour les capteurs photo, thermiques et pushbroom.
+    Résolution au sol en cm, pour les capteurs photo.
   </Card>
   <Card title="Densité" icon="cloud">
-    Densité de points en pt/m², pour les capteurs LiDAR uniquement.
+    Densité de points en pt/m², pour les capteurs LiDAR.
   </Card>
-  <Card title="Recouvrement" icon="target">
-    Nombre de bandes qui se superposent sur chaque cellule, tout capteur.
+  <Card title="Sidelap, Passes, Empreinte" icon="target">
+    Recouvrement latéral en %, nombre de passes et contour des photos, pour tout capteur.
   </Card>
 </CardGroup>
 
-## Afficher une carte de qualité
+## Afficher une carte
 
 <Steps>
-  <Step title="Sélectionner l'élément">
-    Les cases des nappes de qualité n'apparaissent que pour l'**élément actuellement sélectionné** (le vol/la zone en cours d'édition), et seulement s'il a une zone tracée (polygone ou corridor d'au moins 3 sommets).
+  <Step title="Ouvrir le panneau">
+    Cliquez sur **Contrôle qualité** dans la colonne d'outils à droite du globe. La case à cocher de l'en-tête du panneau active l'affichage de la carte sur le globe.
   </Step>
-  <Step title="Ouvrir le panneau Couches">
-    Cliquez sur le bouton flottant **Couches** en haut à droite du globe (icône de calques empilés) pour ouvrir le panneau. Il s'ouvre par défaut sur l'onglet **Fond**, qui contient les cases GSD/Densité/Recouvrement décrites ci-dessous (l'autre onglet, **Calques**, ne liste que les GCP et obstructions).
+  <Step title="Choisir l'échelle">
+    Le sélecteur propose **Vol** pour l'ensemble du vol et **Tâche** pour la tâche sélectionnée.
   </Step>
-  <Step title="Cocher la nappe voulue">
-    Sous la section **Élément sélectionné**, cochez **GSD** (ou **Densité** si le capteur est un LiDAR) et/ou **Recouvrement**.
+  <Step title="Choisir le critère">
+    Sous **CRITÈRE**, cliquez sur une tuile : **GSD**, **Densité**, **Sidelap**, **Passes** ou **Empreinte**.
+  </Step>
+  <Step title="Calculer">
+    Cliquez sur **Calculer**. Le bouton affiche la progression (`Calcul… n %`), et le panneau indique les tuiles traitées et le temps restant.
   </Step>
 </Steps>
 
-<Note>
-  **GSD** et **Densité** ne sont jamais proposées en même temps : le panneau affiche l'une ou l'autre selon le type de capteur de l'élément sélectionné (LiDAR → Densité ; caméra, thermique ou pushbroom → GSD). Pour un capteur LiDAR, dès qu'un résultat de calcul existe, la case **Densité** se coche automatiquement (pas besoin de la cocher soi-même) — si vous la décochez manuellement, elle peut se recocher toute seule au calcul suivant.
-</Note>
+Les tuiles de critère dépendent du capteur du vol : **GSD** pour une caméra ou un capteur thermique, **Densité** pour un LiDAR, les trois autres pour tous. Pour une tâche LiDAR qui embarque aussi une caméra, un sélecteur **LiDAR** / **Photo** choisit la source affichée.
 
-<Warning>
-  Cocher **GSD**, **Densité** ou **Recouvrement** décoche automatiquement les deux autres — l'application les traite comme une seule ardoise de couleur, jamais deux à la fois. L'**Empreinte capteur** (contour photo ou ruban de fauchée) reste indépendante et peut rester affichée en même temps que n'importe laquelle des trois.
-</Warning>
-
-La nappe se dessine sur la zone dès qu'un résultat de calcul existe pour l'élément sélectionné ; sans calcul préalable, la case s'affiche mais rien ne se dessine encore.
-
-## Ce que montre chaque nappe
-
-| Nappe | Vert | Ambre | Rouge |
-|---|---|---|---|
-| **GSD** | Résolution atteinte ou meilleure que la cible (cellule au sol survolée à l'altitude prévue) | Résolution dégradée modérément — le relief a forcé la bande à voler plus haut que la consigne au-dessus de cette cellule | Résolution fortement dégradée — plus de 40 % moins fine que la cible |
-| **Densité** | Densité de points au-dessus (ou égale à) la cible | Densité intermédiaire, autour de la moitié de la cible | Densité insuffisante — souvent une zone survolée plus haut que prévu à cause du relief |
-| **Recouvrement** | La cellule est vue par le nombre de passages cible (2 par défaut) ou plus | Un seul passage — recouvrement en dessous de la cible | Recouvrement très en dessous de la cible sur une cellule tout de même couverte (proche de 0 passage relatif à la cible réglée) |
+Les tuiles sont grisées pendant le calcul, tant qu'aucune carte n'est calculée, et quand le critère n'existe pas à l'échelle choisie. **Sidelap** n'existe qu'à l'échelle **Tâche**. Passer d'un critère à l'autre ne relance pas le calcul : tous les critères sont calculés ensemble.
 
 <Note>
-  Le rouge ne s'affiche que sur des cellules **couvertes** (survolées par au moins une bande) dont la valeur reste mauvaise. Une cellule **jamais survolée** (un vrai trou de couverture, en dehors de la zone réellement couverte) n'est jamais rouge : elle reste **transparente**, laissant voir le fond de carte ou le terrain en dessous.
+  Quand les paramètres de la mission changent, la carte devient **Périmée** et le bouton **Calculer** reparaît.
 </Note>
 
-<Tip>
-  La nappe **GSD** est surtout instructive sur les missions qui suivent le relief (iAGL, iAMSL) ou quand une bande AMSL survole un terrain accidenté : sur une zone plate en AMSL, chaque bande vole à la même hauteur sol partout, donc toute la nappe reste uniformément verte.
-</Tip>
+## Résolution
 
-## La légende éditable
+Le sélecteur **Résolution** propose **1 m**, **10 m**, **30 m**, **100 m** ou **Autre…** (de 1 à 2500 m). Une ligne **Effective** donne la résolution réellement utilisée par zone de MNT : la plus grossière entre la valeur choisie et la maille native du terrain. La résolution est figée pendant une simulation.
 
-Quand une nappe est active, une légende apparaît dans le coin bas-droit du globe, **à la place habituelle de la boussole** — c'est la boussole qui se décale alors vers la gauche de la légende pour lui laisser la place. Elle affiche un dégradé de couleur et un ou plusieurs champs de seuil éditables — cliquez dans un champ, tapez une valeur puis validez (Entrée ou clic ailleurs) pour l'appliquer.
+## Agrégations
 
-<Note>
-  Un champ vidé revient automatiquement au calcul automatique : les seuils sont alors dérivés des paramètres de la mission (GSD ou densité nominale, recouvrement latéral configuré, etc.) et se retrouvent en italique grisé dans le champ pour indiquer qu'ils ne sont pas surchargés. Une valeur saisie manuellement s'affiche en clair.
-</Note>
+Selon le critère, une ligne de réglage précise comment les passes qui se recouvrent sont comptées :
 
-### Légende GSD
+| Critère | Réglage | Choix |
+|---|---|---|
+| **Densité** | **Densité en overlap** | **Somme**, **Max**, **Min** |
+| **GSD** | **GSD multi-clichés** | **Max**, **Moyen**, **Min** |
+| **GSD** | **Géométrie GSD** | **Standard**, **Oblique** |
+| **Sidelap** | **Agrégation du sidelap** | **Max**, **Moyen**, **Min** |
 
-Trois champs, en cm/pixel, alignés sur le dégradé vert → ambre → rouge :
+Quand une couverture est calculée, la section **COUVERTURE** affiche le pourcentage de la zone couvert.
 
-- **Bas** (à gauche, vert) — GSD à partir de laquelle la cellule est considérée comme au niveau de résolution cible. Par défaut, la GSD nominale de la mission.
-- **Moyen** (au centre, ambre) — point médian du dégradé.
-- **Haut** (à droite, rouge) — GSD à partir de laquelle la résolution est considérée en échec.
+## Seuils et classes
 
-### Légende Densité
+La section **SEUILS** (avec l'unité du critère : cm, pt/m², %) définit les couleurs de la carte. Au départ, les seuils sont calés sur les paramètres de la mission : GSD cible, recouvrement latéral.
 
-Même disposition à trois champs, en pt/m², mais le dégradé est inversé (vert à gauche = densité haute, rouge à droite = densité basse, pour que la cible reste toujours du côté vert) :
+- L'histogramme **RÉPARTITION DE LA MESURE** montre la distribution des valeurs mesurées sur la zone.
+- La liste **CLASSES** montre, pour chaque classe, sa couleur, sa légende et sa part de la zone. Elle compte de 2 à 8 classes. Les boutons **+** et **−** coupent la classe sélectionnée en deux ou fusionnent deux classes.
+- Un double-clic sur une classe ouvre **Modifier la classe** : bornes **MIN** et **MAX**, **COULEUR** et **LÉGENDE**. **Légende automatique** rétablit le texte calculé.
+- **Par défaut** rétablit les seuils de départ. **Enregistrer** garde la configuration comme préréglage ; **Charger** ouvre **Préréglages de seuils**, avec les onglets **Local** et **Portail**.
 
-- **Haut** (à gauche, vert) — densité livrée attendue par le moteur pour la mission, en tenant compte du recouvrement latéral configuré (sauf si **Cut overlap** est activé — voir ci-dessous).
-- **Moyen** (au centre, ambre) — par défaut la moitié du seuil haut.
-- **Bas** (à droite, rouge) — par défaut zéro.
+Le curseur **OPACITÉ** règle la transparence de la carte sur le globe.
 
-À côté de l'unité pt/m², un indicateur **« · moy »** affiche la densité moyenne réellement mesurée sur la zone couverte, pour comparer d'un coup d'œil la moyenne réelle à la cible.
+## Résultats, détail et comparaison
 
-<Tip title="Cut overlap">
-  L'interrupteur **Cut overlap**, en bas de la légende Densité, choisit comment les passages qui se recouvrent sont comptés dans chaque cellule :
-  - **Off** (défaut) — densité cumulée : chaque passage qui couvre la cellule ajoute ses points, comme un nuage de points brut fusionné (le comportement d'un post-traitement classique qui garde tous les retours).
-  - **On** — densité d'un seul passage : la cellule ne compte que le meilleur passage (nuage décimé à une classification par cellule), pour visualiser la densité qu'apporterait un seul survol sans tenir compte du recouvrement.
+Chaque calcul est conservé dans la liste **RÉSULTATS**, avec ses paramètres et son âge. Un clic sur une ligne réaffiche ce résultat, la corbeille le supprime après confirmation, et un résultat qui ne correspond plus à la mission est marqué **Périmé**.
 
-  Ce réglage change à la fois la couleur affichée et le seuil haut auto-calculé de la légende.
-</Tip>
+- **Détail** ouvre **Détail QC**, un tableau des mesures. Le bouton apparaît quand un détail est disponible.
+- **Comparer** ouvre **Comparer les hypothèses** pour confronter des résultats. Il demande au moins deux résultats conservés pour la sélection.
 
-### Légende Recouvrement
+## Simuler une pose
 
-Un seul champ éditable, **cible** (nombre de passages, de 1 à 9, par défaut 2), à droite du titre. Le dégradé va cette fois de rouge (0 passage) à ambre (la moitié de la cible) à vert (cible atteinte ou dépassée) — augmenter la cible exige plus de passages superposés pour obtenir une cellule verte.
-
-## Voir aussi
-
-- [Fond de carte et calques](/fr/globe/calques-et-fond-de-carte)
-- [GSD, empreinte et cadence de prise](/fr/guides/gsd-and-footprint)
-- [Régler la couverture : capteur, altitude/GSD et recouvrement](/fr/planification/couverture-et-capteur)
-- [Modes d'altitude](/fr/planification/mode-altitude)
+À l'échelle **Tâche**, **Simuler** lance la simulation d'une pose d'acquisition isolée sur la trajectoire calculée ; **Arrêter la simulation** la termine. Le bouton exige un vol calculé et une carte à jour. Pendant la simulation, **Sidelap** et **Passes** sont indisponibles et la résolution est figée.

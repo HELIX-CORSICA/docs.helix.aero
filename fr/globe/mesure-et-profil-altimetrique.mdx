@@ -1,129 +1,98 @@
 ---
-title: "Mesurer des distances et lire le profil altimétrique"
-description: "Outils de mesure et graphique d'altitude synchronisé avec le globe."
+title: "Mesurer et lire le profil altimétrique"
+description: "Outils de mesure du globe et graphique d'altitude du vol actif."
 ---
 
-En plus de la boussole et de la barre de statut, une colonne d'outils sur le bord droit du globe donne accès à deux outils de mesure ponctuels (distance, surface) et au panneau **Profil altimétrique**, un graphique dockable qui compare l'altitude planifiée du vol à l'altitude du terrain, station par station. Le survol du graphique met en surbrillance la portion correspondante du tracé sur le globe 3D, et — sur les bandes déjà calculées — vous pouvez sélectionner, ajouter, supprimer ou repositionner un waypoint directement depuis le graphique.
+Une colonne de quatre boutons, sur le bord droit du globe, donne accès aux outils de mesure et au panneau **Profil altimétrique**, qui compare l'altitude planifiée du vol à celle du terrain.
 
 <CardGroup cols={2}>
   <Card title="Distance" icon="ruler">
-    Cliquez de point en point pour mesurer une distance au sol ; terminez par un double-clic.
+    Mesure une longueur au sol de point en point.
   </Card>
   <Card title="Surface" icon="shapes">
-    Même principe, en refermant un polygone : la surface s'affiche en m², hectares ou km².
+    Mesure l'aire d'un polygone.
   </Card>
-  <Card title="Profil altimétrique" icon="mountain">
-    Courbes plan de vol / terrain, durée et distance totales, altitudes min/max AGL et AMSL.
+  <Card title="Altitude" icon="mountain">
+    Relève l'altitude du terrain en un point.
   </Card>
-  <Card title="Surbrillance synchronisée" icon="crosshair">
-    Survoler le graphique éclaire en jaune la portion correspondante de la trajectoire sur le globe.
+  <Card title="Profil altimétrique" icon="chart-line">
+    Graphique plan de vol et terrain, avec édition des waypoints.
   </Card>
 </CardGroup>
 
-## La barre d'outils de mesure
+## Les outils de mesure
 
-Trois boutons empilés sur le bord droit du globe (sous la barre du haut) donnent accès aux outils suivants. Cliquer sur un bouton l'active (il devient vert) ; le cliquer à nouveau désactive l'outil et efface son résultat.
+Un clic sur **Distance**, **Surface** ou **Altitude** active l'outil ; un nouveau clic le désactive et efface sa mesure. Ces trois outils sont indisponibles pendant une simulation QC.
 
-| Bouton | Rôle |
-|---|---|
-| **Distance** | Mesure une distance au sol en cliquant de point en point. |
-| **Surface** | Mesure une surface en dessinant un polygone. |
-| **Profil altimétrique** | Ouvre/ferme le panneau dockable décrit plus bas. |
-
-<Note>
-  Activer un outil de mesure désarme automatiquement tout outil de dessin en cours (tracé de polygone, corridor, obstruction…) — les deux familles d'outils sont mutuellement exclusives.
-</Note>
-
-### Mesurer une distance
+### Distance
 
 <Steps>
-  <Step title="Activez l'outil Distance">
-    Cliquez sur l'icône règle dans la colonne d'outils.
+  <Step title="Poser les points">
+    Cliquez sur le globe pour poser chaque point. Un trait suit le curseur, et la distance cumulée est recalculée en continu.
   </Step>
-  <Step title="Posez les points">
-    Cliquez sur le globe pour poser un premier point, puis autant de points intermédiaires que nécessaire. Un trait relie les points déjà posés au curseur en temps réel, et la distance cumulée (somme des segments) est recalculée à chaque clic et à chaque déplacement de la souris.
-  </Step>
-  <Step title="Terminez la mesure">
-    Double-cliquez pour valider, ou cliquez une seconde fois à proximité immédiate du dernier point posé (même effet qu'un double-clic). Une étiquette affichant la distance totale se pose alors sur le tracé, au milieu du segment (arrondie en kilomètres au-delà de 1000 m).
+  <Step title="Valider">
+    Double-cliquez, ou cliquez sur la coche qui accompagne le dernier point. Il faut au moins deux points. Une étiquette affiche alors la distance totale, en mètres (`123.4 m`) ou en kilomètres au-delà de 1000 m (`1.25 km`).
   </Step>
 </Steps>
 
-<Note>
-  Clic droit pendant la saisie : retire le dernier point posé, sans annuler toute la mesure.
-</Note>
+### Surface
 
-### Mesurer une surface
+Même principe, avec au moins trois sommets : le polygone se referme automatiquement sur le premier point. L'étiquette affiche l'aire géodésique :
 
-Même principe que la distance : cliquez pour poser chaque sommet du polygone (un remplissage semi-transparent et son contour suivent le curseur en direct), puis terminez par un double-clic ou par un clic proche du dernier sommet. La surface s'affiche alors sur une étiquette posée au centre du polygone, dans l'unité la plus lisible :
-
-| Surface mesurée | Unité affichée |
+| Aire | Unité |
 |---|---|
-| < 1 ha | m² |
-| 1 ha – 100 ha | hectares (ha) |
-| ≥ 100 ha | km² |
+| Moins de 1 ha | m² |
+| De 1 ha à moins de 1 km² | ha |
+| 1 km² ou plus | km² |
 
-### Effacer, annuler et recommencer
+### Altitude
+
+Cliquez sur le globe : l'étiquette **AMSL … · HAE …** indique l'altitude du terrain au point cliqué, au-dessus du niveau moyen de la mer (AMSL) et au-dessus de l'ellipsoïde (HAE). Un clic droit efface le résultat.
+
+### Corriger et recommencer
 
 | Action | Effet |
 |---|---|
-| Cliquer sur le bouton actif de la barre d'outils | Efface la mesure posée (tracé + étiquette). |
-| Clic droit sur le globe, mesure déjà validée | Efface la mesure, comme le bouton de la barre d'outils. |
-| Clic gauche ailleurs sur le globe, mesure déjà validée | Efface l'ancienne mesure **et démarre immédiatement une nouvelle mesure du même type**, en utilisant ce clic comme premier point — inutile de rappuyer sur le bouton. |
+| Clic droit pendant la saisie | Retire le dernier point posé. Sans point posé, désactive l'outil. |
+| Clic gauche après une mesure validée | Démarre une nouvelle mesure du même type. |
 
 ## Le panneau Profil altimétrique
 
-Cliquer sur l'icône terrain de la barre d'outils ouvre un panneau dockable en bas du globe, qui trace l'altitude planifiée du vol (courbe pleine) au-dessus du relief réel sous la trajectoire (bande terrain), du décollage jusqu'au retour.
+Le bouton **Profil altimétrique** ouvre un panneau en bas du globe. Il trace l'altitude du plan de vol et le relief sous la trajectoire, du décollage au retour.
 
 ### En-tête et indicateurs
 
-- **Durée** (dans la barre de titre) : durée totale du vol actif — la même valeur que la carte affichée près de la boussole.
-- **Distance** (dans la barre de titre) : longueur cumulée du tracé actuellement affiché dans le graphique (zone complète ou vol filtré, voir plus bas).
-- **Waypoints** et **AGL / AMSL** (dans la barre d'indicateurs juste sous la barre de titre, au-dessus du graphique) : à gauche, le nombre de points de la trajectoire (virages exclus) ; à droite, l'altitude au-dessus du sol et au-dessus du niveau de la mer à la position survolée par le curseur.
-- Bas de panneau (sous le graphique) : altitude **min/max** de la trajectoire en AGL et en AMSL sur tout le tracé affiché — pas de lecture liée au curseur à cet endroit.
+- La barre de titre rappelle la **Durée** et la **Distance** du vol.
+- La ligne d'indicateurs donne le nombre de **Waypoints**, le nombre de **Photos** quand le capteur est une caméra, et les altitudes **AGL** et **AMSL** à la position survolée. Avec les tuiles photoréalistes actives, une valeur **AGL photo** s'ajoute.
+- Le pied du panneau affiche la légende **Plan de vol** / **Terrain**, puis les altitudes minimale et maximale de la route en AGL et en AMSL.
 
-<Warning>
-  Un segment du tracé se peint en rouge lorsque la marge entre l'altitude planifiée et le terrain devient critique (proche de la limite de sécurité anti-collision) — un repère visuel à ne pas ignorer avant l'export.
-</Warning>
-
-### Vol complet ou vol unique
-
-Par défaut, le graphique affiche le vol complet de la zone active (toutes les bandes qu'elle contient, reliées par leurs transits). Si la zone a été répartie sur plusieurs vols (batteries), chaque vol apparaît dans une couleur distincte avec une étiquette « Vol 1 », « Vol 2 »… au-dessus de son tronçon.
-
-Le graphique sait filtrer l'affichage sur un seul vol (un bouton apparaît alors dans l'en-tête pour revenir à la vue de la zone complète), mais dans l'interface actuelle aucun contrôle — ni la sidebar gauche, ni les autres panneaux — ne déclenche encore ce filtrage : seule la vue de la zone complète est donc accessible en pratique.
+Survoler le graphique met en évidence la portion correspondante de la trajectoire sur le globe.
 
 ### Options d'affichage
 
-Deux interrupteurs dans la barre juste au-dessus du graphique :
-
-| Option | Par défaut | Effet |
-|---|---|---|
-| **Détails** | Activé | Affiche les noms des bandes (A1, A2…) et des tronçons (Départ, Retour) au-dessus du graphique. |
-| **Waypoints** | Désactivé | Affiche un marqueur pour chaque point réel de la trajectoire (les active aussi pour la sélection/le glisser décrits plus bas). |
+| Option | Effet |
+|---|---|
+| **Détails** | Affiche les noms des bandes et des tronçons au-dessus du graphique. |
+| **Waypoints** | Affiche un marqueur pour chaque waypoint. |
+| **Vue capteur** | Trace la courbe de l'altitude de la trajectoire diminuée de la portée du capteur, pour comparer cette portée au terrain. Proposée quand le capteur du vol a une portée. |
 
 ### Naviguer dans le graphique
 
 | Geste | Effet |
 |---|---|
-| **Molette** | Zoom avant/arrière, centré sur la position du curseur. |
-| **Maj + molette** | Décale la fenêtre visible horizontalement sans zoomer. |
-| **Glisser (clic gauche) sur une zone vide** | Fait défiler la fenêtre visible horizontalement. |
-| **Survoler le graphique** | Affiche l'altitude AGL/AMSL sous le curseur et éclaire en **jaune** la portion correspondante de la trajectoire sur le globe 3D. |
+| **Molette** | Zoom centré sur le curseur. |
+| **Maj + molette** | Décale la fenêtre visible. |
+| **Glisser sur une zone vide** | Fait défiler la fenêtre. |
 
-### Agir sur les marqueurs de waypoint
-
-Avec l'option **Waypoints** activée, chaque point du graphique devient un marqueur cliquable :
+### Modifier les waypoints
 
 | Action | Effet |
 |---|---|
-| **Clic** | Sélectionne l'élément parent du point cliqué (bande, waypoint isolé…) — il devient actif dans le panneau de droite, comme un clic sur le même point dans la vue 3D. |
-| **Double-clic** | Insère un nouveau waypoint à l'endroit cliqué du graphique. |
-| **Clic droit** | Supprime le waypoint visé. |
-| **Glisser** | Sans la touche **Maj**, le glisser déplace **simultanément** la position du waypoint le long de la bande et son altitude, proportionnellement aux déplacements horizontal et vertical de la souris. En maintenant **Maj**, le mouvement se verrouille sur un seul axe : si le glisser est majoritairement horizontal, seule la position change ; s'il est majoritairement vertical, seule l'altitude change. Exception : sur un marqueur de waypoint isolé (POI) ou sur le connecteur de transit qui lui est associé, la position reste **toujours verrouillée** — quel que soit l'angle du glisser ou l'usage de Maj, seul le glisser vertical (altitude) a un effet. |
+| **Clic sur un marqueur** | Sélectionne le waypoint et ouvre la barre latérale sur son élément. |
+| **Glisser un marqueur** | Déplace le waypoint le long de la trajectoire et en altitude. |
+| **Double-clic dans le graphique** | Insère un waypoint à cet endroit. |
+| **Clic droit sur un marqueur** | Supprime le waypoint. |
 
 <Note>
-  L'ajout, la suppression et le glisser ne s'appliquent qu'aux points d'une trajectoire déjà figée en waypoints (ou à un connecteur de transit entre deux éléments enchaînés) **appartenant à l'élément actuellement actif** — cliquer d'abord dessus l'active. Sur un polygone ou un corridor encore piloté par ses paramètres de couverture, ces trois actions n'ont aucun effet ; seule la sélection au clic reste possible sur ses marqueurs. Sur un virage, aucun marqueur n'est affiché sur les sommets de l'arc (seule la ligne du virage est tracée) : il n'y a donc rien à cliquer à cet endroit.
+  Les marqueurs sont visibles avec l'option **Waypoints**, ou pour le waypoint sélectionné. L'insertion, la suppression et le déplacement ne concernent que les éléments de type wayline et les waypoints isolés. Une bande encore pilotée par ses paramètres de couverture n'est pas modifiable depuis le graphique, et les virages n'ont pas de marqueur.
 </Note>
-
-<Tip>
-  Le double-clic pour insérer un waypoint fonctionne directement sur le tracé même quand l'option **Waypoints** est désactivée — inutile de l'activer juste pour ajouter un point.
-</Tip>

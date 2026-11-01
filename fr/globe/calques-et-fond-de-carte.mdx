@@ -1,85 +1,88 @@
 ---
 title: "Fond de carte et calques"
-description: "Choisir le fond de carte et afficher/masquer les couches de la mission."
+description: "Choisir le fond de carte, régler les couches visibles et gérer les GCP et obstructions."
 ---
 
-Le panneau **Couches** regroupe deux choses distinctes dans un seul tiroir, en haut à droite du globe : le choix du **fond de carte** (Satellite, Street, Aéronautique) et la **visibilité** des différents éléments affichés sur le globe (bandes de vol, empreintes capteur, GCP, obstructions, calques qualité, etc.). Il ne modifie jamais le calcul de la mission — uniquement ce qui est dessiné à l'écran.
+La modale **Carte** regroupe le choix du fond de carte, l'affichage des couches de la mission, le terrain, les listes de GCP et d'obstructions et les zones hors ligne. Elle ne modifie pas le calcul de la mission, seulement ce qui est dessiné à l'écran.
+
+Le bouton **Carte / Sources**, dans la colonne d'outils à droite du globe, ouvre la modale. Sa barre latérale compte quatre sections ; le chevron de l'en-tête la referme.
 
 <CardGroup cols={2}>
-  <Card title="Onglet Fond" icon="map">
-    Trois vignettes de fond de carte, plus les interrupteurs des couches globales de la mission.
+  <Card title="Fond de carte" icon="map">
+    Trois fonds, les interrupteurs de couches et les sources d'imagerie ajoutées.
   </Card>
-  <Card title="Onglet Calques" icon="list">
-    Les listes de GCP et d'obstructions de la mission, avec suppression et recentrage rapide.
+  <Card title="Terrain" icon="mountain">
+    Modèles numériques de terrain et tuiles photoréalistes. Voir [Terrain et MNT](/fr/planification/terrain-mnt).
+  </Card>
+  <Card title="Couches" icon="list">
+    Listes des GCP et des obstructions de la mission.
+  </Card>
+  <Card title="Zone offline" icon="download">
+    Téléchargement de zones pour travailler sans connexion. Voir [Cache et performance](/fr/reglages/cache-performance-mises-a-jour).
   </Card>
 </CardGroup>
 
-## Ouvrir le panneau
+## Choisir le fond de carte
 
-Un bouton flottant en haut à droite du globe, avec une icône de calques empilés, ouvre le panneau.
+La section **Fond de carte** affiche trois vignettes :
 
-- Cliquez sur ce bouton pour afficher le panneau (300 px de large environ, ancré à droite).
-- Le panneau contient sa propre flèche de repli (chevron) dans son en-tête : cliquez dessus pour le refermer. Le bouton flottant réapparaît alors à sa place.
-
-Le panneau s'ouvre par défaut sur l'onglet **Fond**.
-
-## L'onglet Fond : choisir le fond de carte
-
-Trois vignettes en haut de l'onglet permettent de choisir le fond de carte affiché sous le globe :
-
-| Vignette | Effet |
+| Vignette | Fond |
 |---|---|
-| **Satellite** | Imagerie satellite comme fond de carte. |
-| **Street** | Fond de type plan routier (labels de villes, routes). |
-| **Aéronautique** | Reprend le même fond que Street (plan sans les labels), et superpose par-dessus la carte aéronautique (espaces aériens, frontières) ainsi que les couches NOTAM et Aéroports. |
+| **Satellite** | Imagerie satellite. |
+| **Plan** | Plan routier. |
+| **Topo** | Carte topographique. |
 
-<Note>
-  En basculant sur **Aéronautique**, les couches **Aéroports** et **NOTAM** sont automatiquement activées et leurs interrupteurs dédiés disparaissent de la liste (ils sont forcés). En quittant ce mode vers Satellite ou Street, la carte aéronautique et les NOTAM sont désactivés et l'interrupteur **Aéroports** retrouve exactement la préférence que vous aviez réglée manuellement avant d'entrer en mode Aéronautique — il ne reste pas allumé si vous ne l'aviez pas coché vous-même.
-</Note>
+Le choix du fond est mémorisé d'une session à l'autre. Choisir un fond désactive les tuiles photoréalistes.
 
-## Afficher ou masquer les couches de la mission
+## Afficher ou masquer les couches
 
-Sous les vignettes de fond de carte, une section **Mission** liste les interrupteurs des couches qui s'appliquent à l'ensemble de la mission, indépendamment de l'élément sélectionné :
+Sous les vignettes, la liste **Couches** propose cinq lignes. Chaque ligne a un œil pour l'afficher ou la masquer et un curseur d'opacité (0 à 100 %).
 
-| Couche | Ce qu'elle affiche |
+| Couche | Contenu | Affichée par défaut |
+|---|---|---|
+| **Bandes de vol** | Bandes calculées, sens de parcours, virages et transits. | Oui |
+| **Obstructions** | Polygones d'obstruction et leur marge de sécurité. | Oui |
+| **Aéroports** | Aérodromes autour de la vue. | Non |
+| **GCP** | Points de contrôle au sol de la mission. | Oui |
+| **Aéronautique** | Espaces aériens. | Non |
+
+L'état et l'opacité de ces couches sont mémorisés d'une session à l'autre.
+
+### Aéroports
+
+La couche s'appuie sur le catalogue d'aérodromes local de l'application. Elle affiche au plus 32 aérodromes autour de la zone visible, chacun avec son nom (son code ICAO à défaut de nom). La zone interrogée suit la position et l'altitude de la caméra.
+
+### Aéronautique
+
+La couche trace sur le fond les contours des espaces aériens OpenAIP, avec leur nom pour les types principaux. Elle s'affiche à partir du niveau de zoom 6, les types les plus restrictifs apparaissant en premier. Les données sont embarquées dans l'application.
+
+| Couleur | Types d'espace |
 |---|---|
-| **Bandes de vol** | Les bandes de vol calculées, leurs flèches de sens de parcours, les virages, les transits entre éléments et les traits de liaison de décollage. |
-| **Obstructions** | Les polygones d'obstruction (avec leur marge de sécurité en hachuré). |
-| **Aéroports** | Les aérodromes à proximité de la vue affichée à l'écran (la couche se recalcule sur le rectangle visible de la caméra, pas sur la géométrie de la zone). Cet interrupteur n'apparaît pas quand le fond **Aéronautique** est actif (voir ci-dessus — il est alors forcé sur ON). |
+| Rouge | Zones interdites, restreintes, dangereuses, restrictions temporaires et survol à basse altitude. |
+| Bleu | Espaces contrôlés (CTR, TMA, CTA, ATZ, TIZ, TIA, LTA) et zones à contact radio obligatoire (TMZ, RMZ). La classe ICAO nuance le bleu : bleu clair pour la classe E. |
+| Vert | Zones de vol à voile, zones sportives et de loisir, régions d'information de vol (FIR, FIS). |
+
+### Sources d'imagerie
+
+Le bouton **Ajouter une source** (pied de la section **Fond de carte**) ajoute une orthophoto GeoTIFF ou un flux WMS ou WMTS, superposé au fond de carte. Chaque source apparaît sous **Sources** avec :
+
+- un badge de type ;
+- un œil et un curseur d'opacité ;
+- des flèches ↑ et ↓ pour changer l'ordre de superposition ;
+- une croix pour la supprimer.
+
+## Gérer les GCP et les obstructions
+
+La section **Couches** liste, sous deux titres repliables, les **GCP** et les **Obstructions** de la mission. Le nombre d'éléments est affiché à droite de chaque titre.
+
+- Une ligne de GCP indique son nom et ses coordonnées (latitude, longitude, 5 décimales). Un double-clic recentre la caméra sur le point.
+- Une ligne d'obstruction indique son nom et sa marge (`marge 30 m`). Le crayon ouvre son édition.
+- L'icône corbeille de chaque ligne ouvre une confirmation de suppression.
 
 <Note>
-  Tant qu'aucune zone n'a été tracée et qu'aucun élément n'a été posé, seul l'interrupteur **Aéroports** est proposé — **Bandes de vol** et **Obstructions** n'apparaissent qu'une fois la mission amorcée (une zone dessinée, un élément posé, ou un résultat déjà calculé).
+  La suppression retire définitivement le GCP ou l'obstruction de la mission. Les œils de la section **Fond de carte** ne masquent que l'affichage.
 </Note>
 
-Un interrupteur **GCP** s'ajoute à cette même section dès qu'au moins un point de contrôle au sol a été importé dans la mission.
+## Cartes de qualité et empreintes
 
-### Couches liées à l'élément sélectionné
-
-Quand l'élément actif de la mission a une zone tracée (polygone ou corridor d'au moins 3 sommets), une section **Élément sélectionné** apparaît sous la section Mission :
-
-| Couche | Ce qu'elle affiche |
-|---|---|
-| **Empreinte capteur** | Selon le type de capteur de l'élément sélectionné : le contour de chaque photo le long de la trajectoire pour un capteur photo/thermique, ou le ruban de fauchée pour un capteur LiDAR/pushbroom. |
-| **GSD** *(tout capteur autre que LiDAR : caméra, thermique, pushbroom)* | Carte de contrôle qualité de la résolution au sol, drapée sur la zone. |
-| **Densité** *(capteur LiDAR uniquement)* | Carte de contrôle qualité de la densité de points, drapée sur la zone. |
-| **Recouvrement** | Carte de contrôle qualité du recouvrement entre bandes, drapée sur la zone. |
-
-<Note>
-  **GSD** (ou **Densité** selon le type de capteur) et **Recouvrement** partagent le même emplacement de carte plaquée sur le terrain : activer l'un désactive automatiquement l'autre, ils ne peuvent pas s'afficher ensemble. **Empreinte capteur** est indépendante et peut rester active en même temps que l'un ou l'autre.
-</Note>
-
-<Tip>
-  Quand un de ces calques qualité (GSD, Densité, Recouvrement) est actif, une légende avec les seuils s'affiche en bas à droite du globe, à côté de la boussole.
-</Tip>
-
-## L'onglet Calques : gérer GCP et obstructions
-
-Le second onglet du panneau liste, sous forme de deux listes déroulantes, les **GCP** et les **obstructions** de la mission — avec le nombre d'éléments affiché à côté de chaque titre de section.
-
-- Chaque ligne affiche le nom de l'élément et une information complémentaire (coordonnées lat/lon pour un GCP, marge de sécurité pour une obstruction), suivis d'une icône de suppression.
-- **Double-cliquer sur une ligne GCP** recentre la caméra du globe sur ce point.
-- Si la mission ne contient encore aucun GCP ni obstruction, un message rappelle d'en importer ou d'en tracer un depuis la barre d'outils de dessin.
-
-<Note>
-  Supprimer une ligne dans cette liste retire définitivement le GCP ou l'obstruction de la mission — l'action n'est pas limitée à l'affichage, contrairement aux interrupteurs de l'onglet Fond.
-</Note>
+Les cartes de GSD, de densité, de recouvrement et l'empreinte capteur se pilotent depuis le panneau **Contrôle qualité**. Voir [Cartes de qualité](/fr/qc/cartes-qualite-visuelles).
