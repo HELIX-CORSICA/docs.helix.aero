@@ -1,15 +1,20 @@
 ---
-// En-tête de la doc à la manière de la vitrine : logo AERO, recherche, liens du site.
+// En-tête de la doc à la manière de la vitrine : logo AERO, recherche, liens du site, langue.
+// Sur mobile, seule la langue reste dans l'en-tête, à côté du menu ; les liens passent dans le menu.
 import Search from 'virtual:starlight/components/Search';
 import SiteTitle from 'virtual:starlight/components/SiteTitle';
+import LangSelect from './LangSelect.astro';
+import Mermaid from './Mermaid.astro';
 import SiteLinks from './SiteLinks.astro';
 ---
 
 <div class="header">
   <div class="title-wrapper sl-flex"><SiteTitle /></div>
   <div class="sl-flex print:hidden"><Search /></div>
-  <div class="sl-hidden md:sl-flex print:hidden"><SiteLinks /></div>
+  <div class="sl-hidden md:sl-flex print:hidden"><SiteLinks><LangSelect /></SiteLinks></div>
+  <div class="sl-flex md:sl-hidden print:hidden"><LangSelect /></div>
 </div>
+<Mermaid />
 
 <style>
   .header { display: flex; gap: var(--sl-nav-gap); justify-content: space-between; align-items: center; height: 100%; }

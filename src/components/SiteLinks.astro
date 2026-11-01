@@ -1,22 +1,14 @@
 ---
-// Liens du site (Flight Planner, Contact, Portal, langue), dans l'en-tête et dans le menu mobile.
-import { getCollection } from 'astro:content';
-import { home } from '../nav';
-
-const route = Astro.locals.starlightRoute;
-const fr = route.locale === 'fr';
+// Liens du site (Flight Planner, Contact, Portal), dans l'en-tête et dans le menu mobile.
+const fr = Astro.locals.starlightRoute.locale === 'fr';
 const site = fr ? 'https://helix.aero/fr' : 'https://helix.aero/en';
-// Bascule de langue : même page dans l'autre langue si elle existe, sinon son accueil (les deux arborescences diffèrent).
-const ids = new Set((await getCollection('docs')).map((e) => e.id));
-const base = fr ? route.id.replace(/^fr\//, '') : route.id;
-const other = fr ? (ids.has(base) ? base : home('en')) : ids.has(`fr/${base}`) ? `fr/${base}` : home('fr');
 ---
 
 <nav class="hx-nav" aria-label={fr ? 'Liens du site' : 'Site links'}>
   <a href={`${site}/flight-planner`}>Flight Planner</a>
   <a href={`${site}/contact`}>Contact</a>
   <a class="hx-pill" href="https://app.helix.aero" target="_blank" rel="noopener">Portal <span aria-hidden="true">↗</span></a>
-  <a class="hx-pill" href={`/${other}/`} hreflang={fr ? 'en' : 'fr'} lang={fr ? 'en' : 'fr'}>{fr ? 'English' : 'Français'}</a>
+  <slot />
 </nav>
 
 <style>

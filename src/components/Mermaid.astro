@@ -1,0 +1,36 @@
+---
+// Diagrammes ```mermaid des pages (Mintlify les dessinait) : Expressive Code les rend en bloc de code, ce script les remplace
+// par le dessin. Mermaid n'est chargé que sur les pages qui en ont. Le code reste affiché si le dessin échoue.
+---
+
+<script>
+  const blocs = [...document.querySelectorAll<HTMLElement>('.expressive-code')].filter((b) => b.querySelector('pre[data-language="mermaid"]'));
+  if (blocs.length) {
+    const { default: mermaid } = await import('mermaid');
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: 'base',
+      fontFamily: 'Manrope, ui-sans-serif, system-ui, sans-serif',
+      themeVariables: {
+        primaryColor: '#f5f5f3', primaryBorderColor: '#111214', primaryTextColor: '#111214',
+        lineColor: '#5d6067', secondaryColor: '#e3f8e9', tertiaryColor: '#ffffff', fontSize: '15px',
+      },
+    });
+    for (const [i, bloc] of blocs.entries()) {
+      // Le bouton « copier » porte le code source, lignes séparées par U+007F.
+      let code = bloc.querySelector<HTMLElement>('[data-code]')?.dataset.code?.replaceAll('\u007f', '\n');
+      if (!code) continue;
+      // Sur téléphone, un flux de gauche à droite devient illisible : il est dessiné de haut en bas.
+      if (matchMedia('(max-width: 40rem)').matches) code = code.replace(/^(\s*(?:flowchart|graph))\s+(LR|RL)\b/, '$1 TD');
+      try {
+        const { svg } = await mermaid.render(`hx-mermaid-${i}`, code);
+        const figure = document.createElement('div');
+        figure.className = 'hx-mermaid';
+        figure.innerHTML = svg;
+        bloc.replaceWith(figure);
+      } catch {
+        bloc.classList.add('hx-mermaid-erreur');
+      }
+    }
+  }
+</script>
