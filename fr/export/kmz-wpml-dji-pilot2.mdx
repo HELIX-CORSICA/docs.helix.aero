@@ -5,91 +5,102 @@ description: "Le fichier de mission DJI, importable manuellement dans Pilot 2."
 
 # Exporter en KMZ/WPML pour DJI Pilot 2
 
-L'export **WPML (DJI Pilot 2)** produit un fichier `.kmz` — l'archive de mission native lue par l'application DJI Pilot 2 sur la radiocommande. Il embarque directement le déclenchement photo, les vitesses de vol, la hauteur de sécurité au décollage et, pour un capteur LiDAR, la calibration IMU et l'enregistrement du nuage de points : tout ce qu'il faut pour que le drone vole la mission sans réglage complémentaire dans Pilot 2.
+L'export **WPML (DJI Pilot)** produit un fichier `.kmz`, l'archive de mission native lue par DJI Pilot 2 sur la radiocommande. Il embarque le déclenchement photo, les vitesses, le mode de décollage et, pour un capteur LiDAR, l'enregistrement du nuage de points et la calibration IMU.
 
 ## Contenu de l'archive
 
-Un `.kmz` est une archive ZIP contenant deux fichiers, au format WPML v1.0.0 de DJI :
+Un `.kmz` est une archive ZIP de deux fichiers au format WPML de DJI :
 
-- `wpmz/waylines.wpml` — la trajectoire réellement volée (waypoints, vitesses, virages, actions du capteur).
-- `wpmz/template.kml` — les métadonnées et réglages globaux de la mission affichés par Pilot 2 avant le vol.
+- `wpmz/waylines.wpml` : la trajectoire volée (waypoints, vitesses, virages, actions du capteur) ;
+- `wpmz/template.kml` : les réglages globaux de la mission affichés par Pilot 2 avant le vol.
 
 <Note>
-  Un fichier `.kmz` correspond à **un seul vol**. Sur une mission à plusieurs vols, l'export en produit un par vol sélectionné (voir « Exporter plusieurs vols » plus bas).
+  Un fichier `.kmz` correspond à **un seul vol**. Avec plusieurs vols cochés, l'export écrit un `.kmz` par vol.
 </Note>
 
 ## Réservé aux drones DJI
 
-Cet export n'a de sens que pour un appareil DJI — Pilot 2 ne s'installe que sur les radiocommandes DJI. Dans le menu **Exporter → Plan de vol**, l'entrée **WPML (DJI Pilot 2)** reste grisée tant que :
+Dans **Export → Plan de vol**, la ligne **WPML (DJI Pilot)** reste grisée tant que :
 
-- aucun aéronef n'est choisi pour le vol (survolez la ligne grisée : « Sélectionnez un drone DJI pour activer cet export ») ;
-- l'aéronef choisi n'est pas un DJI (message : « Export réservé aux drones DJI (Mavic, Matrice, Phantom, …) »).
+- aucun aéronef n'est choisi pour le vol (« Sélectionnez un drone DJI pour activer cet export. ») ;
+- l'aéronef choisi n'est pas un DJI (« Export réservé aux drones DJI (Mavic, Matrice, Phantom, …). »).
+
+L'export demande aussi le droit drone (`aircraft.drone`) dans l'abonnement.
 
 <Tip>
-  La détection DJI se base sur le fabricant du catalogue aéronef. Si un appareil DJI que vous avez ajouté vous‑même n'active pas l'export, vérifiez que son fabricant est bien renseigné à « DJI » dans le catalogue.
+  La détection DJI s'appuie sur le fabricant et le nom de l'aéronef dans le catalogue. Si un appareil DJI ajouté par vous n'active pas l'export, vérifiez son fabricant dans [le catalogue capteurs et appareils](/fr/dashboard/catalogue-capteurs-appareils).
 </Tip>
 
 ## Ouvrir l'export
 
 <Steps>
-  <Step title="Cliquez sur Exporter">
-    Dans la barre du haut de la vue mission, cliquez le bouton **Exporter**.
+  <Step title="Cliquer sur Export">
+    Dans la barre supérieure, cliquez le bouton **Export**.
   </Step>
-  <Step title="Choisissez « Plan de vol »">
-    Dans le menu qui s'ouvre, sélectionnez **Plan de vol** (regroupe les formats `.helix`, KML et WPML).
+  <Step title="Choisir « Plan de vol »">
+    La liste des formats s'affiche : `.helix`, KML et WPML.
   </Step>
-  <Step title="Sélectionnez « WPML (DJI Pilot 2) »">
-    Dans la liste des formats, cliquez l'entrée **WPML (DJI Pilot 2)** (extension `.kmz`). Une fenêtre de sélection des vols s'ouvre.
+  <Step title="Choisir « WPML (DJI Pilot) »">
+    La fenêtre de sélection des vols **Export DJI WPML** s'ouvre.
   </Step>
 </Steps>
 
 <Note>
-  La mission doit avoir été **calculée** au préalable — au moins un vol doit disposer de bandes générées. Un vol sans résultat calculé n'apparaît pas dans la liste des vols exportables.
+  Un vol doit être calculé pour être exportable. Un vol sans résultat est grisé avec la mention **Non calculé**.
 </Note>
 
 ## Choisir le référentiel d'altitude
 
-Quand l'aéronef actif est DJI, la fenêtre de sélection des vols affiche un choix de **référentiel d'altitude** pour le WPML :
+La fenêtre propose le **Référentiel d'altitude (DJI WPML)**. La valeur par défaut est **AMSL absolu**.
 
 | Référentiel | Comportement |
 |---|---|
-| **Relatif au décollage** (par défaut) | Chaque waypoint est écrit en hauteur `AMSL − origine`, l'origine étant l'altitude du point de décollage (élévation du terrain + offset éventuel), ou à défaut l'élévation du terrain sous le premier waypoint. Fonctionne sur **tout drone**, RTK ou non — le baromètre embarqué est précis en relatif. |
-| **AMSL absolu** | Chaque waypoint est écrit en hauteur ellipsoïdale WGS84 (`AMSL + ondulation du géoïde`). Plus précis mais suppose un positionnement **RTK**. |
+| **AMSL absolu** (par défaut) | Chaque waypoint est écrit en hauteur ellipsoïdale WGS84, soit l'altitude AMSL augmentée de l'ondulation du géoïde. |
+| **Relatif au décollage** | Chaque waypoint est écrit en hauteur au-dessus du point de décollage du vol. |
 
 <Warning>
-  En mode **AMSL absolu**, Helix calcule l'ondulation réelle du géoïde via PROJ à partir d'un point d'ancrage (le décollage du vol, ou à défaut le départ de la première bande). Si aucun point d'ancrage n'est disponible, l'export **échoue** plutôt que d'utiliser une valeur approchée — l'altitude absolue d'un drone n'est jamais une donnée à approximer.
+  Si l'ondulation du géoïde est introuvable pour le vol, l'export en altitude absolue échoue avec une erreur de géodésie. Helix n'utilise jamais une valeur à 0 m en remplacement.
 </Warning>
+
+<Note>
+  Quand le **Décollage sécurisé** est choisi dans les paramètres du vol, le fichier est envoyé en altitude absolue quel que soit le référentiel sélectionné. La fenêtre l'indique : « Décollage sécurisé : envoyé en altitude absolue (WGS84), comme Flight Hub — en relatif le drone redescend au sol. » Une tâche en mode **Télémètre** impose de la même façon son propre référentiel (hauteur sol).
+</Note>
 
 ## Exporter un ou plusieurs vols
 
-La fenêtre affiche la liste des vols **calculés** de la mission, chacun avec une case à cocher (le vol actif est pré-coché et porte une pastille « actif »). Cochez les vols à inclure puis cliquez **Exporter**.
+Cochez les vols à inclure puis cliquez **Exporter**.
 
-- **Un seul vol coché** → une boîte de sauvegarde native s'ouvre pour choisir l'emplacement et le nom du `.kmz`.
-- **Plusieurs vols cochés** → un sélecteur de dossier s'ouvre ; Helix y écrit **un fichier `.kmz` par vol coché**, nommé d'après le nom du vol (les noms en doublon sont automatiquement différenciés).
+- **Un seul vol coché** : un sélecteur de fichier s'ouvre. Le nom proposé dérive du nom de la mission.
+- **Plusieurs vols cochés** : un sélecteur de dossier s'ouvre et Helix y écrit un `.kmz` par vol, nommé d'après le vol (les doublons sont différenciés). Une notification récapitulative indique le nombre de fichiers écrits et nomme chaque vol en échec avec sa raison.
 
 <Tip>
-  Pour envoyer directement une mission à Pilot 2 sans passer par un fichier — par pont local (LAN) ou par publication cloud — utilisez plutôt l'entrée **Envoyer vers DJI Pilot 2** du menu Exporter, qui repose sur le même moteur WPML mais ne produit aucun fichier sur le disque.
+  Pour envoyer une mission à Pilot 2 sans passer par un fichier, utilisez **Envoyer vers DJI Pilot** : [Pont DJI Pilot 2](/fr/export/pont-dji-pilot2). Les deux chemins produisent le même KMZ.
 </Tip>
+
+## Avertissements à l'export
+
+- **KMZ DJI générique** : l'aéronef n'a pas d'identifiant WPML DJI dans le catalogue. Le KMZ est écrit sans appareil ni charge utile déclarés ; attribuez-les à l'import dans DJI Pilot ou FlightHub 2.
+- **Rayon de virage réduit** : le rayon de virage réglé n'est pas tenu à certains virages parce que les waypoints voisins sont trop proches. Le tracé est identique et DJI lisse jusqu'à un rayon minimal indiqué dans le message.
 
 ## Ce qui est embarqué automatiquement
 
-L'export lit les réglages de mission du panneau **Paramètres** (et du panneau **Paramètres de décollage** pour le vol) et les traduit directement en actions WPML, sans étape manuelle supplémentaire.
+L'export lit les paramètres du vol et de ses tâches et les traduit en actions WPML.
 
-| Réglage embarqué | Source | Comportement dans le `.kmz` |
+| Réglage | Source | Comportement dans le `.kmz` |
 |---|---|---|
-| **Déclenchement photo** | Capteur photo/thermique + recouvrement avant | Un déclenchement tous les *N* mètres le long de la trajectoire, *N* étant déduit de l'empreinte au sol et du recouvrement avant réglés pour la mission. Absent pour un capteur **LiDAR** (voir ci-dessous). |
-| **Vitesse de transit distincte des bandes photo** | Case **Photos virages** (panneau Paramètres) + champ **Vitesse de démarrage** (panneau Paramètres de décollage du vol) | Quand **Photos virages** est réglé sur « Non », l'obturateur ne se déclenche plus sur les virages et transferts entre bandes : ces segments sont regroupés par bande photo et volés à la **vitesse de démarrage** réglée pour le vol (ou, à défaut, à la vitesse maximale de l'aéronef) — plus rapide que la vitesse de croisière des bandes photo. |
-| **Hauteur de sécurité au décollage** | Valeur automatique | Le drone monte à cette hauteur juste après le décollage avant de rejoindre le premier waypoint. Une valeur par défaut sûre est embarquée automatiquement (DJI accepte de 1,5 à 1500 m) ; ce réglage n'est pas encore exposé dans l'interface pour être ajusté vol par vol. |
-| **Calibration IMU DJI native** | Capteur LiDAR DJI natif (Zenmuse L1/L2/L3) + interrupteur **Calibration IMU** | Indique à Pilot 2 d'exécuter sa propre routine de calibration embarquée avant le début de la mission. Voir [Calibration IMU et colorisation LiDAR](/fr/capteurs/calibration-imu-lidar) pour les conditions d'affichage de l'interrupteur. |
-| **Enregistrement du nuage de points** | Capteur LiDAR sur un **Matrice 300 RTK, 350 RTK ou 400** | Démarre l'enregistrement du nuage de points au premier waypoint de l'élément et l'arrête au dernier — remplace le déclenchement photo classique pour ce type de capteur. Automatique dès que le couple capteur/aéronef correspond, sans réglage à saisir. |
-| **Colorisation** | Interrupteur **Colorisation** (LiDAR DJI natif sur Matrice 300 RTK/350 RTK/400, fonctionnalité en accès anticipé) | Déclenche la caméra RVB embarquée du capteur à une cadence calculée automatiquement à partir du recouvrement avant et de la vitesse de vol, pour coloriser le nuage de points en post-traitement. Voir [Calibration IMU et colorisation LiDAR](/fr/capteurs/calibration-imu-lidar) pour le détail des conditions d'affichage. |
+| Déclenchement photo | Capteur photo ou thermique, recouvrement avant | Un déclenchement à intervalle calculé depuis l'empreinte au sol. Si l'intervalle est indisponible, l'export échoue et demande de recalculer le vol. |
+| **Capture en virage** et **Vitesse de démarrage** | Paramètres de la tâche et du vol | Quand la capture en virage est désactivée, les virages et transferts entre bandes sont volés à la vitesse de démarrage réglée, à défaut à la vitesse de croisière de l'aéronef. |
+| **Mode de décollage** | **Sécurisé** (avec **Altitude sécurisée**) ou **Montée directe** | Le mode sécurisé écrit la montée à la hauteur réglée avant le premier waypoint. La montée directe rejoint le premier waypoint en ligne droite. |
+| **Calibration IMU** | Capteur LiDAR DJI et interrupteur du panneau Paramètres | Demande à Pilot 2 sa routine de calibration native. Voir [Calibration IMU et colorisation LiDAR](/fr/capteurs/calibration-imu-lidar). |
+| Enregistrement du nuage de points | Capteur LiDAR sur un appareil compatible (Matrice 300 RTK, 350 RTK, 400) | Démarre l'enregistrement au premier waypoint de la tâche et l'arrête au dernier. |
+| **Colorisation** | LiDAR DJI compatible | Déclenche la caméra RVB du capteur à une cadence calculée depuis le recouvrement et la vitesse. Voir [Calibration IMU et colorisation LiDAR](/fr/capteurs/calibration-imu-lidar). |
 
 <Note>
-  Pour un capteur **LiDAR**, le WPML n'embarque jamais le déclenchement photo classique : les actions capteur sont uniquement la calibration IMU, l'enregistrement du nuage de points et, si activée, la colorisation.
+  Pour un capteur LiDAR, le fichier ne contient aucun déclenchement photo classique. Une cadence d'impulsion LiDAR hors du domaine DJI fait échouer l'export : choisissez une cadence du catalogue du capteur.
 </Note>
 
 <Warning>
-  Si des alertes de sécurité bloquantes sont détectées sur le vol (collision terrain, etc.), le menu Exporter affiche d'abord un écran de confirmation qui doit être explicitement validé avant de pouvoir continuer — voir [Alertes de sécurité et validation](/fr/qc/alertes-securite-et-validation).
+  Si une collision avec le terrain est détectée, un écran de confirmation s'affiche avant l'export. Voir [Alertes de sécurité et validation](/fr/qc/alertes-securite-et-validation).
 </Warning>
 
 ## Voir aussi
@@ -98,4 +109,4 @@ L'export lit les réglages de mission du panneau **Paramètres** (et du panneau 
 - [Régler la couverture : capteur, altitude/GSD et recouvrement](/fr/planification/couverture-et-capteur)
 - [Calibration IMU et colorisation LiDAR](/fr/capteurs/calibration-imu-lidar)
 - [Découper une zone calculée en plusieurs vols](/fr/planification/decoupe-multi-vol)
-- [Créer et organiser les vols](/fr/mission/vols-et-appareils)
+- [Pont DJI Pilot 2](/fr/export/pont-dji-pilot2)

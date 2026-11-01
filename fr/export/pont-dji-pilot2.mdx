@@ -1,0 +1,141 @@
+---
+title: "Pont DJI Pilot 2"
+description: "Envoyer les plans de vol vers DJI Pilot 2 par le réseau local ou par le cloud DJI de Helix."
+---
+
+**Envoyer vers DJI Pilot** transmet les vols d'une mission à DJI Pilot 2 sans passer par un fichier. Deux voies existent, qui produisent le même KMZ WPML que l'[export fichier](/fr/export/kmz-wpml-dji-pilot2) :
+
+<CardGroup cols={2}>
+  <Card title="Local" icon="wifi">
+    Le planner embarque un serveur DJI Cloud API. Pilot 2 s'y connecte par le réseau local et lit les plans dans sa bibliothèque. Aucun compte ni Internet n'est nécessaire.
+  </Card>
+  <Card title="Cloud" icon="cloud">
+    Les plans sont publiés sur le portail Helix, qui les relaie au serveur DJI (`dji.helix.aero`). Ils apparaissent dans Pilot 2 sur n'importe quel réseau.
+  </Card>
+</CardGroup>
+
+Les deux voies exigent un aéronef DJI sur au moins un vol de la mission. Sinon les lignes **Local** et **Cloud** sont grisées avec « Appareil non-DJI — réservé aux drones DJI ».
+
+## Choisir le référentiel d'altitude
+
+L'écran **Envoyer à DJI Pilot** (**Export → Envoyer vers DJI Pilot**) propose le **Référentiel d'altitude (DJI WPML)** : **AMSL absolu** (par défaut) ou **Relatif au décollage**. Le même réglage se retrouve dans la fenêtre de sélection des vols. Voir [Choisir le référentiel d'altitude](/fr/export/kmz-wpml-dji-pilot2#choisir-le-référentiel-daltitude).
+
+## Voie Local
+
+### Le serveur local
+
+Le planner démarre le serveur au lancement de l'application. Il écoute sur l'adresse IPv4 de l'interface qui porte la route par défaut, avec deux ports : HTTP **7560** (page de connexion de Pilot et API de missions) et MQTT **1883**. Ces ports ne se règlent pas dans l'interface.
+
+Le bloc **Serveur local** de l'écran **Envoyer à DJI Pilot** montre l'état : **Actif**, **Démarrage…** ou **Hors ligne**. Le bouton **Démarrer** ou **Stopper** le pilote. Le bouton d'information ouvre le panneau **Pont DJI Pilot**.
+
+<Warning>
+  Au premier démarrage, Windows peut demander d'autoriser l'application sur le réseau. Autorisez le réseau privé, sinon la radiocommande ne joint pas le serveur.
+</Warning>
+
+Si le démarrage échoue, le message l'indique : adresse IP locale introuvable (la machine n'est pas sur un réseau Wi-Fi ou Ethernet), ou « port HTTP 7560 indisponible » / « port MQTT 1883 indisponible » quand un autre programme occupe le port.
+
+### Le panneau Pont DJI Pilot
+
+Le panneau affiche :
+
+| Ligne | Contenu |
+|---|---|
+| État | **Actif** ou **Hors ligne**. |
+| **Adresse IP** | L'adresse à saisir dans Pilot, par exemple `http://192.168.1.20:7560/`. Un clic la copie. |
+| **Code** | Le mot de passe à 6 chiffres à taper sur la radiocommande. Un clic le copie. |
+| **Waylines** | Le nombre de plans dans la bibliothèque du pont. |
+| **Radiocommande** | Une ligne par radiocommande connectée, avec son numéro de série et le nombre d'aéronefs. |
+
+Le pied du panneau contient **Fermer** et **Démarrer** ou **Stopper**.
+
+### Connecter DJI Pilot 2
+
+La machine du planner et la radiocommande doivent partager le même réseau.
+
+<Steps>
+  <Step title="Démarrer le serveur">
+    Vérifiez que l'état est **Actif** dans le panneau **Pont DJI Pilot**.
+  </Step>
+  <Step title="Ouvrir la plateforme dans Pilot">
+    Sur la radiocommande : DJI Pilot 2, **Cloud Service**, **Open Platforms**. Saisissez l'adresse affichée dans la ligne **Adresse IP**.
+  </Step>
+  <Step title="Saisir le code">
+    La page de connexion demande le mot de passe DJI Pilot (Local). Saisissez la valeur de la ligne **Code**. La page déroule ensuite ses étapes (environnement DJI Pilot, configuration Helix, licence Cloud API, module API, liaison temps réel MQTT, bibliothèque de missions) puis affiche « Connecté ».
+  </Step>
+  <Step title="Retrouver les plans">
+    Les plans apparaissent dans Pilot 2 sous **Vol de waypoints → Bibliothèque → Cloud**.
+  </Step>
+</Steps>
+
+### Envoyer des vols
+
+<Steps>
+  <Step title="Choisir Local">
+    **Export → Envoyer vers DJI Pilot → Local** ouvre la fenêtre **Envoyer vers DJI Pilot (LAN)**.
+  </Step>
+  <Step title="Cocher les vols">
+    Cochez les vols à pousser. Seuls les vols calculés avec un aéronef DJI sont cochables. Voir [la fenêtre de sélection des vols](/fr/export/vue-densemble#la-fenêtre-de-sélection-des-vols).
+  </Step>
+  <Step title="Envoyer">
+    Cliquez **Envoyer**. Chaque vol coché devient une wayline dans la bibliothèque du pont. Si le serveur est arrêté, l'envoi le démarre. Le panneau **Pont DJI Pilot** s'ouvre ensuite.
+  </Step>
+</Steps>
+
+Chaque plan porte le nom `NomDeLaMission_NomDuVol`, réduit aux caractères alphanumériques sans accents. Un vol en échec n'arrête pas les suivants : une notification **Envoi DJI Pilot (LAN)** indique le nombre de plans déposés et la raison de chaque échec.
+
+Le bouton **Wayline DJI** de la barre supérieure ouvre la liste de ce que Pilot voit : l'onglet **Local** apparaît quand le serveur est actif et liste les plans du pont, du plus récent au plus ancien, avec une corbeille par plan. Sans plan, le panneau indique « Aucune mission sur le serveur local. Utilisez Export → DJI Pilot → Local. ».
+
+### Changer le code
+
+**Réglages → Serveur**, carte **Serveur DJI Pilot local**, champ **Mot de passe**. Saisissez 6 chiffres et cliquez **Sauver** ; l'icône œil affiche ou masque la saisie. Un serveur actif redémarre pour appliquer le nouveau code (« Enregistré — serveur redémarré. »). Une valeur qui n'a pas 6 chiffres est refusée : « Le code du pont doit faire 6 chiffres. ».
+
+<Warning>
+  Un mot de passe vide est accepté et laisse le serveur ouvert à toute connexion du réseau local. Gardez un code sur un réseau partagé.
+</Warning>
+
+## Voie Cloud
+
+### Prérequis
+
+- Le droit `cloud.access` accordé par le plan ou la licence.
+- Un compte connecté et une connexion Internet.
+- Un aéronef DJI sur chaque vol à publier, dont la fiche du catalogue porte un identifiant WPML DJI. Sinon l'envoi échoue avec « appareil sans identifiant WPML DJI dans le catalogue local » : synchronisez le catalogue ou complétez la fiche sur le portail.
+
+### Publier
+
+<Steps>
+  <Step title="Choisir Cloud">
+    **Export → Envoyer vers DJI Pilot → Cloud** ouvre la fenêtre **Envoyer vers le cloud DJI**.
+  </Step>
+  <Step title="Cocher les vols">
+    La sélection fonctionne comme pour le pont local. Un vol dont l'aéronef n'est pas DJI est grisé (**Appareil non DJI**).
+  </Step>
+  <Step title="Envoyer">
+    Cliquez **Envoyer**. Helix synchronise la mission avec le portail, construit un KMZ par vol et le publie.
+  </Step>
+</Steps>
+
+Le résultat s'affiche en notification :
+
+- « N vol(s) envoyé(s) vers le cloud DJI — visible dans DJI Pilot. » quand le portail a relayé les plans au serveur DJI ;
+- **Envoyée, relais DJI en attente** quand le portail a stocké les plans sans pouvoir les relayer encore. Le portail réessaie seul, et le vol n'apparaît dans Pilot 2 qu'une fois relayé.
+
+### Gérer les plans publiés
+
+Le bouton **Wayline DJI** de la barre supérieure ouvre le panneau des plans de la mission active. L'onglet **Cloud** liste chaque vol publié avec « Vol #N » et un état :
+
+| État | Signification |
+|---|---|
+| **sync** | La dernière version est publiée. |
+| **modifié** | Le vol a changé depuis le dernier envoi. |
+| **relais DJI en attente** | Le portail n'a pas encore relayé le plan au serveur DJI. |
+| **jamais** | Le vol n'a jamais été publié. |
+
+Une corbeille supprime le plan du cloud. Le panneau indique « Aucun vol de cette mission n'a encore été poussé vers le cloud depuis cette machine. Utilisez Export → DJI Pilot → Cloud. » tant que rien n'est publié.
+
+## Voir aussi
+
+- [Exporter en KMZ/WPML](/fr/export/kmz-wpml-dji-pilot2)
+- [Vue d'ensemble de l'export](/fr/export/vue-densemble)
+- [Offres et droits](/fr/compte/offres-et-droits)
+- [Synchronisation entre appareils et mode hors-ligne](/fr/compte/synchronisation)
