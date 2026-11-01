@@ -1,12 +1,15 @@
 ---
 // Diagrammes ```mermaid des pages (Mintlify les dessinait) : Expressive Code les rend en bloc de code, ce script les remplace
-// par le dessin. Mermaid n'est chargé que sur les pages qui en ont. Le code reste affiché si le dessin échoue.
+// par le dessin. Mermaid n'est chargé que sur les pages qui en ont. Le code reste affiché si le chargement ou le dessin échoue.
 ---
 
 <script>
   const blocs = [...document.querySelectorAll<HTMLElement>('.expressive-code')].filter((b) => b.querySelector('pre[data-language="mermaid"]'));
-  if (blocs.length) {
-    const { default: mermaid } = await import('mermaid');
+  const echec = (bloc: HTMLElement) => bloc.classList.add('hx-mermaid-erreur');
+
+  const mermaid = blocs.length ? await import('mermaid').then((m) => m.default).catch(() => null) : null;
+  if (blocs.length && !mermaid) blocs.forEach(echec);
+  if (mermaid) {
     mermaid.initialize({
       startOnLoad: false,
       theme: 'base',
@@ -18,8 +21,8 @@
     });
     for (const [i, bloc] of blocs.entries()) {
       // Le bouton « copier » porte le code source, lignes séparées par U+007F.
-      let code = bloc.querySelector<HTMLElement>('[data-code]')?.dataset.code?.replaceAll('\u007f', '\n');
-      if (!code) continue;
+      let code = bloc.querySelector<HTMLElement>('[data-code]')?.dataset.code?.split('\u007f').join('\n');
+      if (!code) { echec(bloc); continue; }
       // Sur téléphone, un flux de gauche à droite devient illisible : il est dessiné de haut en bas.
       if (matchMedia('(max-width: 40rem)').matches) code = code.replace(/^(\s*(?:flowchart|graph))\s+(LR|RL)\b/, '$1 TD');
       try {
@@ -29,7 +32,7 @@
         figure.innerHTML = svg;
         bloc.replaceWith(figure);
       } catch {
-        bloc.classList.add('hx-mermaid-erreur');
+        echec(bloc);
       }
     }
   }

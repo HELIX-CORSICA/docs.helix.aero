@@ -30,10 +30,12 @@ const frHref = `/${fr ? route.id : ids.has(`fr/${base}`) ? `fr/${base}` : home('
 <style>
   .hx-lang { position: relative; display: inline-flex; align-items: center; color: var(--hx-ink); }
   .hx-lang select {
-    appearance: none; cursor: pointer; background: transparent; color: inherit;
+    -webkit-appearance: none; appearance: none; cursor: pointer; background: transparent; color: inherit;
     border: 1px solid rgb(17 18 20 / 0.14); border-radius: 999px; padding: 0.4rem 1.75rem 0.4rem 0.875rem;
     font: 500 0.875rem/1.2 var(--hx-font-head);
   }
   .hx-lang select:hover { border-color: var(--hx-ink); }
+  /* iOS Safari zoome la page quand on touche un champ dont le texte fait moins de 16 px */
+  @media (pointer: coarse) { .hx-lang select { font-size: 16px; } }
   .hx-lang svg { position: absolute; inset-inline-end: 0.7rem; pointer-events: none; }
 </style>
