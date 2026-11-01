@@ -1,0 +1,33 @@
+---
+title: "Géoïdes"
+description: "Télécharger et gérer les grilles de transformation verticale utilisées pour convertir les altitudes."
+---
+
+L'onglet **Géoïdes** des Réglages gère les grilles de transformation verticale de PROJ. Elles servent à la conversion entre l'altitude au-dessus du niveau moyen de la mer (AMSL) et l'altitude ellipsoïdale. Les modes d'altitude sont décrits dans [Mode altitude](/fr/planification/mode-altitude).
+
+## Ouvrir le gestionnaire
+
+Dans **Grilles de géoïdes (PROJ)**, la ligne **Grilles de transformation verticale** affiche le bouton **Gérer** et, quand des grilles sont installées, leur nombre (par exemple « 2 installés »). **Gérer** ouvre la fenêtre **Grilles de géoïdes**.
+
+## Télécharger et supprimer une grille
+
+La fenêtre liste les grilles disponibles sur le CDN PROJ (`cdn.proj.org`), avec leur région, leur nom de fichier et leur taille.
+
+<Steps>
+  <Step title="Rechercher">
+    Le champ de recherche filtre la liste, par exemple « RAF20 », « Corse » ou « EGM ».
+  </Step>
+  <Step title="Télécharger">
+    Cliquez sur la flèche de la ligne. Un indicateur remplace la flèche pendant le téléchargement, puis la ligne passe à l'état installé.
+  </Step>
+  <Step title="Supprimer si besoin">
+    Une grille installée affiche une icône corbeille qui la retire du poste.
+  </Step>
+</Steps>
+
+Le bas de la fenêtre indique le nombre de grilles installées et le total du catalogue. Le bouton **Rafraîchir** recharge le catalogue du CDN. Si le CDN est injoignable, l'état du catalogue affiche « fallback hors-ligne ».
+
+<Note>
+  Le téléchargement d'une grille demande une connexion Internet. Une grille déjà installée reste utilisable hors ligne.
+</Note>
+

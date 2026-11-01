@@ -1,0 +1,54 @@
+---
+title: "Raccourcis clavier et prérequis"
+description: "Raccourcis disponibles dans Helix Flight Planner et configuration minimale du poste."
+---
+
+## Raccourcis clavier
+
+Sur Mac, **Cmd** remplace **Ctrl** pour les raccourcis ci-dessous. Les raccourcis à lettre seule ne fonctionnent que si aucun champ de saisie n'a le focus : dans un champ, la touche appartient au champ.
+
+### Édition de la mission
+
+| Raccourci | Action |
+|---|---|
+| **Ctrl+Z** | Annuler |
+| **Ctrl+Maj+Z** ou **Ctrl+Y** | Rétablir |
+| **Suppr** | Supprimer la sélection |
+| **Ctrl+C** / **Ctrl+X** / **Ctrl+V** | Copier, couper, coller la sélection |
+| **Alt+V** | Coller les attributs (voir [Naviguer et sélectionner sur le globe](/fr/globe/navigation-et-selection)) |
+| **Ctrl+A** | Sélectionner tous les éléments |
+| **Ctrl+D** | Dupliquer la sélection |
+| **Ctrl+G** | Grouper ou dégrouper la sélection |
+| **D** | Désactiver ou réactiver l'élément sélectionné |
+
+### Outils de dessin
+
+| Raccourci | Action |
+|---|---|
+| **O** | Outil **Obstruction** |
+| **S** | Outil de découpe |
+| **W** | Outil **Waypoint** |
+| **Entrée** | Pendant un tracé de polygone, d'obstruction, de corridor ou de segment : confirme le tracé. Avec l'outil de découpe armé : valide la découpe. |
+| **Retour arrière** | Pendant un tracé : retire le dernier sommet posé |
+| **Échap** | Annule le tracé en cours ; ferme sinon la fenêtre ou la superposition ouverte |
+| **Tab** / **Maj+Tab** | Déplace le focus clavier vers le contrôle suivant ou précédent |
+
+Voir [Dessiner une zone](/fr/mission/dessiner-une-zone) et [Découpe multi-vol](/fr/planification/decoupe-multi-vol).
+
+## Prérequis
+
+<CardGroup cols={2}>
+  <Card title="Windows" icon="monitor">
+    Installeur 64 bits (x64) installé pour l'utilisateur courant, sans droits administrateur.
+  </Card>
+  <Card title="macOS" icon="apple">
+    macOS 13 ou plus récent, sur Mac Apple Silicon.
+  </Card>
+</CardGroup>
+
+**GPU obligatoire.** Helix Flight Planner est une application native qui dessine le globe et exécute les calculs de plan de vol sur le GPU (wgpu : DirectX 12 ou Vulkan sous Windows, Metal sous macOS). Sans adaptateur GPU, l'application affiche « aucun adaptateur GPU disponible » ou « GPU requis », et le calcul est indisponible. Le choix de l'adaptateur et du backend se fait dans **Réglages → Performance** (voir [Cache, performance, mises à jour et diagnostics](/fr/reglages/cache-performance-mises-a-jour)).
+
+**Connexion Internet.** La première connexion d'un poste doit se faire en ligne pour activer la licence (voir [Licence et activation du poste](/fr/compte/licence)). Les cartes, le terrain et les grilles de géoïde se téléchargent à la demande puis restent en cache sur le disque.
+
+**Espace disque.** Le cache de tuiles de terrain et de fond de carte a un budget d'au moins 2 Go.
+

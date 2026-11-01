@@ -1,0 +1,142 @@
+---
+title: "Serveur MCP et ligne de commande"
+description: "Piloter Helix Flight Planner depuis un assistant IA (MCP) ou un script (helix-cli) : activation, configuration d'un client, outils disponibles et codes d'erreur."
+---
+
+Helix Flight Planner ouvre un serveur local qui permet à un assistant IA (Claude, Cursor…) ou à un script de piloter l'application lancée sur le poste : missions, zones, paramètres de vol, calcul, contrôle qualité, caméra. Deux accès existent, chacun verrouillé par un add-on de licence distinct :
+
+| Accès | Add-on | Usage |
+|---|---|---|
+| **MCP** | `addon.mcp` | Assistant IA par le protocole MCP. |
+| **CLI** | `addon.cli` | Commande `helix-cli` depuis un terminal ou un script. |
+
+Ces add-ons sont inclus dans le plan Pro (voir [Offres et droits](/fr/compte/offres-et-droits)). Il n'y a aucune clé à saisir : ils s'activent avec la licence du compte. Un changement de licence est pris en compte sans redémarrer l'application.
+
+## Le serveur local
+
+Le serveur démarre avec l'application, uniquement si la licence porte au moins un des deux add-ons. Il écoute sur l'adresse de bouclage `127.0.0.1`, port 7533, et n'est donc pas joignable depuis le réseau. Les requêtes portant une origine non locale sont refusées.
+
+L'état s'affiche dans **Réglages → Serveur**, carte **Serveur MCP (agent IA)** :
+
+| Élément | Contenu |
+|---|---|
+| **État** | **Actif** avec l'URL du serveur (`http://127.0.0.1:7533/mcp`) et le nombre de requêtes ; **Arrêté** ; **Arrêté dans les Réglages** ; **Add-on MCP ou CLI requis** ; **Erreur** suivie d'un code et d'un message. |
+| **Démarrer** / **Arrêter** | Arrête ou relance le serveur. L'arrêt est mémorisé d'un lancement à l'autre. |
+| **Relancer** | Arrête puis redémarre le serveur. |
+| **Accès** | Disponibilité de chaque accès, par exemple « MCP ✓ · CLI ✗ », et le bouton **Copier la config IA**. |
+
+Les codes affichés après **Erreur** :
+
+| Code | Cause |
+|---|---|
+| `PORT_IN_USE` | Le port 7533 est déjà utilisé par un autre programme ou une autre instance de l'application. |
+| `BIND_FAILED` | L'ouverture du port a échoué pour une autre raison. |
+| `ENDPOINT_WRITE_FAILED` | Le fichier `endpoint.json` n'a pas pu être écrit. |
+| `SPAWN_FAILED` | Le processus d'écoute n'a pas pu démarrer. |
+| `CRASHED` | L'écoute s'est arrêtée en cours de route. |
+
+Libérez le port ou fermez l'autre instance, puis cliquez sur **Relancer**. La variable d'environnement `HELIX_AGENT_PORT` impose un autre port à une instance sans modifier la configuration enregistrée.
+
+## Jeton et fichier endpoint.json
+
+Chaque requête doit porter l'en-tête `Authorization: Bearer <jeton>`. Le jeton est généré au premier lancement et reste le même ensuite, de sorte qu'une configuration collée dans un client IA reste valable après un redémarrage de l'application. Il est stocké dans `config.json`, dans le dossier `agent` des données de l'application.
+
+Pendant que le serveur tourne, l'application publie `endpoint.json` dans ce même dossier, avec le port, le jeton, l'identifiant du processus et la version. `helix-cli` lit ce fichier pour trouver l'application : ni port ni jeton à saisir. Le fichier est supprimé à l'arrêt du serveur. Si une version de test et une version de production tournent ensemble, `helix-cli` utilise la plus récemment lancée.
+
+<Warning>
+  Le jeton donne le contrôle de l'application. Ne le partagez pas et ne le copiez pas dans un dépôt.
+</Warning>
+
+## Connecter un assistant IA
+
+<Steps>
+  <Step title="Vérifier l'accès">
+    Dans **Réglages → Serveur**, l'état doit être **Actif** et l'accès **MCP** coché.
+  </Step>
+  <Step title="Copier la configuration">
+    Cliquez sur **Copier la config IA**. Le message « Configuration MCP copiée. » confirme la copie.
+  </Step>
+  <Step title="Coller dans le client">
+    Collez la configuration dans les paramètres MCP du client (Claude Desktop, Cursor…) :
+
+    ```json
+    {"mcpServers":{"helix":{"command":"helix-cli","args":["mcp"]}}}
+    ```
+  </Step>
+</Steps>
+
+`helix-cli mcp` est un pont MCP en entrée-sortie standard : il transmet les messages du client au serveur de l'application, après avoir lu seul le port et le jeton. L'application doit être lancée ; si elle est relancée pendant la session du client, le pont relit `endpoint.json`.
+
+Les clients MCP qui parlent HTTP peuvent aussi viser directement `http://127.0.0.1:7533/mcp` avec l'en-tête `Authorization: Bearer <jeton>`.
+
+<Note>
+  `helix-cli` est installée avec l'application. Sous Windows, l'installeur ajoute son dossier au `PATH` de l'utilisateur. Sous macOS, l'application crée le lien `/usr/local/bin/helix-cli` quand la licence porte l'add-on CLI ; une demande d'autorisation administrateur peut apparaître une fois.
+</Note>
+
+## Utiliser helix-cli
+
+L'application doit être lancée. Chaque outil est une sous-commande.
+
+```sh
+helix-cli tools
+helix-cli help params_set
+helix-cli status
+helix-cli mission_create --name "Chantier A"
+helix-cli element_add --kind polygon --points "42.00,9.00 42.00,9.01 42.01,9.01"
+helix-cli params_set --params.altitudeM 120 --params.speedKmh 40
+helix-cli plan_compute --pretty
+```
+
+| Commande | Rôle |
+|---|---|
+| `helix-cli tools` | Liste les outils et leur description. |
+| `helix-cli help <outil>` | Affiche le schéma des arguments d'un outil. |
+| `helix-cli status` | Indique si l'application répond. |
+| `helix-cli <outil> --cle valeur` | Appelle un outil. `--a.b valeur` renseigne un champ imbriqué, `--points "lat,lon lat,lon"` une liste de points, et un argument de liste se répète (`--paths a.kml --paths b.kml`). |
+| `helix-cli <outil> '{json}'` | Passe les arguments sous forme d'un objet JSON. |
+| `helix-cli mcp` | Pont MCP en entrée-sortie standard. |
+| `--pretty` | Indente le JSON de sortie. |
+
+La sortie est un JSON sur la sortie standard. Une erreur s'écrit sur la sortie d'erreur sous la forme `CODE: message`. Le code de sortie indique le type d'échec :
+
+| Code de sortie | Signification |
+|---|---|
+| 0 | Succès. |
+| 1 | Erreur de l'outil. |
+| 2 | Erreur d'usage : outil inconnu ou arguments invalides. |
+| 3 | Application injoignable : elle n'est pas lancée, ou son serveur est arrêté. |
+| 4 | `LICENSE_REQUIRED` : la licence ne porte pas l'add-on CLI. |
+
+## Outils disponibles
+
+Les mêmes outils sont servis en MCP et en CLI. Les coordonnées sont en WGS84 (`lat`, `lon`).
+
+| Domaine | Outils |
+|---|---|
+| Session | `app_status` (état de la mission, du vol actif, de la caméra, du calcul et du QC), `history` (annuler ou rétablir) |
+| Missions | `missions_list`, `mission_create`, `mission_load`, `mission_export` (formats `kmz`, `kml` ou `helix`) |
+| Vols | `flights_list`, `flight_add`, `flight_select`, `flight_configure` (nom, aéronef, capteur), `equipment_list` (catalogue d'aéronefs et de capteurs) |
+| Éléments | `mission_geometry`, `element_select`, `element_add` (polygone, corridor, segment, waypoint, décollage), `element_rename`, `element_delete`, `vertex_move`, `obstruction_add` |
+| Imports | `kml_import` (KML, KMZ, GeoJSON, GPX), `obstructions_import` |
+| Paramètres et calcul | `params_get`, `params_set`, `plan_compute`, `plan_get` |
+| Qualité | `qc_compute`, `qc_view` |
+| Globe | `camera_get`, `camera_set`, `camera_frame`, `terrain_at` (hauteur du sol : HAE, AMSL, ondulation du géoïde), `layers_set` |
+
+`params_set` rejette les clés inconnues, ramène les valeurs dans leurs bornes valides et renvoie les valeurs appliquées. Importer plusieurs fichiers avec `kml_import` demande le droit `import.multi_kml` du plan Pro.
+
+Les écritures passent par les mêmes mécanismes que l'interface : elles sont validées, enregistrées dans l'historique et annulables avec `history`.
+
+## Codes d'erreur des outils
+
+Ces codes sont stables et valables en MCP comme en CLI.
+
+| Code | Sens |
+|---|---|
+| `LICENSE_REQUIRED` | La licence ne porte pas l'add-on de cet accès. |
+| `UNAUTHORIZED` | Jeton absent ou invalide. |
+| `UNKNOWN_TOOL` | Outil inexistant. |
+| `INVALID_ARGS` | Arguments manquants, inconnus ou de mauvais type. |
+| `NOT_FOUND` | Élément ou ressource introuvable. |
+| `APP_TIMEOUT` | L'application n'a pas répondu dans le délai de l'outil. |
+| `APP_ERROR` | L'application a refusé ou échoué l'opération. |
+| `UNAVAILABLE` | Service momentanément indisponible. |

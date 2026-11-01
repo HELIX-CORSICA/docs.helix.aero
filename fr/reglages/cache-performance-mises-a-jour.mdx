@@ -1,0 +1,62 @@
+---
+title: "Cache, performance, mises à jour et diagnostics"
+description: "Budget et dossier du cache de tuiles, choix du GPU et du backend, cadence d'affichage, mise à jour de l'application et diagnostics."
+---
+
+Cette page décrit les onglets **Cache terrain**, **Performance**, **Mises à jour** et **Diagnostics** des Réglages.
+
+## Cache terrain
+
+L'onglet **Cache terrain** (« Budget disque et dossier du cache local ») gère le cache de tuiles de terrain et de fond de carte. Les tuiles sont conservées sur disque pour accélérer le rechargement et l'affichage hors ligne des zones déjà visitées. Le budget et le dossier s'appliquent aux deux types de tuiles.
+
+| Ligne | Rôle |
+|---|---|
+| **Utilisation actuelle** | Espace occupé et jauge de remplissage, avec le bouton **Purger le cache**. |
+| **Dossier de cache** | Emplacement du cache : champ **Chemin du dossier** et bouton **Parcourir**. |
+| **Taille max du cache** | Budget disque, minimum 2 Go. |
+
+<Steps>
+  <Step title="Changer le dossier">
+    Saisissez un chemin ou utilisez **Parcourir**, puis enregistrez. Un disque rapide (NVMe ou SSD) accélère l'affichage du terrain quand vous revenez sur une zone visitée.
+  </Step>
+  <Step title="Fixer le budget">
+    Saisissez la taille maximale. Quand la limite est atteinte, les tuiles les plus anciennes sont évincées automatiquement.
+  </Step>
+  <Step title="Purger">
+    **Purger le cache** demande une confirmation (**Confirmer la purge**), puis vide les tuiles de terrain et de fond de carte. Le budget et le dossier ne changent pas. Le bouton est inactif quand le cache est déjà vide.
+  </Step>
+</Steps>
+
+## Performance
+
+L'onglet **Performance** (« GPU, backend graphique et adapter actif ») regroupe les réglages d'affichage.
+
+| Réglage | Contenu |
+|---|---|
+| **Adapter GPU** | Le GPU utilisé par l'application. |
+| **Backend** | **Automatique** (avec le nom du backend en cours), **DirectX 12** (Windows) ou **Vulkan**, et **Rendu logiciel**. Sur macOS, le backend est Metal. |
+| **Fréquence maximale du viewer** | **Fréquence écran** (celle du mode actuel de l'écran principal), 30, 60 ou 120 FPS, **Personnalisé** (de 15 à 360 FPS) ou **Illimité**. Une limite plus basse réduit la consommation du GPU. |
+| **Synchronisation verticale** | Les modes proposés dépendent du système : **Activée (défaut)**, **Désactivée** ou **Sans blocage**. |
+
+Sous ces réglages, un bloc d'information affiche le backend, le **Constructeur**, le **Workgroup max** et la disponibilité des **RT cores (BVH HW)**.
+
+Changer d'adaptateur ou de backend demande un redémarrage : un message le signale et un bouton **Redémarrer** relance l'application. **Rendu logiciel** est indiqué « Indisponible sur macOS » sur Mac.
+
+<Warning>
+  Le calcul des plans de vol s'exécute sur le GPU. Sans adaptateur GPU disponible, l'application affiche « GPU requis » et le calcul est indisponible : il n'existe pas de calcul de repli sur le processeur. Voir [Raccourcis et prérequis](/fr/reglages/raccourcis-et-prerequis).
+</Warning>
+
+## Mises à jour
+
+L'onglet **Mises à jour** affiche la **Version actuelle**, un **Statut** et le bouton **Vérifier**. Le statut passe par « Vérification… », puis « L'application est à jour. » ou « Mise à jour disponible. ». Dans ce dernier cas, un bouton **Installer** apparaît. Une vérification en échec affiche « Échec de la vérification. ».
+
+Une licence active est requise pour les mises à jour ; sans elle, le statut l'indique et **Vérifier** reste inactif. La ligne **Licences tierces** et son bouton **Afficher** ouvrent la liste des licences des composants tiers.
+
+## Diagnostics
+
+L'onglet **Diagnostics** (« Rapport d'erreur et données de diagnostic locales ») contient :
+
+- **Activer les diagnostics** : envoie les rapports de plantage et d'erreur à Helix, sans donnée de vol. Les plantages natifs s'activent au prochain démarrage ; les rapports locaux sont supprimés après 30 jours ;
+- **Exporter les diagnostics** : copie les rapports locaux dans un dossier choisi, à joindre à une demande de support ;
+- **Vider** : supprime le journal des actions et les rapports locaux en attente.
+
