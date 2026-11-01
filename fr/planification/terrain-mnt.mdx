@@ -1,78 +1,90 @@
 ---
 title: "Modèles numériques de terrain (MNT/DEM)"
-description: "Consulter les sources de terrain utilisées et pré-télécharger une zone."
+description: "Gérer les sources de terrain utilisées pour le calcul, importer un MNT et précharger une zone."
 ---
 
 # Modèles numériques de terrain (MNT/DEM)
 
-Une icône **montagne** dans la barre du haut, en mode mission, ouvre le panneau **Modèles numériques de terrain** : il liste les sources d'élévation que le moteur de calcul consulte pour dériver l'altitude du relief (waypoints, garde au sol, couverture, contrôle qualité, profil altimétrique), et propose un bouton pour mettre en cache le terrain de votre zone avant de lancer un calcul.
+La section **Terrain** du panneau **Carte / Sources** liste les sources d'élévation que l'application utilise pour afficher le relief et pour dériver l'altitude des waypoints, la garde au sol, la couverture, le contrôle qualité et le profil altimétrique. Elle permet d'activer ou masquer chaque source, de choisir lesquelles servent au calcul, d'importer un MNT personnel et de précharger une zone.
 
 <CardGroup cols={2}>
-  <Card title="GLO 30 — source globale" icon="globe">
-    Le MNT mondial de référence du moteur de calcul, à 30 m de résolution. Toujours actif, non désactivable.
+  <Card title="Terrains pré-intégrés" icon="globe">
+    Haute définition (Mapterhorn), GLO30 et SRTM1 : masquables, non supprimables.
   </Card>
-  <Card title="Pré-télécharger AOI" icon="download">
-    Met en cache les tuiles de terrain qui couvrent le polygone tracé, avant de lancer un calcul.
+  <Card title="Ajouter un MNT" icon="upload">
+    Raster, nuage de points ou pyramide .hdem, avec résolution, SCR et référence verticale.
+  </Card>
+  <Card title="Calcul" icon="cpu">
+    Case par source : afficher seulement, ou utiliser aussi pour AGL, IAGL et le contrôle qualité.
+  </Card>
+  <Card title="Pré-charger l'AOI" icon="download">
+    Trace une zone dont les tuiles de terrain sont téléchargées pour un usage hors ligne.
   </Card>
 </CardGroup>
 
-## Ouvrir le panneau
+## Ouvrir la section Terrain
 
-L'icône en forme de montagne, dans le groupe de droite de la barre du haut (à côté des notifications), n'apparaît qu'en mode mission — une fois un vol ouvert. Cliquez dessus pour ouvrir le panneau **Modèles numériques de terrain**.
+Cliquez le bouton **Carte / Sources** du rail de droite, puis l'icône **Terrain** dans la colonne de navigation du panneau (les trois autres icônes ouvrent **Fond de carte**, **Couches** et **Zone offline**).
 
-## GLO 30 : la source globale, toujours active
+## Les sources de la liste
 
-En haut de la liste **DEM actifs**, une ligne verrouillée (icône cadenas) affiche :
+La liste est ordonnée : une source placée plus haut est interrogée avant celles qui la suivent. Une première ligne, **Tuiles photoréalistes** (*Mondial*), puis les terrains pré-intégrés et les MNT importés :
 
-| Colonne | Valeur |
-|---|---|
-| Nom | **GLO 30** |
-| Couverture | Mondiale |
-| Résolution | 30 m |
-| État | **Toujours actif** |
+| Source | Résolution | État initial |
+|---|---|---|
+| **Haute définition** | 0,5 – 30 m | Masquée. Données Mapterhorn : fusion de sources ouvertes (Copernicus, IGN RGE ALTI, LiDAR HD…), haute résolution mais pouvant présenter des artefacts dus aux fournisseurs. Le bouton d'information de la ligne détaille la donnée. |
+| **GLO30** | 30 m | Active (affichage et calcul) |
+| **SRTM1** | 30 m | Masquée |
 
-GLO 30 est le MNT mondial de référence (Copernicus GLO-30) que le moteur de calcul utilise comme source d'élévation faisant autorité, partout où le terrain intervient : altitude des bandes en mode AGL/iAGL/FGL, garde au sol, couverture, contrôle qualité, profil altimétrique — y compris en mode AMSL, où le terrain reste consulté pour évaluer la garde au sol même si l'altitude de vol elle-même est constante.
+Chaque ligne porte les commandes suivantes :
 
-<Note>
-  Cette ligne est en lecture seule : impossible de la désactiver, de changer sa résolution ou de la supprimer. C'est un choix délibéré — le moteur de calcul a besoin d'une source de terrain systématiquement disponible et cohérente pour garantir des résultats fiables.
-</Note>
+- **Œil** : affiche ou masque la source.
+- **Case Calcul** (coche et puce de processeur) : coché, le MNT sert au calcul (AGL, IAGL, QC) ; décoché, il est affiché seulement. Le seul MNT coché ne peut pas être décoché ni supprimé : cochez-en un autre d'abord.
+- **Nom** et pastille de **résolution**.
+- **↑ / ↓** : déplace la ligne dans l'ordre de priorité. Une ligne se déplace aussi par glisser-déposer.
+- **Dossier** et **corbeille**, pour un MNT importé seulement : le dossier ouvre l'emplacement du MNT, la corbeille le supprime après confirmation. Un terrain pré-intégré se masque, il ne se supprime pas.
 
-## Sources DEM additionnelles (lecture seule)
+Supprimer un MNT importé demande une confirmation (**Annuler** / **Supprimer**). Si l'application a créé la pyramide, elle est effacée du disque ; si elle pointait vers une pyramide existante, les fichiers d'origine restent en place.
 
-Si votre installation contient déjà d'autres sources de terrain enregistrées, elles s'affichent sous la ligne GLO 30, chacune avec :
+La ligne **Tuiles photoréalistes** a son propre œil et sa propre case **Calcul** ; elle exige un jeton Cesium ion renseigné dans les réglages. Avec **Calcul** coché, AGL et IAGL se calculent sur la surface photoréaliste (toits, canopée) au lieu du MNT.
 
-| Colonne | Valeur |
-|---|---|
-| Nom et chemin | Le nom donné à la source et son chemin d'origine |
-| Résolution | Un badge `~X m` si l'information est connue |
-| État | **Actif** (vert) ou **Inactif** (gris) selon qu'elle est utilisée dans les calculs |
+## Ajouter un MNT
 
-<Warning>
-  Ce panneau n'offre actuellement aucun bouton pour importer un nouveau MNT personnalisé — seule la source globale GLO 30 apparaît par défaut. Si des sources additionnelles sont listées ici, elles proviennent d'un import antérieur ; cette page ne documente pas d'action pour en ajouter, car la fonctionnalité n'est pas accessible depuis l'interface actuelle.
-</Warning>
-
-## Pré-télécharger la zone (AOI)
-
-En bas du panneau, le bouton **Pré-télécharger AOI** met en cache les tuiles de terrain qui couvrent l'emprise (bounding box) du polygone de la zone active, avant de lancer un calcul — utile pour éviter les temps d'attente réseau au premier calcul sur une grande zone, ou pour préparer une zone à l'avance si la connexion sera limitée sur le terrain.
+Le bouton **Ajouter**, en bas du panneau, ouvre un sélecteur de fichiers. Il accepte un ou plusieurs fichiers `.las`, `.laz`, `.tif`, `.tiff`, `.hgt`, `.hdem`, `.xyz`, `.csv` ou `.json`. La fenêtre **Ajouter un DEM** s'ouvre et analyse les fichiers : un résumé donne le type (**Raster**, **Nuage de points** ou **Pyramide .hdem**), le nombre de points, l'emprise et le système d'altitude détecté.
 
 <Steps>
-  <Step title="Tracer un polygone suffisamment détaillé">
-    Le bouton reste désactivé tant que la zone active n'a pas au moins **10 sommets** ; un message **« Dessinez un polygone (≥ 10 sommets) »** s'affiche en dessous tant que ce n'est pas le cas.
+  <Step title="Nommer le DEM">
+    Saisissez le **Nom du DEM** ; il s'affiche dans la liste (tronqué à 15 caractères).
   </Step>
-  <Step title="Cliquer sur Pré-télécharger AOI">
-    Le bouton passe en état **« Téléchargement… »** pendant l'opération.
+  <Step title="Choisir les classes (nuage de points)">
+    Pour un nuage de points LAS ou LAZ, le bouton **Classes…** ouvre la liste des classes avec leur nombre de points et leur part ; cochez les classes à garder (**Tout cocher**, **Aucune**).
   </Step>
-  <Step title="Attendre la confirmation">
-    Un message **« ✓ Tuiles DEM mises en cache »** confirme la réussite (affiché quelques secondes). En cas d'échec réseau, le message devient **« Échec du pré-téléchargement »**.
+  <Step title="Choisir la résolution de la pyramide">
+    **Pleine résolution** (résolution native indiquée) ou **Décimer au pas de** une valeur en mètres.
+  </Step>
+  <Step title="Vérifier le SCR">
+    Le champ **SCR** affiche le système de coordonnées déclaré par le fichier. Si le fichier n'en déclare pas, saisissez un code et choisissez-le dans la liste proposée.
+  </Step>
+  <Step title="Choisir la référence verticale">
+    La liste **Référence verticale** propose **Aucun géoïde (hauteurs ellipsoïdales)** et les grilles de géoïde adaptées à l'emprise, la grille suggérée en tête. Un avertissement s'affiche quand un SCR national est lu sans géoïde. **Gérer les géoïdes** ouvre la gestion des grilles ; voir [Géoïdes](/fr/reglages/geoides).
+  </Step>
+  <Step title="Importer">
+    **Importer** lance la lecture, la rastérisation et la construction de la pyramide. Une notification **DEM importé** confirme la fin.
   </Step>
 </Steps>
 
+Un fichier `.hdem` qui est déjà une pyramide est enregistré tel quel : il n'est ni copié ni jamais effacé par l'application.
+
+## Pré-charger l'AOI
+
+Le bouton vert **Pré-charger l'AOI**, en bas du panneau, referme le panneau et arme le tracé d'une zone hors ligne ; le formulaire qui suit permet de télécharger les tuiles de la zone. Les tuiles du terrain pré-intégré actif sont téléchargées avec celles du fond de carte, pour travailler sans connexion sur le terrain. La zone se retrouve ensuite dans la section **Zone offline**.
+
 <Tip>
-  Une connexion internet active est nécessaire pour ce pré-téléchargement — c'est elle qui alimente le cache local en tuiles de terrain.
+  Une connexion internet est nécessaire pendant le téléchargement. Un MNT importé est local : il n'y a rien à télécharger pour lui.
 </Tip>
 
 ## Voir aussi
 
 - [Choisir le mode d'altitude](/fr/planification/mode-altitude)
 - [Mesurer des distances et lire le profil altimétrique](/fr/globe/mesure-et-profil-altimetrique)
-- [Dessiner une zone, un corridor ou un point de décollage](/fr/mission/dessiner-une-zone)
+- [Géoïdes](/fr/reglages/geoides)
