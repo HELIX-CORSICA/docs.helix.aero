@@ -1,0 +1,69 @@
+---
+title: "Altitude, GSD and speed (FLIGHT tab)"
+description: "Set the altitude mode, altitude, GSD, speed, turn and drone heading in the FLIGHT tab of the Tasks panel."
+icon: plane
+---
+
+The **FLIGHT** tab of the **Tasks** panel controls how the aircraft follows the terrain, how high it flies, how fast it goes and how it turns. These settings apply to the selected task, in the current flight.
+
+<Frame caption="FLIGHT tab of the Tasks panel, AGL mode">
+  <img src="/images/flight-planner/mission-vue-generale.png" alt="Tasks panel, FLIGHT tab, with the Mode, Altitude, GSD, AGL tolerance, Speed, Turn, Drone yaw and Yaw angle fields" />
+</Frame>
+
+## Altitude mode
+
+The **Mode** field sets the reference for the flight altitude. There are three choices:
+
+| Mode | What it means |
+|---|---|
+| **AMSL** | The altitude is measured above sea level. The aircraft keeps the same absolute altitude, even if the ground rises or falls. |
+| **AGL** | The altitude is a fixed height above the ground. The aircraft keeps the same distance to the ground. |
+| **IAGL** | The aircraft follows the terrain at all times, at the height you set. |
+
+<Tip>
+For flat terrain, **AMSL** or **AGL** is enough. For steep terrain, choose **IAGL**: the aircraft stays at a constant height above the ground, including in valleys and on ridges.
+</Tip>
+
+The **AGL** mode is only available for drones. For an airplane, use **IAGL** (terrain following) or **AMSL** (constant altitude).
+
+## Altitude and GSD
+
+The **Altitude** field (in meters) and the **GSD** field (in centimeters) are linked: changing one updates the other automatically.
+
+- **Altitude**: the flight height you ask for, in the selected mode.
+- **GSD**: the GSD (*Ground Sample Distance*) is the size on the ground of one pixel of the image. For example, a GSD of **4.0 cm** means one pixel of the photo covers 4 cm of terrain. The smaller the GSD, the more detailed the image, and the lower the aircraft has to fly.
+
+To get a specific GSD, enter it in **GSD**: **Altitude** is recalculated. To fly at a specific height, enter it in **Altitude**: the **GSD** is recalculated.
+
+The GSD also depends on the sensor you choose. If the GSD looks wrong, check the **SENSOR** tab.
+
+## AGL tolerance
+
+The **AGL tolerance** field (in meters) sets how far the height may vary around the requested altitude. It appears in **AGL** and **IAGL** mode. A small tolerance keeps the aircraft very close to the requested height; a larger tolerance gives the aircraft more freedom over uneven terrain.
+
+## Speed
+
+The **Speed** field (in m/s) sets the flight speed for the task. A speed that is too high can reduce image sharpness. If the speed you enter is above what the aircraft allows, it is reduced to its limit and a **Speed capped** notification appears.
+
+## Turn
+
+For a drone, the **Turn** menu offers two types:
+
+- **Smooth**: the drone turns without stopping at the ends of the strips.
+- **Stop & turn**: the drone stops at each end, then turns.
+
+For an airplane, this menu is replaced by the **Approach (airplane)** field.
+
+## Drone yaw and Yaw angle
+
+These two fields set the drone's heading during the flight. They only appear for a drone.
+
+- **Drone yaw**: chooses the heading reference. **From track**: the heading is counted from the flight direction. **From north**: the heading is counted from north.
+- **Yaw angle**: the heading angle, in degrees (°), counted from this reference. With **From track** and an angle of **0**, the drone faces the flight direction.
+
+## See also
+
+- [Choose the sensor (SENSOR tab)](/flight-planner/parametres/onglet-capteur)
+- [Overlap and orientation (GEOMETRY tab)](/flight-planner/parametres/onglet-geometrie)
+- [Flight strips](/flight-planner/parametres/bandes)
+- [Terrain (DEM) and geoids](/flight-planner/carte/terrain-et-geoides)

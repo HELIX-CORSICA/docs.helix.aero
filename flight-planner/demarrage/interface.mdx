@@ -1,0 +1,134 @@
+---
+title: "Get to know the interface"
+description: "Guided tour of the Flight Planner mission screen, area by area."
+icon: "map"
+---
+
+A mission opens on a map surrounded by panels and control bars. This page walks through the
+mission screen area by area, so you know where each control is before you start.
+
+<Frame caption="Mission screen: overview">
+  <img src="/images/flight-planner/mission-vue-generale.png" alt="Mission screen of the corte-lot3 mission: flight tab, Tasks panel open on the FLIGHT tab, area drawn on the map" />
+</Frame>
+
+The sections below go through the screen from top to bottom:
+
+1. The top bar
+2. The flight row
+3. The Tasks panel
+4. The drawing toolbar
+5. The measurement tools
+6. The basemap and quality control
+7. The compass and the Duration / Distance box
+8. The status bar
+
+## 1. The top bar
+
+At the very top of the screen, from left to right:
+
+- **Logo and home button**: returns you to the dashboard.
+- **Bell**: shows notifications. A red number indicates how many notifications are waiting.
+- **Sync indicator**: shows the state of synchronization. It displays **Sync error** when synchronization has failed.
+- **Gear icon**: opens **Settings**.
+- **Online**: indicates that the software is connected.
+
+## 2. The flight row
+
+Below the top bar, a mission contains one or more flights. Each flight has its own tab.
+
+- **Numbered tabs**: each flight appears with its number and name. Click a tab to open that flight.
+- **Eye icon**: to the right of the tab, hides the flight on the map. The flight stays in the mission.
+- **+ FLIGHT**: adds a flight to the mission. See [Organize flights](/flight-planner/missions/vols).
+- **Import**: menu that offers **Zone**, **GCP** and **Obstructions**. See [Import data](/flight-planner/import-export/importer).
+
+<Frame caption="Import menu">
+  <img src="/images/flight-planner/menu-import.png" alt="Import menu open with the entries Zone, GCP and Obstructions" />
+</Frame>
+
+- **Export**: green button on the right. It opens the flight plan export. See [Export the flight plan](/flight-planner/import-export/exporter).
+
+## 3. The Tasks panel
+
+The **Tasks** panel, on the left of the map, lists the tasks of the selected flight.
+
+- **Tasks**: the numbered list of tasks. Click a task to select it.
+- **Collapse arrow** (`<`): at the top right of the panel, collapses the panel to free up the map.
+- **STRIPS**: collapsed list of flight strips, with their count. It appears once the strips have been calculated. Click it to expand the list and see each strip with its altitude and length. See [Flight strips](/flight-planner/parametres/bandes).
+- **FLIGHT**, **SENSOR**, **GEOMETRY**: three tabs that group the settings of the task.
+  - **FLIGHT**: altitude mode, altitude, GSD and speed. See [Altitude, GSD and speed](/flight-planner/parametres/onglet-vol).
+  - **SENSOR**: sensor, gimbal pitch and trigger. See [Choose the sensor](/flight-planner/parametres/onglet-capteur).
+  - **GEOMETRY**: overlap and orientation. See [Overlap and orientation](/flight-planner/parametres/onglet-geometrie).
+
+<Frame caption="Tasks panel, SENSOR tab">
+  <img src="/images/flight-planner/onglet-capteur.png" alt="Tasks panel on the SENSOR tab with the fields Sensor, Gimbal pitch, Trigger and Capture in turns" />
+</Frame>
+
+## 4. The drawing toolbar
+
+The vertical bar on the left edge of the map groups the drawing tools. Hover over an icon to see its name. From top to bottom:
+
+1. **Takeoff point**
+2. **Place a waypoint**
+3. **Draw area**
+4. **Draw corridor**
+5. **Draw obstruction**
+6. **Manual multi-flight split**
+
+<Frame caption="Tooltip of the Draw area tool">
+  <img src="/images/flight-planner/barre-outils-dessin.png" alt="Vertical drawing toolbar with the Draw area tooltip" />
+</Frame>
+
+Activating a tool deactivates the previous one. See [Draw tasks](/flight-planner/missions/taches) and [Split an area](/flight-planner/missions/decoupe).
+
+{/* CAPTURE À FAIRE : manual multi-flight split window (Flight / Element) */}
+
+## 5. The measurement tools
+
+At the top right of the map, four tools let you measure directly on the map: **Distance**, **Area**, **Altitude** and **Elevation profile**. Hover over an icon to see its name. See [Measure on the map](/flight-planner/carte/mesures).
+
+## 6. The basemap and quality control
+
+On the right of the map, two buttons open panels:
+
+- **Basemap**: chooses the background (**Satellite**, **Map** or **Topo**) and shows or hides the layers (**Flight lines**, **Obstructions**, **Airports**, **GCP**, **Aeronautical**). See [Basemaps and layers](/flight-planner/carte/fonds-et-couches).
+- **Quality control** (QC): opens the quality control panel. See [Quality control (QC)](/flight-planner/qualite/controle-qualite).
+
+<Frame caption="Basemap panel">
+  <img src="/images/flight-planner/panneau-couches.png" alt="Basemap panel with Satellite, Map, Topo and the list of layers" />
+</Frame>
+
+<Frame caption="QC panel">
+  <img src="/images/flight-planner/panneau-qc.png" alt="QC panel with the fields Flight/Task, Criterion, Thresholds and Opacity" />
+</Frame>
+
+## 7. The compass and the Duration / Distance box
+
+- **Compass**: at the bottom right of the map, it shows north.
+- **Duration / Distance**: box to the left of the compass. It shows the duration and distance of the flight plan once the strips have been calculated.
+
+<Frame caption="Calculated strips and the Duration / Distance box">
+  <img src="/images/flight-planner/mission-bandes-calculees.png" alt="Calculated strips over the area, Duration and Distance box at the bottom right, collapsed STRIPS list, CAPTEUR tab open" />
+</Frame>
+
+## 8. The status bar
+
+The bar at the very bottom of the screen always shows:
+
+- **Zoom**: the zoom level of the map.
+- **View**: the extent visible on the screen.
+- **UTM**: the zone and coordinate system.
+- **Lat** and **Lon**: latitude and longitude.
+- **AMSL** and **HAE**: altitudes.
+- **Area**: the area of the zone.
+
+## Moving around the map with the mouse
+
+- **Mouse wheel**: zoom in and out.
+- **Hold the left button and drag** on an empty area: moves the map.
+
+## See also
+
+- [Your first mission in 10 minutes](/flight-planner/demarrage/premiere-mission)
+- [The dashboard](/flight-planner/missions/tableau-de-bord)
+- [Organize flights](/flight-planner/missions/vols)
+- [Basemaps and layers](/flight-planner/carte/fonds-et-couches)

@@ -1,26 +1,33 @@
 // docs.helix.aero : Astro Starlight, servi en statique chez o2switch (helix-infra, deploy-docs.yml).
 // Les pages MDX restent à la racine du dépôt (anglais) et sous fr/ ; la navigation se lit dans docs.json (src/sidebar.ts).
-import { cpSync, existsSync } from 'node:fs';
+import { appendFileSync, cpSync, existsSync } from 'node:fs';
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import AutoImport from 'astro-auto-import';
+import { home } from './src/nav.ts';
 
 // Composants de l'ancienne syntaxe Mintlify, utilisables dans les MDX sans import.
 const mintlify = ['Card', 'CardGroup', 'Steps', 'Step', 'Tabs', 'Tab', 'Note', 'Tip', 'Warning', 'Info', 'Frame', 'Accordion', 'AccordionGroup'];
 
-// Captures rangées comme chez Mintlify, dans images/ à la racine du dépôt et appelées en /images/… : copiées telles quelles dans le site.
-const images = {
-  name: 'images-racine',
+// Après le build : captures de images/ (appelées en /images/… comme chez Mintlify) copiées dans le site, et redirections 301
+// d'Apache vers la première page de chaque langue dans docs.json, anciennes adresses Mintlify (introduction, quickstart, guides/…) comprises.
+const apres = {
+  name: 'images-et-redirections',
   hooks: {
     'astro:build:done': ({ dir }) => {
       if (existsSync('images')) cpSync('images', new URL('images/', dir), { recursive: true });
+      appendFileSync(new URL('.htaccess', dir), [
+        `RedirectMatch 301 ^/(introduction|quickstart|guides(/.*)?)?/?$ /${home('en')}/`,
+        `RedirectMatch 301 ^/fr/(introduction|quickstart|guides(/.*)?)?/?$ /${home('fr')}/`,
+        '',
+      ].join('\n'));
     },
   },
 };
 
 export default defineConfig({
   site: 'https://docs.helix.aero',
-  redirects: { '/': '/introduction/', '/fr/': '/fr/introduction/' },
+  redirects: { '/': `/${home('en')}/`, '/fr/': `/${home('fr')}/` },
   integrations: [
     starlight({
       title: 'HELIX Flight Planner',
@@ -45,6 +52,6 @@ export default defineConfig({
     }),
     // après Starlight : c'est lui qui ajoute l'intégration MDX, que l'auto-import doit trouver
     AutoImport({ imports: mintlify.map((c) => `./src/components/mintlify/${c}.astro`) }),
-    images,
+    apres,
   ],
 });

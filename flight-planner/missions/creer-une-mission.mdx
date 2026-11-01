@@ -1,0 +1,91 @@
+---
+title: "Create a mission"
+description: "Create a mission in two steps: name it, then optionally pre-center the map on a place. You can also import an existing mission."
+icon: "plus"
+---
+
+A mission groups the flights, tasks, and settings for one job. You create it from the dashboard, in two steps: the name, then the place (optional).
+
+## Create a mission
+
+<Steps>
+  <Step title="Open the dashboard">
+    On the **Missions** tab, click **+ New mission**, at the top right.
+
+    <Frame caption="The dashboard, Missions tab">
+      <img src="/images/flight-planner/dashboard.png" alt="Dashboard, Missions tab, with the DJI Cloud, Import a mission and + New mission buttons" />
+    </Frame>
+  </Step>
+
+  <Step title="Step 01: Information">
+    The creation window opens at step **01 Information**, with the subtitle "Name your mission."
+
+    Type the name in the **Mission name** field. While the field is empty, the **Next** button stays grayed out.
+
+    <Frame caption="Step 01 Information, empty field">
+      <img src="/images/flight-planner/nouvelle-mission.png" alt="New mission window at step 01 Information, Mission name field empty" />
+    </Frame>
+
+    <Frame caption="Step 01 Information, name entered">
+      <img src="/images/flight-planner/nouvelle-mission-nom.png" alt="Mission name field filled in with Corse - Haute-Corse lot 3, Next button active" />
+    </Frame>
+
+    Click **Next**.
+  </Step>
+
+  <Step title="Step 02: Place (optional)">
+    The **02 Place** step pre-centers the map on your work area. The **Place — optional** field accepts a town or coordinates (for example `41.92 8.74`).
+
+    <Frame caption="Step 02 Place, empty field">
+      <img src="/images/flight-planner/nouvelle-mission-lieu.png" alt="Step 02 Place with the optional Place field empty, Previous and Create mission buttons" />
+    </Frame>
+
+    Start typing the name of the place. A list of suggestions appears under the field, with the country or region of each result.
+
+    <Frame caption="Searching for Corte, with suggestions">
+      <img src="/images/flight-planner/nouvelle-mission-lieu-saisi.png" alt="Place field with the text Corte and the suggestion list: Corte Corsica France, Corte Veneto Italy, and others" />
+    </Frame>
+
+    Click the suggestion you want. The field then shows the selected place.
+
+    <Frame caption="Place selected">
+      <img src="/images/flight-planner/nouvelle-mission-lieu-choisi.png" alt="Place field showing Corte, Corsica, France" />
+    </Frame>
+
+    <Tip>
+      The place is optional. To create the mission without one, click **Create mission** without typing anything in the field.
+    </Tip>
+  </Step>
+
+  <Step title="Create the mission">
+    Click **Create mission** to confirm. To cancel at any step, click **Cancel**.
+  </Step>
+</Steps>
+
+## Window buttons
+
+| Button | Step | Effect |
+|---|---|---|
+| **Cancel** | 01 and 02 | Closes the window without creating a mission. |
+| **Next** | 01 | Goes to step 02 Place. Grayed out while the name is empty. |
+| **Previous** | 02 | Goes back to step 01 Information. |
+| **Create mission** | 02 | Creates the mission with the name and, if entered, the place. |
+
+You can close the window at any time with the **×** button, at the top right. In that case, nothing is created.
+
+## Import an existing mission
+
+To reopen a mission you have already prepared, click **Import a mission**, next to **+ New mission**, on the dashboard.
+
+{/* CAPTURE À FAIRE : fenêtre d'import de mission, après clic sur Import a mission (champs et formats acceptés) */}
+
+<Note>
+  Importing a mission is not covered in detail here. To import data into an open mission (areas, flight plans, ground control points), see [Import data](/flight-planner/import-export/importer).
+</Note>
+
+## See also
+
+- [The dashboard](/flight-planner/missions/tableau-de-bord)
+- [Organize flights](/flight-planner/missions/vols)
+- [Draw tasks](/flight-planner/missions/taches)
+- [Import data](/flight-planner/import-export/importer)

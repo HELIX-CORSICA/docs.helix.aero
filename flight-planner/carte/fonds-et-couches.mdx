@@ -1,0 +1,86 @@
+---
+title: "Basemap and layers"
+description: "The Basemap panel: choose Satellite, Map or Topo, show or hide each layer with its opacity slider, and add your own orthophoto or a WMS / WMTS feed."
+icon: "map"
+---
+
+The **Basemap** panel controls what the map shows beneath your flights: the base map itself (**Satellite**, **Map** or **Topo**), and the overlay layers (flight lines, obstructions, airports, ground control points GCP, aeronautical). You can also add a data source of your choice.
+
+## Open the Basemap panel
+
+<Steps>
+  <Step title="Open the map">
+    In the vertical bar on the right side of the screen, click the map icon. Its tooltip reads **Map / Sources**.
+  </Step>
+  <Step title="Read the panel">
+    The **Basemap** panel opens on the right. It has three areas: the choice of base map, the **Layers** list, and the **Add a source** button at the bottom.
+  </Step>
+</Steps>
+
+<Frame caption="The Basemap panel, with Satellite selected and the list of layers">
+  <img src="/images/flight-planner/panneau-couches.png" alt="Basemap panel: Satellite, Map and Topo base maps, layer list with opacity sliders, Add a source button" />
+</Frame>
+
+## Choose the base map
+
+Three base maps are offered at the top of the panel. Click a tile to activate it. The selected base map is highlighted in green.
+
+| Base map | Use it to |
+|---|---|
+| **Satellite** | See an aerial image. Check the real terrain, buildings and vegetation. |
+| **Map** | See a road map. Locate roads and place names. |
+| **Topo** | See a topographic map. Read the relief. |
+
+Changing the base map does not change your flights or your tasks. It only changes the reference image.
+
+## Show and adjust the layers
+
+The **Layers** list contains five layers. Each one has the same controls:
+
+- **The eye** to the left of the name: click it to show or hide the layer. A crossed-out eye means the layer is hidden.
+- **The slider** under the name: it sets the layer's opacity, from 0% (invisible) to **100%** (opaque).
+
+| Layer | What it shows |
+|---|---|
+| **Flight lines** | The flight lines calculated for your tasks. |
+| **Obstructions** | The obstacles you have drawn or imported. |
+| **Airports** | The airports shown on the map. |
+| **GCP** | The ground control points (GCP). |
+| **Aeronautical** | The aeronautical base layer. |
+
+<Tip>
+Lower the opacity of a layer to see the map beneath it more clearly. Hide **Flight lines** to see the base map without the flight lines.
+</Tip>
+
+{/* CAPTURE TO DO: Layers list with one layer hidden (crossed-out eye, for example Airports) and a reduced opacity slider */}
+
+## Add a source
+
+The **Add a source** button lets you overlay your own data on the base map. Two types of source are accepted:
+
+- an **orthophoto GeoTIFF**: a georeferenced aerial image you already have;
+- a **WMS / WMTS feed**: an online map service.
+
+<Steps>
+  <Step title="Open the window">
+    In the **Basemap** panel, click **Add a source**.
+  </Step>
+  <Step title="Choose the file">
+    The **Add a source** window opens, with the text **GeoTIFF orthophoto or WMS / WMTS feed, overlaid on the basemap.** Click **Choisir le fichier…** and select your orthophoto.
+  </Step>
+</Steps>
+
+<Frame caption="The Add a source window">
+  <img src="/images/flight-planner/ajouter-source-carte.png" alt="Add a source window with the Cancel and Choisir le fichier… buttons" />
+</Frame>
+
+To cancel without adding anything, click **Cancel**.
+
+{/* CAPTURE TO DO: after adding a source, the source overlaid on the base map and its entry in the Layers list */}
+
+## See also
+
+- [Measuring on the map](/flight-planner/carte/mesures)
+- [Terrain (DEM) and geoids](/flight-planner/carte/terrain-et-geoides)
+- [Weather](/flight-planner/carte/meteo)
+- [Quality control (QC)](/flight-planner/qualite/controle-qualite)
