@@ -1,0 +1,8 @@
+---
+// Cadre Mintlify autour d'une capture : <Frame caption="…"><img src="/images/…" /></Frame>.
+const { caption } = Astro.props;
+---
+<figure class="hx-frame not-content">
+  <slot />
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>

@@ -1,11 +1,22 @@
 // docs.helix.aero : Astro Starlight, servi en statique chez o2switch (helix-infra, deploy-docs.yml).
 // Les pages MDX restent à la racine du dépôt (anglais) et sous fr/ ; la navigation se lit dans docs.json (src/sidebar.ts).
+import { cpSync, existsSync } from 'node:fs';
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import AutoImport from 'astro-auto-import';
 
 // Composants de l'ancienne syntaxe Mintlify, utilisables dans les MDX sans import.
-const mintlify = ['Card', 'CardGroup', 'Steps', 'Step', 'Tabs', 'Tab', 'Note', 'Tip', 'Warning', 'Info'];
+const mintlify = ['Card', 'CardGroup', 'Steps', 'Step', 'Tabs', 'Tab', 'Note', 'Tip', 'Warning', 'Info', 'Frame', 'Accordion', 'AccordionGroup'];
+
+// Captures rangées comme chez Mintlify, dans images/ à la racine du dépôt et appelées en /images/… : copiées telles quelles dans le site.
+const images = {
+  name: 'images-racine',
+  hooks: {
+    'astro:build:done': ({ dir }) => {
+      if (existsSync('images')) cpSync('images', new URL('images/', dir), { recursive: true });
+    },
+  },
+};
 
 export default defineConfig({
   site: 'https://docs.helix.aero',
@@ -34,5 +45,6 @@ export default defineConfig({
     }),
     // après Starlight : c'est lui qui ajoute l'intégration MDX, que l'auto-import doit trouver
     AutoImport({ imports: mintlify.map((c) => `./src/components/mintlify/${c}.astro`) }),
+    images,
   ],
 });

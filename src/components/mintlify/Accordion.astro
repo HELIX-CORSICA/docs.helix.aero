@@ -1,0 +1,8 @@
+---
+// Question repliable Mintlify : <Accordion title="…">…</Accordion>.
+const { title } = Astro.props;
+---
+<details class="hx-accordion">
+  <summary>{title}</summary>
+  <div class="sl-markdown-content"><slot /></div>
+</details>
