@@ -1,0 +1,12 @@
+# docs.helix.aero chez o2switch (site statique Astro) : page 404 du site, accueil vers l'introduction, ressources en cache.
+ErrorDocument 404 /404.html
+RedirectMatch 301 ^/$ /introduction/
+RedirectMatch 301 ^/fr/?$ /fr/introduction/
+<IfModule mod_headers.c>
+  <FilesMatch "\.(js|css|woff2|svg|png|webp|avif|ico)$">
+    Header set Cache-Control "public, max-age=604800"
+  </FilesMatch>
+  <If "%{REQUEST_URI} =~ m#^/_astro/#">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </If>
+</IfModule>

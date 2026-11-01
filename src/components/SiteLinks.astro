@@ -1,0 +1,27 @@
+---
+// Liens du site (Flight Planner, Contact, Portal, langue), dans l'en-tête et dans le menu mobile.
+import { getCollection } from 'astro:content';
+
+const route = Astro.locals.starlightRoute;
+const fr = route.locale === 'fr';
+const site = fr ? 'https://helix.aero/fr' : 'https://helix.aero/en';
+// Bascule de langue : même page dans l'autre langue si elle existe, sinon son introduction (les deux arborescences diffèrent).
+const ids = new Set((await getCollection('docs')).map((e) => e.id));
+const base = fr ? route.id.replace(/^fr\//, '') : route.id;
+const other = fr ? (ids.has(base) ? base : 'introduction') : ids.has(`fr/${base}`) ? `fr/${base}` : 'fr/introduction';
+---
+
+<nav class="hx-nav" aria-label={fr ? 'Liens du site' : 'Site links'}>
+  <a href={`${site}/flight-planner`}>Flight Planner</a>
+  <a href={`${site}/contact`}>Contact</a>
+  <a class="hx-pill" href="https://app.helix.aero" target="_blank" rel="noopener">Portal <span aria-hidden="true">↗</span></a>
+  <a class="hx-pill" href={`/${other}/`} hreflang={fr ? 'en' : 'fr'} lang={fr ? 'en' : 'fr'}>{fr ? 'English' : 'Français'}</a>
+</nav>
+
+<style>
+  .hx-nav { display: flex; flex-wrap: wrap; gap: 1rem 1.5rem; align-items: center; font-family: var(--hx-font-head); font-size: 0.875rem; }
+  .hx-nav a { color: var(--hx-ink); text-decoration: none; white-space: nowrap; }
+  .hx-nav a:hover { color: var(--hx-green-text); }
+  .hx-pill { border: 1px solid rgb(17 18 20 / 0.14); border-radius: 999px; padding: 0.4rem 1rem; font-weight: 500; }
+  .hx-pill:hover { border-color: var(--hx-ink); }
+</style>

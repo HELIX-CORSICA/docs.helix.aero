@@ -1,0 +1,9 @@
+---
+// Carte Mintlify : titre, texte, lien facultatif. L'attribut icon (Font Awesome chez Mintlify) est ignoré.
+const { title, href } = Astro.props;
+const Tag = href ? 'a' : 'div';
+---
+<Tag class="hx-card" href={href}>
+  {title && <p class="hx-card-title">{title}{href && <span aria-hidden="true"> →</span>}</p>}
+  <div class="hx-card-body sl-markdown-content"><slot /></div>
+</Tag>
