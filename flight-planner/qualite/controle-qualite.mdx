@@ -1,0 +1,93 @@
+---
+title: "Quality control (QC)"
+description: "Check on the map the resolution and overlap planned by your flight plan, using the Quality control panel."
+icon: "gauge-high"
+---
+
+The **QC** panel (**Quality control** button in the right-hand bar of the map) colors the area according to the image quality you can expect. Use it to spot, before the flight, the areas where the resolution is too coarse or where the photos overlap poorly.
+
+<Frame caption="QC panel before computing">
+  <img src="/images/flight-planner/panneau-qc.png" alt="QC panel before computing, with the Flight and Task tabs, the criterion, the thresholds and the opacity" />
+</Frame>
+
+## How to do it
+
+<Steps>
+  <Step title="Open the QC panel">
+    Click the **Quality control** button (cube icon, to the right of the map). The **QC** panel opens on the right.
+  </Step>
+  <Step title="Choose the scope">
+    At the top of the panel, choose **Flight** to analyze the whole flight, or **Task** to analyze a single task.
+  </Step>
+  <Step title="Choose the criterion">
+    Under **CRITERION**, select **GSD**, **Passes** or **Footprint**. The criterion you choose sets the color shown on the map.
+  </Step>
+  <Step title="Set the thresholds">
+    Under **THRESHOLDS (cm)**, adjust the sliders or click **Presets** to apply a ready-made set of values.
+  </Step>
+  <Step title="Run the computation">
+    Click **Compute**, the green button that appears at the top of the map. The progress percentage shows while it runs, then the colors appear on the area.
+  </Step>
+  <Step title="Read the map">
+    Read the color map by comparing each area with the thresholds (see below).
+  </Step>
+</Steps>
+
+<Frame caption="GSD color map after computing, with the threshold histogram">
+  <img src="/images/flight-planner/qc-carte-gsd.png" alt="QC panel after computing, GSD criterion selected, colored map and threshold histogram" />
+</Frame>
+
+## The panel in detail
+
+### Scope and criterion
+
+- **Flight** / **Task**: the scope of the analysis. The panel shows the selected flight or task.
+- **CRITERION**:
+  - **GSD**: the ground size of one photo pixel, in centimeters. The smaller the number, the finer the detail.
+  - **Passes**: the number of strips covering each area.
+  - **Footprint**: the ground area covered by the photos of the sensor.
+
+### MULTI-SHOT GSD
+
+When GSD is the criterion, **MULTI-SHOT GSD** sets which value is kept when the same area is photographed several times:
+
+- **Max**: the coarsest value is shown. This is the strictest check.
+- **Mean**: the average of the values is shown.
+- **Min**: the finest value is shown.
+
+### GSD GEOMETRY
+
+Under **GSD GEOMETRY**, choose:
+
+- **Standard**: the usual shooting geometry.
+- **Oblique**: the tilted shooting geometry.
+
+### Thresholds (cm)
+
+- The **THRESHOLDS (cm)** bar runs from red (high values, on the left) to green (low values, on the right). The numbers show values in centimeters (for example 5, 7.5 and 10 cm).
+- **Presets** opens the **Threshold presets** window, with ready-made sets of values.
+- Once the computation is done, a small histogram appears under **Presets**. It shows how the values are spread across the area.
+
+### Opacity
+
+The **OPACITY** slider sets how transparent the color on the map is (the default shown is 75%).
+
+### Compare
+
+The **Compare** button, at the bottom of the panel, opens the **Compare hypotheses** window. It stays grayed out until the QC map is computed.
+
+{/* CAPTURE À FAIRE : "Compare hypotheses" window after computing two hypotheses */}
+
+## Reading the color map
+
+- **Green**: the value meets the threshold. The area is good.
+- **Orange** to **red**: the value exceeds the threshold. The area needs a look. For example, adjust the altitude or the overlap, then compute again.
+
+After any change to the plan (altitude, sensor, overlap, task), click **Compute** again to update the map. The button turns orange when the map is no longer up to date.
+
+## See also
+
+- [Altitude, GSD and speed (FLIGHT tab)](/flight-planner/parametres/onglet-vol)
+- [Overlap and orientation (GEOMETRY tab)](/flight-planner/parametres/onglet-geometrie)
+- [Flight strips](/flight-planner/parametres/bandes)
+- [Glossary](/flight-planner/aide/glossaire)

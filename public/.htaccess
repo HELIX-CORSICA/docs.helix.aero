@@ -1,7 +1,6 @@
-# docs.helix.aero chez o2switch (site statique Astro) : page 404 du site, accueil vers l'introduction, ressources en cache.
+# docs.helix.aero chez o2switch (site statique Astro) : page 404 du site, ressources en cache ; redirections ajoutées au build (astro.config.mjs).
+# Ce fichier se termine par un saut de ligne : le build y ajoute les règles de redirection.
 ErrorDocument 404 /404.html
-RedirectMatch 301 ^/$ /introduction/
-RedirectMatch 301 ^/fr/?$ /fr/introduction/
 <IfModule mod_headers.c>
   <FilesMatch "\.(js|css|woff2|svg|png|webp|avif|ico)$">
     Header set Cache-Control "public, max-age=604800"

@@ -1,0 +1,167 @@
+---
+title: "Sensor and aircraft catalogs"
+description: "Browse, search, filter and add sensors and aircraft (airplanes, helicopters, drones) from the dashboard."
+icon: "camera"
+---
+
+The catalogs list the **sensors** (cameras, LiDAR) and the **aircraft** (airplanes, helicopters, drones) used in your missions. You browse them from the dashboard, in the **SENSORS** and **AIRCRAFT** tabs. You can also add a sensor or an aircraft that is not in the list yet.
+
+## Open a catalog
+
+<Steps>
+  <Step title="Open the dashboard">
+    The dashboard opens when you start the application. It has three tabs at the top: **MISSIONS**, **SENSORS** and **AIRCRAFT**.
+  </Step>
+  <Step title="Choose the tab">
+    Click **SENSORS** to see the sensors, or **AIRCRAFT** to see the aircraft.
+  </Step>
+</Steps>
+
+<Frame caption="SENSORS tab: catalog in grid view">
+  <img src="/images/flight-planner/dashboard-capteurs.png" alt="SENSORS tab of the dashboard, with the list of sensors in a grid" />
+</Frame>
+
+<Frame caption="AIRCRAFT tab: catalog of airplanes, helicopters and drones">
+  <img src="/images/flight-planner/dashboard-appareils.png" alt="AIRCRAFT tab of the dashboard, with the list of aircraft in a grid" />
+</Frame>
+
+## Browse and search
+
+Each tab has the same command bar, above the list:
+
+| Item | What it does |
+|---|---|
+| Search field | Type a name. It shows **Search a sensor…** in the SENSORS tab and **Search an aircraft…** in the AIRCRAFT tab. |
+| **All brands** | Drop-down list to keep only one brand. |
+| **All types** | Drop-down list to keep only one type. |
+| View icons | Two buttons to change the display: **Cards** (grid) or **List**. |
+| **Sync** | Updates the catalog (see below). |
+| **+ NEW SENSOR** / **+ NEW AIRCRAFT** | Adds a new entry (see below). |
+
+The results narrow as you type and as you apply filters. If nothing matches, the message **No results.** appears.
+
+### Grid and list
+
+- In **Cards** view, each sensor or aircraft is a tile with its name and its type. Sensor tiles carry a **3D** badge.
+- In **List** view, the same entries appear one per line, so you can compare more references on screen.
+
+{/* CAPTURE À FAIRE : SENSORS tab in List view, with a search entered and an active brand filter */}
+
+### Filter sensors
+
+In the **SENSORS** tab, the **All types** list keeps only one category of sensor. Each tile shows the sensor's category under its name (for example **Photo**).
+
+### Filter aircraft
+
+In the **AIRCRAFT** tab, the **All types** list keeps only airplanes, helicopters or drones. Each tile shows the aircraft's type under its name (**Airplane**, **Helicopter**, **Drone**).
+
+## Mark a sensor or aircraft as a favorite
+
+Click the star at the top right of a tile to mark it as a favorite. The stars also appear in the **Choose a sensor** window.
+
+## Detail view
+
+{/* CAPTURE À FAIRE : detail view of a sensor or an aircraft opened from the catalog, with the "← Close" button and the 3D preview */}
+
+A detail view shows the characteristics of a sensor or an aircraft. The **← Close** button returns you to the list.
+
+## Add a sensor: + NEW SENSOR
+
+Use **+ NEW SENSOR** when your sensor does not appear in the list. The window is titled **New sensor**.
+
+<Steps>
+  <Step title="Open the window">
+    In the **SENSORS** tab, click **+ NEW SENSOR**.
+  </Step>
+  <Step title="Fill in the fields">
+    Fill in the fields. Required fields are marked with an asterisk (*). Main fields:
+
+    | Field | Example content |
+    |---|---|
+    | **Manufacturer** | The brand name |
+    | **Sensor type** | The sensor's category |
+    | **Sensor width (mm)** and **Sensor height (mm)** | The sensor dimensions |
+    | **Focal lengths (mm)** | The focal length or lengths of the lens |
+    | **Pixel (µm)** | The size of one pixel. If you leave this field empty, the size is derived from the sensor width and the image width. |
+    | **Image width (px)** and **Image height (px)** | The image resolution |
+    | **Across-track FOV (°)** | The viewing angle perpendicular to the flight line |
+    | **Min intervalometer (s) \*** | The minimum delay between two shots |
+
+  </Step>
+  <Step title="Save">
+    Click **Save**. If a required field is empty, the message **Fill in the required fields before saving** appears and the entry is not saved. The message **Missing required fields:** shows which fields to complete.
+  </Step>
+</Steps>
+
+{/* CAPTURE À FAIRE : "New sensor" window open, with the required fields marked by an asterisk */}
+
+## Add an aircraft: + NEW AIRCRAFT
+
+Use **+ NEW AIRCRAFT** to add an airplane, a helicopter or a drone that is missing from the list. The window is titled **New aircraft**.
+
+<Steps>
+  <Step title="Open the window">
+    In the **AIRCRAFT** tab, click **+ NEW AIRCRAFT**.
+  </Step>
+  <Step title="Fill in the fields">
+    Fill in the fields. Main fields:
+
+    | Field | Content |
+    |---|---|
+    | **Call sign** | Short name of the aircraft |
+    | **Cruise (km/h)** | Cruise speed |
+    | **Endurance (min)** | Maximum flight duration |
+    | **Ceiling (m)** | Maximum altitude |
+    | **Max payload (kg)** | Maximum mass that can be carried |
+    | **Climb rate (m/s)** and **Descent rate (m/s)** | Vertical speeds |
+    | **Stall speed (m/s)** | Minimum flight speed (airplane) |
+    | **Min turn radius (m)** | The tightest turn radius |
+    | **Min ground clearance (m)** | Minimum height above the ground |
+    | **Drone type** | For a drone: **Multicopter**, **Fixed wing**, **Single rotor**, **VTOL** or **Other** |
+    | **Flight stack** | **Generic** or **Proprietary** |
+
+    Required fields are marked with an asterisk (*).
+  </Step>
+  <Step title="Save">
+    Click **Save**. As with a sensor, the required fields must be completed.
+  </Step>
+</Steps>
+
+{/* CAPTURE À FAIRE : "New aircraft" window open, with the full list of fields */}
+
+## Sync the catalog
+
+The catalog updates automatically when you sign in. To get the latest updates at any time, click **Sync**.
+
+- While the sync runs, the button shows **Syncing…**.
+- After a sync, the button goes into a wait state: it shows **Sync (Ns)**, where N is the countdown in seconds. You can sync again only when the countdown reaches zero.
+- If the sync fails, the message **Sync failed:** followed by the reason appears. If the top bar shows **Sync error**, check your internet connection, then click **Sync**.
+
+<Tip>
+If the list is empty, the message **No sensor in the catalog.** or **No aircraft in the catalog.** appears, with the advice to check your internet connection and then run **Sync**.
+</Tip>
+
+## Choose a sensor or an aircraft in a mission
+
+The same lists are used when you pick the sensor or the aircraft for a flight.
+
+- **Choose a sensor** opens from the **Sensor** field in the **SENSOR** tab. The window offers a search field, the filters **All**, **Photo** and **LiDAR**, the favorite stars and the **Cancel** button.
+- **Choose an aircraft** opens from the **Flight parameters** window. It offers a search field, the filters **All**, **Airplane**, **Heli** and **Drone**, the favorite stars and the **Cancel** button. Each row shows the type, the cruise speed and the endurance.
+- The number shown next to each filter tells you how many entries it contains.
+
+<Frame caption="Choose a sensor window, opened from the SENSOR tab">
+  <img src="/images/flight-planner/choix-capteur.png" alt="Choose a sensor window with a search field, the All, Photo and LiDAR filters, and favorite stars" />
+</Frame>
+
+<Frame caption="Choose an aircraft window">
+  <img src="/images/flight-planner/choix-appareil.png" alt="Choose an aircraft window with a search field, the All, Airplane, Heli and Drone filters, and favorite stars" />
+</Frame>
+
+For the rest of the setup, see [Choose the sensor](/flight-planner/parametres/onglet-capteur) and [Create a mission](/flight-planner/missions/creer-une-mission).
+
+## See also
+
+- [The dashboard](/flight-planner/missions/tableau-de-bord)
+- [Choose the sensor (SENSOR tab)](/flight-planner/parametres/onglet-capteur)
+- [Create a mission](/flight-planner/missions/creer-une-mission)
+- [Glossary](/flight-planner/aide/glossaire)

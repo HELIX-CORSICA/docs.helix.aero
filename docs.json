@@ -1,7 +1,7 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Helix Flight Planner",
+  "name": "Helix Aero",
   "colors": {
     "primary": "#078B00",
     "light": "#2AAF22",
@@ -18,31 +18,71 @@
         "language": "en",
         "tabs": [
           {
-            "tab": "Guides",
+            "tab": "Flight Planner",
             "groups": [
               {
                 "group": "Getting started",
                 "pages": [
-                  "introduction",
-                  "quickstart"
+                  "flight-planner/index",
+                  "flight-planner/demarrage/connexion",
+                  "flight-planner/demarrage/premiere-mission",
+                  "flight-planner/demarrage/interface"
                 ]
               },
               {
-                "group": "User guide",
+                "group": "Missions",
                 "pages": [
-                  "guides/mission-planning",
-                  "guides/export-formats",
-                  "guides/sensors"
+                  "flight-planner/missions/tableau-de-bord",
+                  "flight-planner/missions/creer-une-mission",
+                  "flight-planner/missions/vols",
+                  "flight-planner/missions/taches",
+                  "flight-planner/missions/decoupe"
                 ]
               },
               {
-                "group": "Concepts",
+                "group": "Flight settings",
                 "pages": [
-                  "guides/gsd-and-footprint",
-                  "guides/altitude-modes",
-                  "guides/strip-generation",
-                  "guides/leading-lines",
-                  "guides/quality-control"
+                  "flight-planner/parametres/onglet-vol",
+                  "flight-planner/parametres/onglet-capteur",
+                  "flight-planner/parametres/onglet-geometrie",
+                  "flight-planner/parametres/bandes"
+                ]
+              },
+              {
+                "group": "Map and tools",
+                "pages": [
+                  "flight-planner/carte/fonds-et-couches",
+                  "flight-planner/carte/mesures",
+                  "flight-planner/carte/terrain-et-geoides",
+                  "flight-planner/carte/meteo"
+                ]
+              },
+              {
+                "group": "Quality control",
+                "pages": [
+                  "flight-planner/qualite/controle-qualite"
+                ]
+              },
+              {
+                "group": "Import and export",
+                "pages": [
+                  "flight-planner/import-export/importer",
+                  "flight-planner/import-export/exporter",
+                  "flight-planner/import-export/dji"
+                ]
+              },
+              {
+                "group": "Catalogs and settings",
+                "pages": [
+                  "flight-planner/catalogues/capteurs-et-appareils",
+                  "flight-planner/reglages"
+                ]
+              },
+              {
+                "group": "Help",
+                "pages": [
+                  "flight-planner/aide/faq",
+                  "flight-planner/aide/glossaire"
                 ]
               }
             ]
@@ -53,31 +93,71 @@
         "language": "fr",
         "tabs": [
           {
-            "tab": "Guides",
+            "tab": "Flight Planner",
             "groups": [
               {
                 "group": "Pour commencer",
                 "pages": [
-                  "fr/introduction",
-                  "fr/quickstart"
+                  "fr/flight-planner/index",
+                  "fr/flight-planner/demarrage/connexion",
+                  "fr/flight-planner/demarrage/premiere-mission",
+                  "fr/flight-planner/demarrage/interface"
                 ]
               },
               {
-                "group": "Guide utilisateur",
+                "group": "Missions",
                 "pages": [
-                  "fr/guides/mission-planning",
-                  "fr/guides/export-formats",
-                  "fr/guides/sensors"
+                  "fr/flight-planner/missions/tableau-de-bord",
+                  "fr/flight-planner/missions/creer-une-mission",
+                  "fr/flight-planner/missions/vols",
+                  "fr/flight-planner/missions/taches",
+                  "fr/flight-planner/missions/decoupe"
                 ]
               },
               {
-                "group": "Concepts",
+                "group": "Paramètres de vol",
                 "pages": [
-                  "fr/guides/gsd-and-footprint",
-                  "fr/guides/altitude-modes",
-                  "fr/guides/strip-generation",
-                  "fr/guides/leading-lines",
-                  "fr/guides/quality-control"
+                  "fr/flight-planner/parametres/onglet-vol",
+                  "fr/flight-planner/parametres/onglet-capteur",
+                  "fr/flight-planner/parametres/onglet-geometrie",
+                  "fr/flight-planner/parametres/bandes"
+                ]
+              },
+              {
+                "group": "Carte et outils",
+                "pages": [
+                  "fr/flight-planner/carte/fonds-et-couches",
+                  "fr/flight-planner/carte/mesures",
+                  "fr/flight-planner/carte/terrain-et-geoides",
+                  "fr/flight-planner/carte/meteo"
+                ]
+              },
+              {
+                "group": "Contrôle qualité",
+                "pages": [
+                  "fr/flight-planner/qualite/controle-qualite"
+                ]
+              },
+              {
+                "group": "Import et export",
+                "pages": [
+                  "fr/flight-planner/import-export/importer",
+                  "fr/flight-planner/import-export/exporter",
+                  "fr/flight-planner/import-export/dji"
+                ]
+              },
+              {
+                "group": "Catalogues et réglages",
+                "pages": [
+                  "fr/flight-planner/catalogues/capteurs-et-appareils",
+                  "fr/flight-planner/reglages"
+                ]
+              },
+              {
+                "group": "Aide",
+                "pages": [
+                  "fr/flight-planner/aide/faq",
+                  "fr/flight-planner/aide/glossaire"
                 ]
               }
             ]

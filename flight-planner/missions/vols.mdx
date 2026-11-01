@@ -1,0 +1,115 @@
+---
+title: "Manage flights"
+description: "Add, rename, hide, duplicate and delete the flights of a mission, and set the parameters of each flight."
+icon: plane
+---
+
+A mission groups one or more **flights**. Each flight has its own tasks (areas, corridors, points) and its own aircraft parameters. This page explains how to manage flights from the top bar of the mission.
+
+<Frame caption="An open mission: the flight tab, the + VOL button and the Tasks panel">
+  <img src="/images/flight-planner/mission-vue-generale.png" alt="Open mission with the corte-lot3 flight tab, the + VOL button and the Tasks panel" />
+</Frame>
+
+## Flight tabs
+
+Flights appear as tabs in the top bar, below the **HELIX** logo. Each tab has a number and a color, and shows the flight name. The active flight is the one whose tab is selected: the **Tasks** panel and the tasks drawn on the map apply to it.
+
+To switch the active flight, click its tab.
+
+## Add a flight
+
+<Steps>
+  <Step title="Click + VOL">
+    The **+ VOL** button sits just after the last tab. Its tooltip reads **Add a flight**.
+  </Step>
+  <Step title="Draw in the new flight">
+    The new flight becomes active. Then draw your tasks: they will be attached to this flight.
+  </Step>
+</Steps>
+
+<Tip>
+In the same mission, each flight can have its own tasks and its own aircraft. To split an area into several flights, see [Split an area](/flight-planner/missions/decoupe).
+</Tip>
+
+## Rename a flight
+
+Double-click the tab name. The tooltip shows **Double-click to rename**. Type the new name.
+
+## Hide and show a flight
+
+The eye icon to the right of the tab name hides or shows the flight on the map. The flight stays in the mission; only its display on the map changes.
+
+To act on all flights at once, use the tooltips **Hide all flights** and **Show all flights**.
+
+{/* CAPTURE À FAIRE : top bar with a hidden flight (crossed-out eye) and the "Hide this flight" tooltip */}
+
+## Flight menu
+
+Right-click a flight tab to open its menu. It offers:
+
+| Menu entry | Effect |
+|---|---|
+| **Flight settings…** | Opens the flight parameters window (see below). |
+| **Duplicate flight** | Duplicates the flight. |
+| **Paste flight attributes…** | Copies the attributes of another flight onto this one, after confirmation. |
+| **Delete flight** | Deletes the flight and its tasks. If several flights are selected, the entry shows their number (for example **Delete 2 flights**). |
+
+<Warning>
+**Delete flight** removes the flight and the tasks it contains. Check the tab before deleting, and hide the flight rather than deleting it if you think you may still need it.
+</Warning>
+
+{/* CAPTURE À FAIRE : right-click on a flight tab, menu open */}
+
+### Paste flight attributes
+
+Right-click the tab of the flight to adjust, then choose **Paste flight attributes…**. The window shows a summary "Copy attributes from … to …" with the source and target flight names: check it before confirming.
+
+{/* CAPTURE À FAIRE : "Paste flight attributes" window with the source-to-target summary */}
+
+## Flight parameters
+
+The **Flight parameters** window groups the settings specific to the flight. Open it with **Flight settings…** in the flight menu.
+
+<Frame caption="Flight parameters window">
+  <img src="/images/flight-planner/parametres-du-vol.png" alt="Flight parameters window with Aircraft, Startup speed, Altitude offset, Enforce, Rangefinder and Turn anticipation" />
+</Frame>
+
+| Field | What to know |
+|---|---|
+| **AIRCRAFT** (required) | Click the **Choose an aircraft…** field to open the catalog. See below. |
+| **Startup speed** | Value in m/s (3.0 by default in the screenshot). |
+| **Altitude offset** | Value in meters (0.0 in the screenshot). |
+| **Enforce** | Check box. Until it is checked, the field on the right is greyed out. The text under the box reads: "Off: the operator’s DJI remote RTH preset is kept." |
+| **Rangefinder (real-time terrain follow)** | Check box. It shows **Not available on this aircraft** if the selected aircraft does not support it. |
+| **Turn anticipation** | Value in meters (20.0 in the screenshot). |
+
+The **Cancel** and **Confirm** buttons close the window. **Confirm** is only enabled once an aircraft is set.
+
+### Choose the aircraft
+
+Click the **Choose an aircraft…** field to open **Choose an aircraft**.
+
+<Frame caption="Choose an aircraft window">
+  <img src="/images/flight-planner/choix-appareil.png" alt="Choose an aircraft window with the search field and the All, Airplane, Heli and Drone filters" />
+</Frame>
+
+- Type in **Search an aircraft…** to filter the list.
+- The filters **All**, **Airplane**, **Heli** and **Drone** restrict the list to one aircraft type, with the number of aircraft of each type.
+- Each row shows the type, the cruise speed and the flight time.
+- Click the star on the right of an aircraft to add it to your favorites.
+- **Cancel** closes the window without changing anything.
+
+<Note>
+You can also set the aircraft from the **Aircraft** tab of the dashboard. See [The dashboard](/flight-planner/missions/tableau-de-bord).
+</Note>
+
+## Settings specific to the task, not the flight
+
+The altitude mode, altitude, GSD, speed and turn settings are set in the **Tasks** panel, per task, not in the **Flight parameters** window. See [Altitude, GSD and speed](/flight-planner/parametres/onglet-vol).
+
+## See also
+
+- [Create a mission](/flight-planner/missions/creer-une-mission)
+- [Draw tasks](/flight-planner/missions/taches)
+- [Altitude, GSD and speed](/flight-planner/parametres/onglet-vol)
+- [Choose the sensor](/flight-planner/parametres/onglet-capteur)

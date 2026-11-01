@@ -1,0 +1,69 @@
+---
+title: "Measure on the map"
+description: "Measure a distance, an area, an elevation or an elevation profile directly on the map, and read the status bar."
+icon: "ruler"
+---
+
+The measurement tools let you check a distance, an area or the terrain directly on the map, without leaving the mission. They are at the top right of the map.
+
+## Use a measurement tool
+
+<Steps>
+  <Step title="Choose the tool">
+    Click the icon of the tool you want in the measurement toolbar: **Distance**, **Area**, **Altitude** or **Elevation profile**.
+  </Step>
+  <Step title="Measure on the map">
+    For **Distance**, **Area** and **Altitude**, click the map to place the points of the measurement. The result appears as you go. **Elevation profile** shows or hides with a single click on its icon.
+  </Step>
+  <Step title="Turn the tool off">
+    Click the icon of the active tool again. The map goes back to normal.
+  </Step>
+</Steps>
+
+<Frame caption="Measurement toolbar at the top right of the map">
+  <img src="/images/flight-planner/barre-outils-mesure.png" alt="Measurement toolbar: Distance, Area, Altitude, Elevation profile" />
+</Frame>
+
+## The four tools
+
+| Tool | What it does |
+|---|---|
+| **Distance** | Measures the length of a line you draw point by point on the map. |
+| **Area** | Measures the area of a zone bounded by the points you place. |
+| **Altitude** | Shows the terrain altitude at the place you click. |
+| **Elevation profile** | Shows or hides the elevation profile. |
+
+{/* CAPTURE À FAIRE : result shown for the Distance tool (value read on the map) */}
+{/* CAPTURE À FAIRE : result shown for the Area tool */}
+{/* CAPTURE À FAIRE : result shown for the Altitude tool and for the Elevation profile */}
+
+## Good to know
+
+- **One tool at a time.** Choosing **Distance**, **Area** or **Altitude** turns off the previous tool.
+- **Measurements are not kept.** When you turn the tool off or switch to another one, the measurement disappears. Note the result if you need it.
+- **Unavailable during the simulation.** **Distance**, **Area** and **Altitude** are greyed out while the simulation is displayed; the tooltip then reads "Unavailable during simulation". **Elevation profile** stays available.
+
+## The status bar
+
+The bar at the bottom of the screen always shows reference values:
+
+| Field | What it shows |
+|---|---|
+| **Zoom** | The map's zoom level. |
+| **View** | The area of the map currently visible. |
+| **UTM** | The UTM zone and its EPSG code. |
+| **Lat** / **Lon** | The coordinates of the point under the cursor. |
+| **AMSL** | The altitude above mean sea level. |
+| **HAE** | The altitude above the ellipsoid. |
+| **Area** | The area of the drawn zone. |
+
+<Frame caption="Status bar at the bottom of the screen">
+  <img src="/images/flight-planner/mission-vue-generale.png" alt="Open mission with the status bar at the bottom of the screen" />
+</Frame>
+
+## See also
+
+- [Map backgrounds and layers](/flight-planner/carte/fonds-et-couches)
+- [Terrain (DEM) and geoids](/flight-planner/carte/terrain-et-geoides)
+- [Draw the tasks](/flight-planner/missions/taches)
+- [Glossary](/flight-planner/aide/glossaire)

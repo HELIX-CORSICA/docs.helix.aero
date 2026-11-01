@@ -1,0 +1,131 @@
+---
+title: "Glossary"
+description: "Short definitions of the terms used in Helix Flight Planner: altitudes, strips, sensors, quality control, DJI and weather."
+icon: "book"
+---
+
+This glossary explains the words that come up often in Helix Flight Planner. Terms are listed in alphabetical order and written as they appear on screen.
+
+## A
+
+**AGL**
+: Height above ground. The flight follows the terrain, so the altitude stays constant relative to the ground. See [Terrain and geoids](/flight-planner/carte/terrain-et-geoides).
+
+**AMSL**
+: Altitude above mean sea level. The flight keeps the same altitude relative to the sea, whatever the terrain. See [Terrain and geoids](/flight-planner/carte/terrain-et-geoides).
+
+**AOI**
+: Area of interest, that is, the surface you actually want to cover. The **AOI buffer** field adds a margin around this area so that its edges are photographed properly. See [GEOMETRY tab](/flight-planner/parametres/onglet-geometrie).
+
+**AOI buffer**
+: Margin added around the area of interest (AOI) to cover its edges. See [GEOMETRY tab](/flight-planner/parametres/onglet-geometrie).
+
+## C
+
+**Corridor**
+: A path of a set width along a line, for example a road or a power line. It is drawn like a task, with the **Draw corridor** tool. See [Draw tasks](/flight-planner/missions/taches).
+
+## D
+
+**DEM / DTM**
+: Digital terrain model: a map of the relief that gives the ground height at each point. Helix uses it to follow the terrain in AGL or IAGL mode. See [Terrain and geoids](/flight-planner/carte/terrain-et-geoides).
+
+## F
+
+**Front / side overlap**
+: Share of each image that overlaps the next one, along the flight direction (front overlap) and from one strip to the next (side overlap). Enough overlap is needed to stitch the images together. See [GEOMETRY tab](/flight-planner/parametres/onglet-geometrie).
+
+## G
+
+**GCP**
+: Ground control points: markers on the ground with precise coordinates. They are used to align the photos after the flight. Import them from the **Import** menu. See [Import data](/flight-planner/import-export/importer).
+
+**Geoid**
+: Surface that follows mean sea level. GPS measures altitude relative to another surface, and the geoid lets you convert one into the other. See [Terrain and geoids](/flight-planner/carte/terrain-et-geoides).
+
+**GSD**
+: Ground size of one pixel of the image, often expressed in centimeters. The smaller the GSD, the more detailed the image. Set it in the **FLIGHT** tab. See [FLIGHT tab](/flight-planner/parametres/onglet-vol).
+
+## H
+
+**HAE**
+: Ellipsoidal height. It is the altitude measured from a smooth mathematical surface, not from sea level. It appears in the status bar at the bottom of the screen. See [Terrain and geoids](/flight-planner/carte/terrain-et-geoides).
+
+## I
+
+**IAGL**
+: Altitude mode shown as **IAGL** in the **FLIGHT** tab. Like AGL, it keeps a height above ground by following the terrain. See [FLIGHT tab](/flight-planner/parametres/onglet-vol).
+
+**ICAO**
+: Four-letter code that identifies an airport, for example LFKC for Calvi. The **Weather** screen lets you look up bulletins from this code. See [Weather](/flight-planner/carte/meteo).
+
+## M
+
+**METAR / TAF**
+: Airport weather bulletins. The METAR describes the weather observed, and the TAF the forecast. They appear on the **Weather** screen, from an ICAO code. See [Weather](/flight-planner/carte/meteo).
+
+**Mission**
+: A complete capture project, for example a job site or an area to map. A mission contains one or more flights. See [Create a mission](/flight-planner/missions/creer-une-mission).
+
+## N
+
+**Nadir**
+: Vertical shot, with the camera pointing straight down at the ground. It is the view most used for mapping.
+
+## O
+
+**Obstruction**
+: An obstacle to avoid during the flight, such as a pylon, an antenna or a tall building. Draw it with the **Draw obstruction** tool. It appears on the map in the **Obstructions** layer. See [Basemap and layers](/flight-planner/carte/fonds-et-couches).
+
+**Overshoot**
+: Extra distance flown at the start and end of each strip, beyond the area. It gives the aircraft time to stabilize its path before and after the shots. See [GEOMETRY tab](/flight-planner/parametres/onglet-geometrie).
+
+## P
+
+**Gimbal pitch**
+: Tilt of the gimbal, that is, the mount that holds the sensor. See [SENSOR tab](/flight-planner/parametres/onglet-capteur).
+
+## Q
+
+**QC (Quality control)**
+: Panel that checks the result of the calculation, for example **GSD**, **Density**, **Passes** or **Sidelap**. You choose the criterion to check and the thresholds to respect. See [Quality control (QC)](/flight-planner/qualite/controle-qualite).
+
+## S
+
+**Sensor**
+: The camera or LiDAR that collects the data. The sensor you choose sets the resolution and the ground coverage. See [Choose a sensor](/flight-planner/parametres/onglet-capteur).
+
+**Strip**
+: A flight line flown from one end to the other without turning. Strips calculated by Helix appear on the area, and in the **STRIPS** list of the left panel. See [Flight strips](/flight-planner/parametres/bandes).
+
+## T
+
+**Task**
+: A work item of a flight: an area to cover, a corridor, a takeoff point or a waypoint. The tasks of the selected flight appear in the **Tasks** panel. See [Draw tasks](/flight-planner/missions/taches).
+
+**Trigger**
+: Setting that controls when the sensor takes its photos during the flight. It is in the **SENSOR** tab. See [SENSOR tab](/flight-planner/parametres/onglet-capteur).
+
+## V
+
+**Flight**
+: A part of the mission, with its own altitude, sensor and geometry settings. A mission can contain several flights, shown as tabs at the top of the screen. See [Organize flights](/flight-planner/missions/vols).
+
+## W
+
+**Waypoint**
+: A precise point along the flight path, placed with the **Place a waypoint** tool. See [Draw tasks](/flight-planner/missions/taches).
+
+**WPML / KMZ**
+: Flight plan format used by DJI drones. The **Flight plan** export offers the **WPML (DJI Pilot)** format, which DJI Pilot can read. See [Export the flight plan](/flight-planner/import-export/exporter).
+
+## Y
+
+**Yaw**
+: Rotation of the aircraft around its vertical axis, that is, the direction it points toward. The **Drone yaw** setting in the **FLIGHT** tab lets you choose the drone's orientation: **From north**, **From track** or **Yaw angle**. See [FLIGHT tab](/flight-planner/parametres/onglet-vol).
+
+## See also
+
+- [Frequently asked questions and troubleshooting](/flight-planner/aide/faq)
+- [Explore the interface](/flight-planner/demarrage/interface)
+- [Altitude, GSD and speed (FLIGHT tab)](/flight-planner/parametres/onglet-vol)

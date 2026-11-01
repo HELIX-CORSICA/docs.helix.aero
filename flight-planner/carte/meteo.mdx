@@ -1,0 +1,83 @@
+---
+title: "Weather"
+description: "Check sunrise and sunset times, METAR and TAF reports for an airport or the active flight, on a given date."
+icon: "cloud-sun"
+---
+
+The **Weather** screen gathers the information you need before flying: daylight hours, and the latest METAR and TAF for the airport concerned. You can look at the active flight, or search for any airport by its ICAO code.
+
+<Frame caption="The Weather screen, for the active flight corte-lot3">
+  <img src="/images/flight-planner/meteo.png" alt="Weather screen with the daylight window, METAR and TAF reports, and the search bar" />
+</Frame>
+
+## Open the weather screen
+
+1. Find the row of flights at the top of the mission, above the map.
+2. Click the **cloud and sun** icon, to the left of the **Import** button. Its tooltip reads **Weather**.
+3. The **Weather** screen opens for the selected flight.
+
+To go back to the mission, click the **×** at the top right of the screen.
+
+## Read the screen
+
+**The top bar** shows the title **Weather** and the name of the flight concerned. The **Refresh** button reloads the data.
+
+**The selection bar** contains:
+
+- the green button with the name of the active flight;
+- the search field **ICAO (e.g. LFPG) or "lat, lon"…**;
+- the **Departure (ICAO)** field;
+- the **Arrival (ICAO)** field;
+- the **Flight date** field.
+
+**The daylight window** shows, for the date you chose:
+
+- **Sunrise**;
+- **Sunset**;
+- **Solar noon**;
+- **Daylight duration**, in hours and minutes.
+
+Times are given in UTC. The current UTC time appears on the right of the flight name.
+
+**The METAR and TAF blocks** show the latest report received for the airport. If no report is available, the screen says so, for example **No METAR data for the active flight.**
+
+The sources are listed at the bottom of the screen: METAR and TAF come from AVWX, and airport data comes from OpenAIP.
+
+## Search for an airport
+
+1. In the **ICAO (e.g. LFPG) or "lat, lon"…** field, type the ICAO code of the airport, for example **LFKC**.
+2. Or type a position in the form "latitude, longitude".
+3. Choose the result in the list. If nothing matches, the screen shows **No results.**
+
+While the search is running, the field shows **Searching…**.
+
+## Departure and arrival
+
+The **Departure (ICAO)** and **Arrival (ICAO)** fields let you show the weather at the departure and arrival airports:
+
+1. Enter the ICAO code of the departure airport in **Departure (ICAO)**.
+2. Enter the ICAO code of the arrival airport in **Arrival (ICAO)**.
+
+## Choose the flight date
+
+The **Flight date** field sets the day analysed. Change it to see the daylight hours and reports for another day.
+
+The text below the window tells you what is available for the date you chose:
+
+- **METAR filtered to the UTC day; current TAF applies.** For today.
+- **METAR unavailable (future day); current TAF shown.** For a future day.
+- **Day's METAR filtered; current TAF not representative.** For a past day.
+- **No data available (date beyond the TAF horizon).** If the date is too far away.
+
+<Tip>
+Refresh the screen before departure. Weather reports change regularly, and the **Refresh** button fetches the latest ones.
+</Tip>
+
+{/* CAPTURE À FAIRE : Weather screen with Departure and Arrival filled in and a future date (message "METAR unavailable (future day)") */}
+
+## See also
+
+- [Background maps and layers](/flight-planner/carte/fonds-et-couches)
+- [Measure on the map](/flight-planner/carte/mesures)
+- [Terrain (DEM) and geoids](/flight-planner/carte/terrain-et-geoides)
+- [Organise flights](/flight-planner/missions/vols)

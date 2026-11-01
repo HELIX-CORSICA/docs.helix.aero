@@ -1,0 +1,137 @@
+---
+title: "Settings"
+description: "Browse the Flight Planner settings: account, license, preferences, appearance, geoids, terrain cache, performance, updates and diagnostics."
+icon: "gear"
+---
+
+The **Settings** window groups the application's settings: your account, your license, the language and units, the display, the terrain data cache and diagnostics. You rarely need it, except to change the language, the units or the cache folder.
+
+## Open the settings
+
+1. Find the **gear** icon in the top right of the window, to the left of the connection status.
+2. Click it. The **Settings** window opens.
+3. Choose a section in the left column. Its content appears on the right.
+
+To close the window, click the **×** at the top right.
+
+## Account
+
+This section shows the email address of the connected account and lets you sign out.
+
+<Frame caption="Settings, Account section">
+  <img src="/images/flight-planner/reglages-compte.png" alt="Account section of the settings with the email, the Cesium ion token field and the Sign out button" />
+</Frame>
+
+- **Email**: the address of the account. It shows **Not signed in** if no session is open.
+- **Cesium ion token**: a masked field for your token. Click the eye icon to display it. The token stays stored only on this device.
+- **Sign out**: closes the session on this device.
+
+If the session expires, the application asks you to sign in again from **Settings → Account**. See [Sign in](/flight-planner/demarrage/connexion).
+
+## License
+
+This section shows the license status of this computer and its type.
+
+<Frame caption="Settings, License section">
+  <img src="/images/flight-planner/reglages-licence.png" alt="License section with the status, the license type, the organization and the Deactivate button" />
+</Frame>
+
+- **Status**: **Active** or **Inactive**.
+- **License type** and **Organization**: the details of your license.
+- **Deactivate this machine?**: the **Deactivate** button removes the license activation from this computer.
+
+## Preferences
+
+This section sets the language and the units shown.
+
+<Frame caption="Settings, Preferences section">
+  <img src="/images/flight-planner/reglages-preferences.png" alt="Preferences section with the language, the distance unit and the speed units" />
+</Frame>
+
+- **Language**: a drop-down list. The choices are **Français** and **English**.
+- **Distance unit**: **Meters** or **Feet**.
+- **Speed unit — drone**: **M/S**, **KM/H** or **KT**.
+- **Speed unit — airplane / helicopter**: **KT**, **KM/H** or **M/S**.
+
+The two speed units are independent. You can, for example, show drones in meters per second and airplanes in knots.
+
+## Appearance
+
+<Frame caption="Settings, Appearance section">
+  <img src="/images/flight-planner/reglages-apparence.png" alt="Appearance section with the Theme drop-down set to Dark" />
+</Frame>
+
+The **Theme** drop-down offers three choices:
+
+- **System**: follows the theme of your computer.
+- **Light**: always a light background.
+- **Dark**: always a dark background.
+
+## Geoids
+
+Geoids are used to convert altitudes. They are needed for heights to be accurate. The details are in [Terrain (DEM) and geoids](/flight-planner/carte/terrain-et-geoides).
+
+<Frame caption="Settings, Geoids section">
+  <img src="/images/flight-planner/reglages-geoides.png" alt="Geoids section with the Vertical transformation grids row and the MANAGE button" />
+</Frame>
+
+Click **Manage** to open the **Geoid grids** window.
+
+## Terrain cache
+
+The cache keeps the terrain data and basemaps you have already downloaded on your disk. As a result, they display faster the next time.
+
+<Frame caption="Settings, Terrain cache section">
+  <img src="/images/flight-planner/reglages-cache-terrain.png" alt="Terrain cache section with the current usage, the cache folder and the maximum size" />
+</Frame>
+
+- **Current usage**: the space used by the cache, for example **617 KB / 5.0 GB**. The **Purge cache** button empties it. The application asks for confirmation. The folder and the maximum size do not change.
+- **Cache folder**: the current folder is shown. Click **Browse** to choose another one, then **Save** to apply it.
+- **Max cache size**: enter the size in GB, then click **Save**. The minimum value is **2 GB**. When the limit is reached, the oldest tiles are deleted automatically.
+
+## Performance
+
+This section sets the display of the 3D viewer. The default settings suit most computers. Change them only if the display is slow or jerky.
+
+<Frame caption="Settings, Performance section">
+  <img src="/images/flight-planner/reglages-performance.png" alt="Performance section with the backend, the GPU adapter, the anti-aliasing, the frame rate cap and the vertical sync" />
+</Frame>
+
+- **Backend**: the graphics engine used by the application. **Software rendering** is a fallback mode for a computer without a suitable graphics card. It is slower. This choice is not available on macOS.
+- **GPU adapter**: the graphics card to use. If your computer has several, the list shows all of them. The word **integrated** indicates a graphics chip built into the processor.
+- **Anti-aliasing**: smooths the edges of shapes on screen. **FXAA (default)** is recommended. **Off (unsmoothed edges)** makes the image slightly faster, with jagged edges.
+- **Viewer frame rate cap**: limits the number of frames per second. **Display refresh (auto)** follows the screen. **Unlimited** sets no limit. **Custom** lets you set a value. A lower limit reduces the load on the computer.
+- **Vertical sync**: prevents the image from tearing during fast movements. The choices are **On (default)**, **Off** and **Non-blocking**.
+- **GPU**: a read-only information block. It shows the graphics card in use and its vendor.
+
+If a change requires a restart, a **Restart** button appears. The change takes effect after this restart.
+
+## Updates
+
+This section shows the installed version and lets you check whether a new version is available.
+
+<Frame caption="Settings, Updates section">
+  <img src="/images/flight-planner/reglages-mises-a-jour.png" alt="Updates section with the current version, the status and the Check button" />
+</Frame>
+
+- **Current version**: the number of the installed version.
+- **Status**: shows whether a check is possible. The message **An active license is required for updates.** appears when the license is not active. See the [License](#license) section.
+- **Action**: the **Check** button starts the search for a new version.
+
+## Diagnostics
+
+This section manages sending error reports to Helix. It is useful if support asks you for information about an incident.
+
+<Frame caption="Settings, Diagnostics section">
+  <img src="/images/flight-planner/reglages-diagnostics.png" alt="Diagnostics section with the Enable diagnostics toggle and the Export button" />
+</Frame>
+
+- **Enable diagnostics**: a toggle. Once enabled, the application sends crash and error reports to Helix. These reports contain no flight data. Local reports are deleted after 30 days.
+- **Export diagnostics**: click **Export** to copy the local reports into a folder. Attach this folder to your support request.
+
+## See also
+
+- [Sign in](/flight-planner/demarrage/connexion)
+- [Terrain (DEM) and geoids](/flight-planner/carte/terrain-et-geoides)
+- [Frequently asked questions and troubleshooting](/flight-planner/aide/faq)
+- [Glossary](/flight-planner/aide/glossaire)

@@ -1,0 +1,79 @@
+---
+title: "Export the flight plan"
+description: "Save the flight plan as a .helix, KML or KMZ WPML file, or send it directly to DJI Pilot."
+icon: "download"
+---
+
+Once the strips are computed, the **Export** button turns your mission into files you can use in the field or in other software. You choose everything in the **Export the flight plan** window.
+
+## Open the export
+
+<Steps>
+<Step title="Check the computation">
+The flight strips must be computed for your area. Otherwise, the application shows "Compute the mission before exporting.".
+</Step>
+<Step title="Click Export">
+The **Export** button is at the top right, in the mission bar.
+</Step>
+<Step title="Choose a destination">
+The window offers two options: **Flight plan** (a file to save) and **Send to DJI Pilot**.
+</Step>
+</Steps>
+
+<Frame caption="The Export the flight plan window">
+  <img src="/images/flight-planner/export.png" alt="Export the flight plan window with the Flight plan and Send to DJI Pilot options" />
+</Frame>
+
+Click **Cancel** to close the window without exporting anything.
+
+## Flight plan: the formats
+
+The **Flight plan** option saves a file. The **Flight plan format** window opens. Choose the format based on what you want to do with it:
+
+| Format | What it is | What it is for in the field |
+|---|---|---|
+| **.helix (Helix Archive)** | Complete **Flight Planner project** | Save the mission and share it. You can re-import it into Flight Planner and get back the exact options and strips of locked areas. |
+| **KML** | Route shown on a map. **KML mode** offers **LineString** (a line) or **Placemark** (points). | View the route in mapping software, for example Google Earth, to review or present it. |
+| **WPML (DJI Pilot)** | Flight plan in DJI format (KMZ file) | Prepare the mission of a DJI drone in DJI Pilot. |
+
+<Note>
+The **WPML (DJI Pilot)** format is reserved for DJI drones. If no aircraft is selected, the application shows "Select a DJI drone to enable this export.".
+</Note>
+
+{/* CAPTURE À FAIRE : window that opens after choosing a Flight plan format, showing where the file will be saved */}
+
+## Send to DJI Pilot
+
+This option sends the mission directly to the **DJI Pilot** app, without a file to carry around.
+
+<Steps>
+<Step title="Click Send to DJI Pilot">
+The line reads: "Choose the altitude reference then Local or Cloud".
+</Step>
+<Step title="Choose the altitude reference">
+Select **Absolute AMSL** or **Relative to takeoff**. Pick the option that matches how you want altitudes to be read in DJI Pilot.
+</Step>
+<Step title="Choose Local or Cloud">
+
+| Option | What it does |
+|---|---|
+| **Local** | Sends the mission to DJI Pilot on the remote controller, over the local network. |
+| **Cloud** | Publishes the mission to the Helix portal. DJI Pilot then retrieves it online. |
+
+</Step>
+</Steps>
+
+<Warning>
+This option is only available for a DJI drone. With any other aircraft, it is disabled and shows "Non-DJI aircraft — reserved for DJI drones".
+</Warning>
+
+## If a problem is detected on the flight
+
+Before export, the application may show "Major issues were detected on your flight.", for example **Terrain collision detected!**. Fix the flight first if you can. To export anyway, tick "I understand the risks and still want to export." then click **Continue anyway**.
+
+## See also
+
+- [Import data](/flight-planner/import-export/importer)
+- [Working with DJI (Pilot and Cloud)](/flight-planner/import-export/dji)
+- [Quality control (QC)](/flight-planner/qualite/controle-qualite)
+- [Altitude, GSD and speed](/flight-planner/parametres/onglet-vol)

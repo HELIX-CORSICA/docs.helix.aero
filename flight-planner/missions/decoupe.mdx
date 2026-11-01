@@ -1,0 +1,55 @@
+---
+title: "Split an area"
+description: "The Manual multi-flight split tool: draw one or more cut lines on an area to divide it into several flights."
+icon: "scissors"
+---
+
+The **Manual multi-flight split** tool cuts an area into several pieces using lines that you draw yourself. Each piece becomes a flight. Use it when an area is too large for a single flight.
+
+## Split an area step by step
+
+<Steps>
+  <Step title="Open the flight">
+    At the top of the screen, click the tab of the flight that contains the area to split.
+  </Step>
+  <Step title="Open the split tool">
+    In the vertical toolbar, click the scissors icon. The tooltip shows **Manual multi-flight split**. Shortcut: the **S** key.
+  </Step>
+  <Step title="Draw the cut lines">
+    Click on the map to place the points of the line. Double-click to finish the line. Each line must cross the area from one side to the other: its first and last points are outside the area. To cut more than once, draw several lines.
+  </Step>
+  <Step title="Confirm the cut">
+    A bar appears above the map with the text **Split: N lines drawn** (for example **Split: 2 lines drawn**). Click **Cut**, or press the **Enter** key.
+  </Step>
+  <Step title="Check the result">
+    Each piece becomes a flight, with its own bands. The **Split completed** notification shows the number of flights created.
+  </Step>
+</Steps>
+
+<Frame caption="The Manual multi-flight split tool (scissors) is the last tool in the vertical toolbar.">
+  <img src="/images/flight-planner/barre-outils-dessin.png" alt="Vertical drawing toolbar, with the scissors icon at the bottom" />
+</Frame>
+
+{/* CAPTURE À FAIRE : barre « Découpe : N lignes tracées » avec les boutons Annuler et Couper, lignes de coupe dessinées sur la zone */}
+
+## Correct or cancel
+
+- **Right-click**: removes the last point placed, or the last finished line.
+- **Cancel** in the **Split: N line(s) drawn** bar, or the **Esc** key: stops the current split.
+
+## No valid cut
+
+If no line crosses the area, the cut is refused and the message **No valid cut** appears. The details explain the problem, for example **The first point of the line is inside the AOI** or **The lines do not cut the AOI**. Draw a line that enters the area and comes out again, then click **Cut** again.
+
+{/* CAPTURE À FAIRE : message Aucune coupe valide après une ligne qui ne traverse pas la zone */}
+
+<Note>
+If the area's trajectory is frozen (wayline), the tool shows **Split unavailable: frozen trajectory (wayline) — restore the area to split the AOI**.
+</Note>
+
+## See also
+
+- [Draw tasks](/flight-planner/missions/taches)
+- [Organize flights](/flight-planner/missions/vols)
+- [Create a mission](/flight-planner/missions/creer-une-mission)
+- [Glossary](/flight-planner/aide/glossaire)
