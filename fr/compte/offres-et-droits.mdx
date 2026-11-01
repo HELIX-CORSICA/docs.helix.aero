@@ -1,0 +1,84 @@
+---
+title: "Offres et droits"
+description: "Ce que les offres Carto et Pro débloquent, et comment l'application applique chaque droit."
+---
+
+La licence de Helix Flight Planner est un ensemble de **droits** portés par votre compte. À la connexion, le portail Helix Aero les inscrit dans le jeton de session signé de ce poste ; l'application les lit dans ce jeton et n'a aucune clé à saisir. Voir [Licence et activation du poste](/fr/compte/licence) pour l'activation du poste lui-même.
+
+## Les offres
+
+Le Flight Planner se vend en deux offres.
+
+| | Carto | Pro |
+|---|---|---|
+| Postes activables simultanément | 2 | 3 |
+| Planification avec un drone | Oui | Oui |
+| Création de missions | Oui | Oui |
+| Export `.helix` | Oui | Oui |
+| Publication vers le cloud DJI | Oui | Oui |
+| Import de plusieurs fichiers de zones à la fois | Non, un fichier à la fois | Oui |
+| Pilotage par un assistant IA (add-on MCP) | Non | Oui |
+| Pilotage par script (add-on CLI) | Non | Oui |
+
+Pro reprend tout Carto et y ajoute l'import multiple, le MCP et la CLI. Les avions et les hélicoptères ne font partie d'aucune des deux offres : ils s'ajoutent à une licence sur demande.
+
+## Ce que débloque chaque droit
+
+| Droit | Ce qu'il débloque pour l'utilisateur | Appliqué par l'application |
+|---|---|---|
+| `aircraft.drone` | Planifier et exporter avec un drone. | Oui : sélecteur d'appareil, exports, pont DJI Pilot. |
+| `aircraft.airplane` | Planifier et exporter avec un avion **et** avec un hélicoptère. | Oui, aux mêmes endroits. |
+| `aircraft.helicopter` | Droit du portail pour les hélicoptères. | Non lu par l'application : un hélicoptère suit `aircraft.airplane`. |
+| `mission.export_helix` | Exporter une mission au format `.helix`. | Oui. |
+| `cloud.access` | Publier des waylines vers le cloud DJI. | Oui. |
+| `fms.access` | Envoyer une mission au FMS. | Oui. |
+| `import.multi_kml` | Choisir plusieurs fichiers dans **Import → Zone**. | Oui. |
+| `addon.mcp` | Démarrer l'accès par assistant IA (protocole MCP). | Oui. |
+| `addon.cli` | Démarrer l'accès par la commande `helix-cli`. | Oui. |
+| `mission.create` | Créer une mission. | Oui pour la création par MCP ou CLI. Dans l'interface, une licence valide suffit. |
+| `quota.machines` | Nombre de postes activables en même temps. | À l'activation du poste, avec le message *Limite de postes atteinte*. |
+| `quota.missions_per_month`, `quota.area_ha_per_month` | Plafonds mensuels de missions et de surface. | Le portail seul. L'application n'affiche aucun compteur. |
+| `sensor.camera`, `sensor.lidar`, `sensor.pushbroom` | Utiliser les capteurs de chaque famille. | Non lus par l'application. |
+| `mission.publish`, `viewer.access`, `realtime.voice`, `icu.live` | Publication vers le portail, HELIX Viewer, vol live, ICU LIVE. | Non lus par le planificateur. |
+
+<Note>
+  Les droits du portail se répartissent entre deux listes du jeton. La liste `features` accepte un joker qui ouvre tous les droits ci-dessus, **sauf** `import.multi_kml`, `addon.mcp` et `addon.cli`. Ces trois options ne s'ouvrent que si le portail les accorde nommément.
+</Note>
+
+## Comment l'application applique les droits
+
+### Une licence valide pour travailler
+
+Sans licence valide sur ce poste, le calcul d'une mission, l'import, l'export KML, la génération de PDF, la vue client et les contrôles qualité sont refusés. Pour le calcul, l'application affiche le titre **Licence requise** et le motif du refus.
+
+### Les appareils verrouillés
+
+Dans la fenêtre **Choisir un appareil**, un appareil dont le type n'est pas couvert par la licence apparaît estompé, avec la mention *Non inclus dans votre abonnement* à la place de sa description. Un clic sur cette ligne ne le sélectionne pas.
+
+À l'export d'un vol, l'application revérifie le type d'appareil de chaque vol concerné. En cas de refus, la fenêtre d'export affiche un message de la forme *licence requise : feature aircraft.airplane not licensed*, qui nomme le droit manquant. Une mission qui mélange un drone et un avion est refusée dès qu'un de ses vols n'est pas couvert.
+
+### Les exports et envois
+
+| Action | Droit contrôlé | Message en cas de refus |
+|---|---|---|
+| Export `.helix` | `mission.export_helix` | *licence requise : feature mission.export_helix not licensed* |
+| Export WPML (DJI Pilot) et envoi vers DJI Pilot en local | `aircraft.drone` | Même forme, avec `aircraft.drone`. |
+| Publication vers le cloud DJI | `cloud.access` | *Votre licence ne permet pas la publication cloud DJI.* |
+| Envoi vers le FMS | `fms.access` | *Votre licence ne permet pas la publication FMS.* |
+
+### Import de plusieurs fichiers
+
+Avec `import.multi_kml`, le sélecteur de fichiers de **Import → Zone** accepte plusieurs fichiers. Sans ce droit, il n'en accepte qu'un. Voir [Importer des données](/fr/mission/importer-des-donnees).
+
+### Les add-ons MCP et CLI
+
+Le MCP et la CLI s'activent par la licence, sans clé ni code à saisir. Dans **Réglages → Serveur**, la carte **Serveur MCP (agent IA)** affiche :
+
+- **État** : *Add-on MCP ou CLI requis* tant que la licence n'accorde ni `addon.mcp` ni `addon.cli`, puis *Actif*, *Arrêté* ou *Erreur* ;
+- **Accès** : `MCP ✓ · CLI ✗` indique quelles surfaces la licence ouvre.
+
+Chaque surface est contrôlée séparément : une licence avec `addon.mcp` seul ouvre le MCP et laisse la CLI fermée. La suite se trouve dans [Serveur MCP et CLI](/fr/reglages/serveur-mcp-et-cli).
+
+<Tip>
+  Après un changement d'offre ou l'ajout d'un add-on sur le portail, déconnectez-vous puis reconnectez-vous : les droits se relisent dans le jeton émis à la connexion.
+</Tip>

@@ -1,151 +1,127 @@
 ---
-title: "Demarrage rapide"
-description: "Premiers pas : connexion, creation d'une mission et premier export."
+title: "Démarrage rapide"
+description: "Premiers pas : connexion, création d'une mission et premier export."
 ---
 
-# Demarrage rapide
+# Démarrage rapide
 
-Ce guide suppose que Helix Flight Planner est deja installe et lance. Vous allez : vous connecter, creer une mission, ajouter un vol, tracer une zone de couverture, choisir un capteur, regler l'altitude / le GSD et le recouvrement, puis exporter votre premier plan.
+Ce guide suppose que Helix Flight Planner est déjà installé et lancé. Vous allez vous connecter, créer une mission, ajouter un vol, tracer une zone de couverture, choisir un capteur, régler l'altitude, le GSD et le recouvrement, puis exporter votre premier plan.
 
-## Etape 1 : Se connecter
+## Étape 1 : se connecter
 
-Sur l'ecran de connexion, saisissez votre adresse e-mail et votre mot de passe, puis cliquez sur **Se connecter**.
+Sur l'écran **Connexion**, cliquez sur **Se connecter**. La page de connexion Helix s'ouvre dans votre navigateur ; terminez la connexion avec votre compte, l'application ouvre ensuite la session toute seule.
 
-- L'icone en forme d'oeil dans le champ mot de passe permet de l'afficher en clair.
-- La case **Se souvenir de moi** est cochee par defaut : la session reste ouverte au prochain lancement de l'application. Decochez-la si vous voulez qu'elle se ferme a la fermeture de l'application.
+- La case **Se souvenir de moi** est cochée par défaut : la session reste ouverte au prochain lancement. Décochez-la avant de cliquer sur **Se connecter** pour qu'elle se ferme à la fermeture de l'application.
+- Si votre compte demande une vérification en deux étapes, saisissez le code à 6 chiffres puis cliquez sur **Vérifier**.
 
 <Note>
-  L'activation de la licence se fait automatiquement a la connexion (verification du poste machine). Le catalogue de capteurs / aeronefs et vos projets se synchronisent ensuite en arriere-plan.
+  L'activation de la licence se fait automatiquement à la connexion (vérification du poste). Le catalogue de capteurs et d'appareils et vos missions se synchronisent ensuite en arrière-plan.
 </Note>
 
-Si vos identifiants sont refuses ou que le serveur est injoignable, un message explicite s'affiche sous le formulaire (identifiants invalides, limite de postes atteinte, serveur injoignable, etc.).
+Si la connexion échoue, un message explicite s'affiche au-dessus du bouton (identifiants invalides, limite de postes atteinte, serveur injoignable…). Voir [Connexion et première utilisation](/fr/compte/connexion).
 
-## Etape 2 : Creer une mission
+## Étape 2 : créer une mission
 
-Depuis le tableau de bord, cliquez sur **+ Nouvelle mission**. L'assistant s'ouvre en deux etapes courtes :
+Depuis le tableau de bord, cliquez sur **+ Nouvelle mission**. L'assistant s'ouvre en deux étapes :
 
 <Steps>
   <Step title="Informations">
-    Saisissez le **Nom de la mission** (obligatoire), puis cliquez sur **Suivant**.
+    Saisissez le nom de la mission (obligatoire), puis passez à l'étape suivante.
   </Step>
   <Step title="Lieu">
-    Optionnel : recherchez un lieu dans le champ (par nom, ex. "Ajaccio", ou en coordonnees "42.0, 9.0"), ou choisissez un lieu recent dans la liste. Le lieu choisi pre-centre le globe a l'ouverture. Laissez le champ vide si vous preferez centrer manuellement ensuite.
+    Optionnel : cherchez un lieu par son nom, par exemple « Ajaccio », ou saisissez des coordonnées, par exemple `41.92 8.74`. Les lieux récents sont proposés en raccourci. Le lieu choisi pré-centre le globe à l'ouverture.
   </Step>
 </Steps>
 
-Cliquez sur **Creer la mission**. Le globe 3D s'ouvre sur la mission, vide pour l'instant : il faut maintenant y ajouter un vol.
+Cliquez sur **Créer la mission**. Le globe 3D s'ouvre sur la mission, vide pour l'instant : il faut y ajouter un vol.
 
-## Etape 3 : Creer un vol
+## Étape 3 : créer un vol
 
-Un **vol** est le conteneur dans lequel vous allez dessiner une ou plusieurs zones (polygone, corridor, waypoint) ; l'appareil se choisit au niveau du vol, le capteur se choisit ensuite zone par zone.
+Un **vol** contient les zones que vous allez dessiner. L'appareil se choisit au niveau du vol, le capteur zone par zone.
 
-Cliquez sur **+ Vol** (barre superieure du globe, a droite des onglets de vol). La fenetre **Configurer le vol** s'ouvre :
+Cliquez sur **+ Vol** dans la barre supérieure du globe. La fenêtre **Configurer le vol** s'ouvre :
 
-- **Nom du vol** — pre-rempli (ex. "Vol 1"), modifiable.
-- **Appareil** — cliquez sur **Choisir un appareil...** pour ouvrir le catalogue et selectionner un aeronef (drone, avion ou helicoptere).
+- **Nom du vol** : pré-rempli (`Vol 1`), modifiable ;
+- **Appareil** : cliquez sur **Choisir un appareil…** pour ouvrir le catalogue et sélectionner un drone, un avion ou un hélicoptère.
 
-Le bouton **Valider** reste desactive tant qu'un nom et un appareil ne sont pas renseignes. Une fois valide, le vol apparait dans la barre de vols en haut du globe.
+Le bouton **Valider** reste inactif tant qu'un nom et un appareil ne sont pas renseignés. Une fois validé, le vol apparaît dans la barre de vols.
 
 <Note>
-  Aucun capteur ne se choisit ici : il se definit sur chaque zone (polygone / corridor) que vous allez dessiner a l'etape suivante — un meme vol peut ainsi combiner plusieurs capteurs sur des zones differentes.
+  Aucun capteur ne se choisit ici : il se définit sur chaque zone, à l'étape suivante. Un même vol peut ainsi combiner plusieurs capteurs sur des zones différentes.
 </Note>
 
-## Etape 4 : Tracer une zone de couverture (AOI)
+## Étape 4 : tracer une zone de couverture
 
-Les outils de dessin sont dans la colonne d'icones a gauche du globe. Ils restent grises tant qu'aucun vol n'est cree ou selectionne.
+Les outils de dessin sont dans la colonne d'icônes à gauche du globe. Ils restent estompés tant qu'aucun vol n'est sélectionné ou qu'aucun appareil n'est choisi pour le vol.
 
 <Steps>
-  <Step title="Activer l'outil polygone">
-    Cliquez sur l'icone polygone (info-bulle **Dessiner polygone**) dans la barre d'outils de dessin.
+  <Step title="Activer l'outil">
+    Cliquez sur l'icône **Dessiner une zone**.
   </Step>
   <Step title="Poser le premier sommet">
-    **Double-cliquez** sur le globe pour poser le premier sommet — un simple clic ne demarre pas le tracé (il reste reserve a la selection / navigation).
+    **Double-cliquez** sur le globe. Un simple clic ne démarre pas le tracé : il reste réservé à la navigation et à la sélection.
   </Step>
   <Step title="Poser les sommets suivants">
-    Cliquez (simple clic) pour poser chaque sommet suivant. Un clic droit retire le dernier sommet pose.
+    Cliquez pour poser chaque sommet. Un clic droit retire le dernier sommet posé.
   </Step>
-  <Step title="Fermer le polygone">
-    Cliquez a nouveau sur l'un des sommets deja poses (pas necessairement le premier), ou double-cliquez pour fermer avec les sommets deja poses. Il faut au moins 3 sommets.
+  <Step title="Fermer la zone">
+    Cliquez sur le premier sommet, ou double-cliquez, pour fermer la zone. Il faut au moins 3 sommets.
   </Step>
 </Steps>
 
-Des que le polygone est ferme, il devient une zone du vol actif et les bandes de vol se calculent automatiquement — aucun bouton "Calculer" a presser.
+Dès que la zone est fermée, elle devient une zone du vol actif et les bandes de vol se calculent automatiquement : aucun bouton de calcul n'est à presser.
 
 <Warning>
-  La fermeture est refusee si le polygone se croise lui-meme (forme en papillon) — le contour s'affiche alors en rouge pendant le tracé. Ajustez le dernier sommet avant de fermer.
+  La fermeture est refusée si la zone se croise elle-même (nœud papillon) ; le contour s'affiche alors en rouge. Retirez les derniers sommets avant de fermer.
 </Warning>
 
 <Tip>
-  La touche **Echap** annule l'outil de dessin en cours. Un bouton dedie, distinct du bouton polygone, permet de dessiner un **corridor** (info-bulle **Dessiner corridor** ; bande lineaire le long d'un trace) au lieu d'un polygone plein.
+  **Échap** annule l'outil en cours. L'outil **Dessiner corridor** trace une bande linéaire le long d'un tracé au lieu d'une zone pleine. Voir [Dessiner une zone](/fr/mission/dessiner-une-zone).
 </Tip>
 
-## Etape 5 : Choisir un capteur pour cette zone
+## Étape 5 : choisir un capteur pour la zone
 
-Dans le panneau de planification a droite, onglet **Parametres**, groupe **Vol**, cliquez sur la ligne **Capteur** (bouton **Choisir un capteur...**).
+Dans le panneau de planification à droite, onglet de paramètres, groupe **Vol**, cliquez sur la ligne **Capteur** (**Choisir un capteur…**). La fenêtre **Choisir un capteur** s'ouvre avec un champ de recherche et des filtres par catégorie. Cliquez sur un capteur pour le sélectionner. Voir [Choisir un capteur et un appareil](/fr/capteurs/choisir-capteur-et-appareil).
 
-La fenetre **Choisir un capteur** s'ouvre :
+## Étape 6 : ajuster altitude, GSD et recouvrement
 
-- Un champ de recherche filtre par nom / fabricant.
-- Des filtres par categorie : **Tous**, **Photo**, **LiDAR**, **Pushbroom**, **Thermique**.
-- Si l'appareil du vol declare des capteurs compatibles, un bascule **Natif / Tous** limite d'abord la liste aux capteurs natifs de cet appareil.
-- Cliquez sur un capteur pour le selectionner. S'il accepte plusieurs focales (boitier a objectifs interchangeables), un ecran supplementaire demande de choisir ou saisir la focale montee avant de valider.
+Toujours dans le groupe **Vol**, les champs **Altitude** et **GSD** sont liés : modifier l'un recalcule l'autre à partir du capteur choisi. Pour un capteur LiDAR, le champ GSD laisse la place aux paramètres propres au LiDAR.
 
-## Etape 6 : Ajuster altitude, GSD et recouvrement
+Le groupe **Recouvrement** contient :
 
-Toujours dans l'onglet **Parametres**, groupe **Vol** :
-
-- Les champs **Altitude** et **GSD** sont tous les deux editables et lies : modifier l'un recalcule automatiquement l'autre a partir du capteur choisi. (Pour un capteur LiDAR ou pushbroom, le champ GSD est remplace par un champ **FOV**.)
-
-Juste en dessous, groupe **Recouvrement** :
-
-| Champ | Role |
+| Champ | Rôle |
 |-------|------|
-| **Avant** | Recouvrement longitudinal entre images consecutives le long d'une bande. |
-| **Lateral** | Recouvrement entre bandes voisines. |
-| **Buffer AOI** | Marge ajoutee autour du polygone avant calepinage. |
-| **Overshoot** | Distance de depassement en bout de bande. |
-| **Double grille** | Ajoute une seconde grille de bandes a 90 deg du cap principal. |
-
-Avant et Lateral s'affichent en pourcentage par defaut ; un bascule permet de les afficher / saisir en metres.
+| **Recouvrement avant** | Recouvrement entre images consécutives le long d'une bande. |
+| **Recouvrement latéral** | Recouvrement entre bandes voisines. |
+| **Buffer AOI** | Marge ajoutée autour de la zone avant le calepinage. |
+| **Overshoot** | Distance de dépassement en bout de bande. |
+| **Double grille** | Ajoute une seconde grille de bandes perpendiculaire à la première. |
 
 <Note>
-  Le recalcul des bandes est automatique et quasi instantane a chaque modification — il n'y a pas de bouton "Calculer" a chercher.
+  Le recalcul des bandes est automatique à chaque modification.
 </Note>
 
-## Etape 7 : Exporter le plan
+## Étape 7 : exporter le plan
 
-Cliquez sur **Export** dans la barre superieure du globe. La fenetre **Exporter le plan de vol** s'ouvre ; cliquez sur la ligne **Plan de vol** pour choisir un format :
-
-| Format | Description |
-|--------|--------------|
-| **.helix (Helix Archive)** | Conteneur natif Helix. Deux modes au choix : **FMS** (une zone, format actuel du FMS cockpit) ou **Projet Flight Planner** (round-trip complet, multi-zones, y compris les trajectoires figees). |
-| **KML** | Fichier Google Earth / SIG standard. |
-| **WPML (DJI Pilot 2)** | Archive KMZ pour DJI Pilot 2. Necessite un aeronef DJI selectionne sur le vol — desactive sinon. |
-
-- Pour **.helix**, choisissez ensuite **FMS** ou **Projet Flight Planner**, puis l'emplacement du fichier dans la boite de dialogue systeme (application desktop uniquement).
-- Pour **KML** (et **WPML**), une fenetre de selection liste tous les vols exportables (ceux ayant au moins un element calcule) : cochez ceux a inclure, puis choisissez l'emplacement du fichier.
+Cliquez sur **Export** dans la barre supérieure du globe. Le bouton reste estompé tant qu'aucun vol n'est calculé. La fenêtre **Exporter le plan de vol** propose les routes **Plan de vol** (`.helix`, KML, WPML pour DJI Pilot), **Envoyer vers DJI Pilot** et **Envoyer vers FMS**. Pour un premier export, choisissez **Plan de vol** puis le format voulu.
 
 <Note>
-  Si une alerte de securite est active sur le vol (typiquement une collision terrain / obstacle detectee automatiquement), la fenetre d'export affiche un verrou bloquant : il faut cocher explicitement "Je comprends les risques et souhaite exporter malgre tout" avant de pouvoir continuer.
+  Si une alerte de sécurité est active sur le vol (collision terrain détectée, par exemple), la fenêtre d'export affiche un verrou : il faut cocher *Je comprends les risques et souhaite exporter malgré tout.* pour continuer. Un avertissement de qualité ou une information n'empêche pas l'export.
 </Note>
 
-<Note>
-  Si un avertissement de qualite (orange) ou une information (bleu) est actif sur le vol, un bandeau non bloquant s'affiche dans la fenetre d'export mais n'empeche pas l'export.
-</Note>
-
-## Etapes suivantes
+## Étapes suivantes
 
 <CardGroup cols={2}>
-  <Card title="Planification de mission" icon="map" href="/guides/mission-planning">
-    Guide complet du flux de planification, des overlays QC et de l'edition de bandes.
+  <Card title="Dessiner une zone" icon="map" href="/fr/mission/dessiner-une-zone">
+    Le tracé des zones, corridors, obstructions et points de décollage.
   </Card>
-  <Card title="Catalogue capteurs" icon="camera" href="/guides/sensors">
-    Recherche, filtres et capteurs personnalises.
+  <Card title="Capteurs et appareils" icon="camera" href="/fr/capteurs/choisir-capteur-et-appareil">
+    Recherche, filtres et choix du matériel.
   </Card>
-  <Card title="Formats d'export" icon="download" href="/guides/export-formats">
+  <Card title="Formats d'export" icon="download" href="/fr/export/vue-densemble">
     Contenu de chaque export et quand l'utiliser.
   </Card>
-  <Card title="Modes d'altitude" icon="mountain" href="/guides/altitude-modes">
-    AMSL, iAMSL, iAGL : comprendre les references d'altitude.
+  <Card title="Modes d'altitude" icon="mountain" href="/fr/planification/mode-altitude">
+    AMSL, AGL, IAGL : comprendre les références d'altitude.
   </Card>
 </CardGroup>

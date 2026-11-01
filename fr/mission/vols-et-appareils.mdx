@@ -27,12 +27,13 @@ Cliquez sur **Créer la mission**. Si aucun lieu n'a été choisi, la mission s'
 
 ## Importer une mission existante (.helix)
 
-Le bouton **Importer une mission** du tableau de bord ouvre un sélecteur limité aux fichiers `.helix`. Le comportement dépend du contenu du fichier :
+Le bouton **Importer une mission** du tableau de bord ouvre un sélecteur limité aux fichiers `.helix`. L'import crée une nouvelle mission qui reprend l'archive :
 
-| Type de fichier | Comportement à l'import |
-|---|---|
-| **Projet Flight Planner complet** (exporté depuis l'application, toutes ses zones/vols) | Une nouvelle mission est créée avec tous les vols restaurés. Pour chaque vol, **une seule zone est conservée** : celle qui était active au moment de l'export si c'est le vol actif, sinon la première zone calculée du vol (à défaut sa première zone) — si un vol contenait plusieurs zones (polygone + corridor, par exemple), seule l'une d'elles survit à l'export/réimport, sans avertissement. La zone conservée reste **verrouillée** (trajectoire telle que calculée, et éventuellement éditée point par point, au moment de l'export) si elle l'était déjà, sinon elle est restaurée avec sa géométrie et ses paramètres puis **recalculée automatiquement** dès que le vol est activé. |
-| **Fichier `.helix` générique** (produit par un autre système, sans la structure de projet complet) | Une mission est créée mais reste **vide** (aucun vol) : ce format n'est pas relu par l'application au chargement de la mission, seuls les projets complets ci-dessus restaurent des vols et des zones. |
+- un **vol** pour chaque ensemble de zones qui partage le même nom de vol et le même appareil ;
+- une **tâche** par zone, avec son capteur, ses paramètres et, si la zone était calculée, son résultat ;
+- les points de décollage, les GCP et les obstructions de l'archive.
+
+Un fichier d'une seule zone donne un vol et une tâche. Les erreurs de lecture (fichier corrompu, version non prise en charge, archive sans zone) sont décrites dans [Gérer ses missions](/fr/dashboard/missions).
 
 <Tip>
   Pour tout ce qui concerne la liste des missions au tableau de bord — recherche, tri, renommage, suppression — voir [Gérer ses missions](/fr/dashboard/missions).
@@ -108,7 +109,7 @@ Le sélecteur d'aéronef liste le catalogue complet, avec :
 - l'aéronef actuellement sélectionné mis en évidence et remonté en tête de liste.
 
 <Note>
-  Certaines catégories d'aéronef peuvent apparaître verrouillées (icône cadenas) si votre formule d'abonnement ne les inclut pas — elles restent visibles mais non sélectionnables, avec une infobulle renvoyant vers l'offre qui les débloque.
+  Un appareil dont le type n'est pas couvert par votre licence apparaît estompé, avec la mention *Non inclus dans votre abonnement* à la place de sa description. Il reste visible et ne se sélectionne pas. Voir [Offres et droits](/fr/compte/offres-et-droits).
 </Note>
 
 <Warning>

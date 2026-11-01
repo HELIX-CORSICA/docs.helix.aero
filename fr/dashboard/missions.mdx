@@ -1,85 +1,90 @@
 ---
 title: "Gérer ses missions"
-description: "Lister, créer, importer, renommer et supprimer des missions depuis le tableau de bord."
+description: "Lister, créer, importer, renommer, verrouiller et supprimer des missions depuis le tableau de bord."
 ---
 
-Le **tableau de bord** est le premier écran de Helix Flight Planner après la connexion. Il regroupe toutes vos missions et donne accès aux catalogues de capteurs et d'appareils via trois onglets en haut de l'écran : **Missions**, **Capteurs** et **Appareils**. Cette page couvre l'onglet **Missions** — la liste, la création, l'import, le renommage et la suppression — ainsi que les réglages propres à une mission une fois celle-ci ouverte.
+Le **tableau de bord** est le premier écran de Helix Flight Planner après la connexion. Il regroupe vos missions et donne accès aux catalogues via trois onglets : **Missions**, **Capteurs** et **Appareils**. Cette page couvre l'onglet **Missions**. Les deux autres sont décrits dans [Catalogues des capteurs et des appareils](/fr/dashboard/catalogue-capteurs-appareils).
 
 ## La liste des missions
 
-Chaque mission apparaît sous la forme d'une **carte** (vue par défaut) avec une vignette générée automatiquement, ou sous la forme d'une **ligne compacte** en vue liste. Une barre d'outils au-dessus de la liste permet de :
+Chaque mission apparaît sous forme de **carte** (vue par défaut) avec sa vignette, son nom, sa date de dernière modification, les types d'appareil utilisés et des pastilles pour ses appareils et ses capteurs, ou sous forme de **ligne compacte** en vue liste. Une barre d'outils au-dessus de la liste propose :
 
-- **Rechercher** une mission par son nom ou par le nom du client renseigné dans ses paramètres.
-- **Trier** par date de dernière modification (par défaut, la plus récente en premier) ou par nom.
-- **Basculer entre la vue cartes et la vue liste** grâce aux deux icônes à côté du tri.
+- **Rechercher une mission…** : le filtre porte sur le nom, le nom du client et les pastilles d'appareils et de capteurs ;
+- le basculement entre **vue cartes** et **vue liste**, par les deux icônes à côté du champ de recherche ;
+- le tri **Date MAJ** (la plus récente en premier, par défaut) ou **Nom** ;
+- les boutons **DJI Cloud**, **Importer une mission** et **+ Nouvelle mission**.
+
+Sans mission, la liste affiche *Aucune mission enregistrée.* ; une recherche sans résultat affiche *Aucun résultat pour « … ».*
 
 <Tip>
-  La vignette de chaque carte est générée en arrière-plan la première fois que la mission est affichée (vue du dessus de la zone + bandes de vol), puis mise en cache. Elle se régénère automatiquement dès que le contenu de la mission change ; tant qu'elle n'existe pas encore, un motif de fond neutre s'affiche à la place.
+  La vignette est générée en arrière-plan à partir du contenu de la mission et se régénère quand ce contenu change. Tant qu'elle n'existe pas, un fond neutre s'affiche.
 </Tip>
 
 ### Ouvrir une mission
 
-Cliquez n'importe où sur une carte, ou sur une ligne en vue liste, pour ouvrir la mission dans l'éditeur de vol (globe 3D + panneau de planification).
+Cliquez sur une carte ou sur une ligne pour ouvrir la mission dans l'éditeur (globe 3D et panneau de planification). Un cadenas sur la carte indique une mission verrouillée.
 
 ## Créer une mission
 
-Cliquez sur **+ Nouvelle mission** en haut à droite de la liste pour ouvrir l'assistant de création, en deux étapes :
+Cliquez sur **+ Nouvelle mission** pour ouvrir l'assistant de création, en deux étapes :
 
 <Steps>
   <Step title="Informations">
-    Saisissez le nom de la mission. C'est le seul champ obligatoire pour passer à l'étape suivante.
+    Saisissez le nom de la mission. C'est le seul champ obligatoire.
   </Step>
   <Step title="Lieu (optionnel)">
-    Recherchez un lieu par son nom, ou saisissez directement une latitude/longitude (ex. `42.0, 9.0`). Les lieux récemment utilisés dans d'autres missions sont proposés en raccourci tant que le champ de recherche est vide. Si vous choisissez un lieu, le globe 3D se centre automatiquement dessus à l'ouverture de la mission ; si vous laissez le champ vide, la mission s'ouvre sans pré-centrage.
+    Cherchez un lieu par son nom, ou saisissez des coordonnées (ville ou `41.92 8.74`). La liste **Récents** propose les derniers lieux utilisés tant que le champ est vide. Si vous choisissez un lieu, le globe se centre dessus à l'ouverture ; sans lieu, la mission s'ouvre sans pré-centrage.
   </Step>
 </Steps>
 
-Cliquez sur **Créer la mission** : la mission est enregistrée puis ouverte immédiatement dans l'éditeur de vol.
+Cliquez sur **Créer la mission** : la mission est enregistrée puis ouverte dans l'éditeur. Le bouton **Précédent** revient à l'étape des informations.
 
 ## Importer une mission (.helix)
 
-Le bouton **Importer une mission** (dans la barre d'outils, et aussi proposé sur l'écran « Aucune mission ») ouvre un sélecteur de fichier limité à l'extension `.helix`. Le comportement de l'import dépend du contenu du fichier :
+Le bouton **Importer une mission** ouvre un sélecteur de fichier limité à l'extension `.helix` (filtre **Archive Helix**). L'import crée une **nouvelle mission**, portant le nom enregistré dans l'archive, puis l'ouvre :
 
-- **Projet Flight Planner complet** — si le fichier `.helix` a été exporté par Helix Flight Planner et contient l'ensemble des zones/vols d'un projet, l'import crée une nouvelle mission qui restaure **toutes** ces zones/vols. Les vols qui étaient verrouillés conservent leurs bandes de vol telles qu'elles avaient été calculées (et éventuellement éditées) au moment de l'export ; les autres vols sont recalculés automatiquement dès que vous les activez.
-- **Fichier `.helix` générique (FMS)** — si le fichier ne contient pas cette structure de projet complet (par exemple un fichier produit par un autre système compatible), l'import crée une mission simple avec un seul vol, à partir des paramètres et du résultat contenus dans le fichier.
+- un **vol** pour chaque ensemble de zones de l'archive qui partage le même nom de vol et le même appareil ;
+- une **tâche par zone**, avec son capteur, ses paramètres et, pour une zone calculée, son résultat ;
+- les points de décollage, les GCP et les obstructions de l'archive.
 
-Dans les deux cas, la nouvelle mission apparaît dans la liste et s'ouvre automatiquement à la fin de l'import.
+Un fichier d'une seule zone donne un vol et une tâche.
 
-<Note>
-  En cas d'échec de la lecture du fichier (format non reconnu, fichier corrompu), un message d'erreur s'affiche et aucune mission n'est créée.
-</Note>
+| Message | Cause |
+|---|---|
+| *Ce fichier n'est pas un fichier .helix.* | Le fichier n'est pas une archive Helix. |
+| *Fichier .helix corrompu ou incomplet : rien n'a été importé.* | L'archive est illisible ou tronquée. |
+| *Fichier .helix trop volumineux.* | Le fichier dépasse la taille admise. |
+| *Version du format .helix non prise en charge : mettez l'application à jour.* | L'archive vient d'une version plus récente. |
+| *L'archive .helix ne contient aucune zone.* | Aucune zone exploitable dans l'archive. |
 
-## Renommer une mission
+En cas d'échec, une notification d'erreur s'affiche et aucune mission ne reste créée.
 
-Ouvrez le menu contextuel d'une mission (clic droit sur sa carte ou sa ligne) puis choisissez **Renommer**. Saisissez le nouveau nom et validez — le bouton d'enregistrement reste désactivé tant que le nom est vide ou identique au nom actuel.
+## Renommer, verrouiller, supprimer
 
-## Supprimer une ou plusieurs missions
+Le menu **⋯** d'une carte, ou un clic droit sur une carte ou une ligne, ouvre le menu de la mission :
 
-Deux façons de supprimer :
+| Entrée | Effet |
+|---|---|
+| **Renommer** | Ouvre la fenêtre **Renommer la mission** ; **Enregistrer** valide le nouveau nom. |
+| **Verrouiller** / **Déverrouiller** | Pose ou retire le verrou de la mission (cadenas sur la carte). |
+| **Supprimer** | Supprime la mission après confirmation. |
 
-- **Suppression seule** — menu contextuel (clic droit) sur la carte ou la ligne, puis **Supprimer**.
-- **Suppression en masse** — cochez la case qui apparaît au survol de chaque carte (ou visible en permanence en vue liste) pour sélectionner plusieurs missions. Une barre d'action apparaît alors en haut de la liste avec le nombre de missions sélectionnées, un bouton **Supprimer les missions** et un bouton **Annuler** pour vider la sélection.
+Dans une mission ouverte, un double-clic sur son nom dans la barre supérieure la renomme aussi.
 
-Dans les deux cas, une boîte de confirmation liste les noms des missions concernées avant de valider.
+### Sélection multiple
+
+Cochez la case qui apparaît au survol d'une carte, ou Ctrl/Cmd-cliquez sur les cartes, pour sélectionner plusieurs missions. Maj-clic sélectionne une plage, et un rectangle tracé à la souris sur le fond de la liste sélectionne les cartes qu'il recouvre. Une barre d'actions affiche **Supprimer les missions** et **Annuler** (vide la sélection). Dans le menu d'une carte sélectionnée, **Supprimer** devient **Supprimer les missions sélectionnées**. **Échap** vide aussi la sélection.
+
+Une boîte de confirmation précède toute suppression.
 
 <Warning>
   La suppression d'une mission est irréversible.
 </Warning>
 
-## Aucune mission
+## DJI Cloud
 
-Quand la liste est vide (aucune mission créée ni importée), le tableau de bord affiche un écran dédié avec le logo Helix, le message « Aucune mission » et deux boutons : **+ Créer une mission** et **Importer une mission**, qui ouvrent respectivement l'assistant de création et le sélecteur d'import décrits ci-dessus.
-
-## Paramètres de la mission
-
-Une fois une mission ouverte, cliquez sur l'icône de réglages à côté de son nom, dans la barre supérieure, pour ouvrir ses **Paramètres de la mission** :
-
-| Champ | Rôle |
-|---|---|
-| **Nom de la mission** | Identité affichée dans le tableau de bord et la barre supérieure. |
-| **Client** | Nom du client associé, utilisé aussi dans la recherche du tableau de bord. |
-| **Description** | Notes internes libres. |
+Le bouton **DJI Cloud** ouvre une fenêtre qui liste *toutes les missions de ce compte présentes sur le serveur DJI*. La publication elle-même se fait depuis l'export : voir [Pont DJI Pilot 2](/fr/export/pont-dji-pilot2).
 
 ## Réglages généraux
 
-L'icône en forme d'engrenage, tout à droite de la barre supérieure (visible depuis le tableau de bord comme depuis une mission ouverte), ouvre les **Réglages** généraux de l'application — thème, langue, unités, cache terrain, licence, etc. — indépendamment de toute mission particulière.
+L'icône d'engrenage, à droite de la barre supérieure, ouvre les **Réglages** de l'application depuis le tableau de bord comme depuis une mission ouverte. Voir [Préférences et apparence](/fr/reglages/preferences-et-apparence).

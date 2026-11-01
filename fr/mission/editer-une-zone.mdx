@@ -72,29 +72,31 @@ Maintenez **Alt** en cliquant-glissant n'importe quel sommet d'un polygone, d'un
 
 ## Découper une zone en plusieurs vols
 
-L'outil **ciseaux** (barre d'outils de dessin, raccourci `s`) scinde la zone active en plusieurs vols distincts le long d'une ou plusieurs lignes de coupe. Le geste de tracé d'une ligne de coupe (double-clic pour démarrer, clics simples pour les points suivants, clic sur le premier point ou double-clic pour la refermer) est identique aux autres outils — voir [Dessiner une zone](/fr/mission/dessiner-une-zone) pour le détail du tracé.
+L'outil **Découpe multi-vol manuelle** (barre d'outils de dessin, raccourci `s`) scinde la zone active le long d'une ou plusieurs lignes de coupe. Le tracé d'une ligne de coupe suit le geste des autres outils : voir [Dessiner une zone](/fr/mission/dessiner-une-zone).
 
 <Warning>
-  L'outil est **indisponible** (icône grisée, infobulle explicite) dès que la zone active est une trajectoire **figée** (wayline, éditée point par point après génération) : il n'y a alors plus de contour polygonal à scinder. Restaurez d'abord le polygone éditable de la zone pour réactiver la découpe.
+  L'outil est **indisponible** (icône grisée, infobulle explicite) quand la zone active est une trajectoire **figée** (wayline) : il n'y a plus de contour à scinder. Restaurez d'abord la zone éditable avec **Restaurer la zone** dans son menu contextuel.
 </Warning>
 
 <Steps>
   <Step title="Tracer une ou plusieurs coupes">
-    Chaque ligne de coupe fermée reste affichée en tireté orange **et l'outil reste actif** : vous pouvez enchaîner plusieurs lignes de coupe dans la même session, pour scinder la zone en plus de deux morceaux d'un coup.
+    L'outil reste actif après chaque ligne de coupe : vous pouvez en enchaîner plusieurs dans la même session. Une barre en haut du globe affiche le nombre de coupes (*1 coupe*, *2 coupes*).
   </Step>
-  <Step title="Ajuster une coupe déjà tracée">
-    Tant que la session n'est pas validée, chaque ligne de coupe reste **éditable** : ses sommets affichent une poignée que vous pouvez cliquer-glisser pour l'ajuster, sans avoir à refaire le tracé.
+  <Step title="Couper">
+    Cliquez sur **Couper**. La fenêtre **Destination de la découpe** propose deux choix : **Vol** (*un vol par morceau, le vol source est masqué*) et **Élément** (*les morceaux deviennent des tâches du vol source*).
   </Step>
-  <Step title="Valider ou annuler">
-    Une barre flottante apparaît en haut du globe : **« Découpe : *n* ligne(s) tracée(s) »**, avec deux boutons — **Valider** (ou touche `Entrée`) applique la découpe, **Annuler** (ou touche `Échap`) abandonne toute la session sans rien modifier.
+  <Step title="Abandonner">
+    La croix rouge de la barre, ou la touche `Échap`, abandonne la session sans modifier la zone.
   </Step>
 </Steps>
 
-À la validation, chaque morceau valide devient un **nouveau vol**, avec le même aéronef, le même capteur et la même orientation (cap de balayage) que la zone d'origine. La zone source, elle, **n'est pas supprimée** : elle est simplement masquée et désactivée dans la barre de vols — vous pouvez la réafficher et la réactiver à tout moment pour la redécouper autrement.
+Une notification **Découpe effectuée** indique le résultat : *N vols créés* pour la destination **Vol**, *N tâches créées* pour **Élément**. Avec la destination **Vol**, la zone source n'est pas supprimée : elle est masquée dans la barre de vols et peut être réaffichée pour une autre découpe.
 
 <Note>
-  Si aucune ligne tracée ne traverse réellement la zone, la validation refuse la découpe (« Aucune coupe valide — tracez au moins une ligne qui traverse la zone. ») et la session reste ouverte pour corriger le tracé.
+  Si aucune ligne tracée ne traverse la zone, la notification **Aucune coupe valide** précise la cause, par exemple *Tracez au moins une ligne qui traverse la zone.*, et la session reste ouverte pour corriger le tracé.
 </Note>
+
+Le menu contextuel d'une zone propose aussi **Découper en vols…**. La découpe automatique par durée ou par distance est décrite dans [Découpe multi-vol](/fr/planification/decoupe-multi-vol).
 
 ## Nom de la zone
 

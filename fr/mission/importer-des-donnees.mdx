@@ -1,94 +1,123 @@
 ---
-title: "Importer des géométries KML/KMZ et des points GCP"
-description: "Ajouter des polygones, corridors ou points de calage dans une mission déjà ouverte."
+title: "Importer des zones, des obstructions et des points GCP"
+description: "Ajouter des zones, corridors, waypoints, obstructions ou points de calage dans une mission déjà ouverte."
 ---
 
-# Importer des géométries KML/KMZ et des points GCP
+Une fois une mission ouverte, le bouton **Import** de la barre supérieure du globe (à droite de l'icône météo, avant **Export**) ouvre un menu à trois entrées : **Zone**, **GCP** et **Obstructions**. Chaque entrée ouvre d'abord le sélecteur de fichiers du système. Une fenêtre d'aperçu s'ouvre ensuite avec le fichier déjà analysé : rien n'est ajouté à la mission tant que vous n'avez pas cliqué sur **Importer**.
 
-Une fois une mission ouverte, le bouton **Import** de la barre supérieure du globe (à droite, entre l'icône météo et le bouton **Export**) ouvre un menu déroulant avec deux entrées : **Polygone / vol** pour des géométries KML/KMZ, et **GCP** pour des points de calage au format tableur. Les deux fenêtres analysent le fichier localement et présentent un aperçu avant toute création — rien n'est ajouté à la mission tant que vous n'avez pas cliqué sur **Importer**.
-
-<CardGroup cols={2}>
-  <Card title="Polygone / vol" icon="map">
-    Importer un fichier KML ou KMZ contenant un ou plusieurs polygones, lignes ou points, et choisir ce que chacun devient dans la mission.
+<CardGroup cols={3}>
+  <Card title="Zone" icon="map">
+    Un ou plusieurs fichiers KML, KMZ, GeoJSON ou GPX contenant des zones, des lignes ou des points.
   </Card>
   <Card title="GCP" icon="crosshair">
-    Importer une liste de points de calage (CSV, TXT, XYZ ou PTS), avec reprojection automatique vers WGS84 si les coordonnées sont projetées.
+    Une liste de points de calage (CSV, TXT, XYZ ou PTS), avec reprojection automatique vers WGS84.
+  </Card>
+  <Card title="Obstructions" icon="ban">
+    Les zones d'un fichier géographique, importées comme zones d'exclusion.
   </Card>
 </CardGroup>
 
-## Importer un polygone ou un vol (KML / KMZ)
+L'import de zones et d'obstructions exige un vol dans la mission : sans vol, l'application affiche *Ajoutez un vol avant d'importer une géométrie.*
+
+## Importer des zones (Zone)
 
 <Steps>
-  <Step title="Ouvrir le fichier">
-    Cliquez sur **Import → Polygone / vol**. Glissez un fichier `.kml` ou `.kmz` dans la zone de dépôt, ou cliquez pour parcourir. Taille maximale : 25 Mo. Les coordonnées du fichier doivent être en **WGS84** (longitude/latitude) — les formats vectoriels projetés (Shapefile, DXF) et le GeoJSON ne sont pas acceptés sur cet écran.
+  <Step title="Choisir le ou les fichiers">
+    Cliquez sur **Import → Zone**. Le sélecteur **Importer un plan de vol** propose les filtres **Géométries (KML, KMZ, GeoJSON, GPX)**, **KML / KMZ**, **GeoJSON**, **GPX** et **Tous les fichiers**. Avec la licence Pro (droit `import.multi_kml`), le sélecteur accepte plusieurs fichiers à la fois ; sans ce droit, il n'en accepte qu'un. La taille maximale est de 25 Mo par fichier.
   </Step>
-  <Step title="Vérifier la liste des géométries détectées">
-    Toutes les géométries du fichier sont listées : **Polygone**, **Ligne** ou **Point**, avec leur nom (repris du `<Placemark>` source, ou un nom générique si absent) et leur nombre de sommets.
+  <Step title="Vérifier les types détectés">
+    La fenêtre **Plan de vol** affiche *« N géométries détectées — choisissez l'import par type »*. Une ligne par type de géométrie présent dans le fichier : **Zone**, **Ligne** ou **Point**, avec le nombre d'éléments (*3 zones*, *1 ligne*…).
   </Step>
-  <Step title="Choisir la destination de chaque ligne">
-    Chaque ligne a son propre menu déroulant « importer comme » — voir le tableau ci-dessous pour les options selon le type de géométrie source. Par défaut, un polygone devient un **polygone de couverture**, une ligne devient un **corridor**, un point devient un **waypoint**.
+  <Step title="Choisir la destination de chaque type">
+    Le menu déroulant de chaque ligne choisit ce que devient le type, pour toutes ses géométries à la fois.
   </Step>
   <Step title="Importer">
-    Le compteur en bas de fenêtre indique combien d'éléments seront effectivement créés (« X / Y éléments importés » — les lignes mises sur **Ignorer** ou invalides ne comptent pas). Cliquez sur **Importer** : chaque élément retenu est ajouté au vol actif exactement comme s'il avait été dessiné à la main, et la caméra se recentre sur le premier élément importé.
+    Le pied de fenêtre indique *« X / Y importés »*. Cliquez sur **Importer** : chaque élément retenu est ajouté au vol actif, comme s'il avait été dessiné à la main, et porte le nom de son `Placemark` source.
   </Step>
 </Steps>
 
-### Options d'import par type de géométrie
+### Destinations par type de géométrie
 
-| Géométrie source | Options du menu déroulant |
-|---|---|
-| **Polygone** | Polygone (couverture) · Corridor · Ignorer |
-| **Ligne** | Corridor · Waypoints (chaque sommet devient un waypoint séparé) · Ignorer |
-| **Point** | Waypoint · Ignorer |
+| Type détecté | Choix proposés | Choix par défaut |
+|---|---|---|
+| **Zone** | **Zone (couverture)** · **Corridor** · **Waypoints (chaque sommet)** · **Ignorer** | **Zone (couverture)** |
+| **Ligne** | **Corridor** · **Waypoints (chaque sommet)** · **Ignorer** | **Corridor** |
+| **Point** | **Waypoint** · **Ignorer** | **Waypoint** |
+
+Une zone devient un polygone de couverture à partir de 3 sommets ; un corridor demande 2 sommets. Une géométrie invalide (coordonnées hors WGS84, trop peu de sommets) est écartée : elle ne compte pas dans le total *importés*. L'altitude d'un point ou d'un sommet, quand le fichier en porte une, devient l'altitude AMSL du waypoint créé.
+
+### Plusieurs fichiers
+
+Les géométries de tous les fichiers choisis sont réunies dans **un seul aperçu**. Le nom du fichier affiché en tête de fenêtre liste les fichiers séparés par des virgules.
+
+Si un fichier est illisible, la fenêtre affiche une ligne d'erreur par fichier fautif, sous la forme `nom-du-fichier : message`. Les géométries des fichiers lisibles restent listées, mais le bouton **Importer** n'est pas proposé tant que cette erreur est affichée : relancez **Import → Zone** avec les seuls fichiers lisibles.
 
 <Note>
-  Une géométrie est affichée **grisée et non modifiable** (menu bloqué sur *Ignorer*) dans deux cas : elle n'a pas assez de sommets pour son type (moins de 3 pour un polygone, moins de 2 pour une ligne), ou ses coordonnées tombent hors des bornes WGS84 — signe probable que le fichier source est en réalité dans un système projeté. Le motif exact s'affiche à côté du nombre de sommets.
+  Le même droit s'applique aux scripts : la commande `helix-cli kml_import` et l'outil MCP équivalent acceptent plusieurs fichiers avec `import.multi_kml`. Sans ce droit, un appel avec plusieurs fichiers est refusé avec *plusieurs fichiers : plan Pro requis (import.multi_kml)*. Voir [Serveur MCP et CLI](/fr/reglages/serveur-mcp-et-cli) et [Offres et droits](/fr/compte/offres-et-droits).
 </Note>
 
-<Tip>
-  Un fichier KMZ est lu comme une archive : l'application y cherche le `doc.kml` (ou, à défaut, le premier `.kml` du paquet) et l'analyse de la même façon qu'un KML simple.
-</Tip>
+### Formats acceptés
+
+| Format | Extensions | Remarque |
+|---|---|---|
+| KML | `.kml` | Coordonnées en WGS84. |
+| KMZ | `.kmz` | Archive ZIP : l'application y lit le fichier `.kml`. |
+| GeoJSON | `.geojson`, `.json` | Coordonnées en WGS84. |
+| GPX | `.gpx` | Traces, routes et points de cheminement. |
+
+L'application reconnaît le format par le contenu du fichier. Un fichier d'un autre format donne *Format non reconnu : le fichier n'est ni du KML/KMZ, ni du GeoJSON, ni du GPX.* Un fichier sans géométrie donne *Aucune géométrie trouvée dans le fichier.*
+
+## Importer des obstructions
+
+**Import → Obstructions** ouvre le même sélecteur, mais un seul fichier à la fois, et la même fenêtre en mode obstruction :
+
+- une **Zone** devient une **Obstruction** (choix par défaut), ou peut être ignorée ;
+- un **Point** peut devenir une **Obstruction** : un disque de 5 m de rayon autour du point ;
+- une **Ligne** est toujours ignorée ;
+- si le fichier ne contient aucune zone, la fenêtre l'indique : *Aucun polygone dans le fichier : une obstruction est surfacique, lignes et points sont ignorés.*
+
+Les obstructions importées reçoivent la marge par défaut et sont créées en une seule action annulable.
 
 ## Importer des points GCP (CSV / TXT / XYZ / PTS)
 
 <Steps>
-  <Step title="Ouvrir le fichier">
-    Cliquez sur **Import → GCP**. Glissez un fichier `.csv`, `.txt`, `.xyz` ou `.pts`, ou cliquez pour parcourir. Taille maximale : 5 Mo.
+  <Step title="Choisir le fichier">
+    Cliquez sur **Import → GCP** et choisissez un fichier `.csv`, `.txt`, `.xyz` ou `.pts` (5 Mo maximum, *Fichier trop volumineux. Limite : 5 Mo.* au-delà). La fenêtre **Points GCP** s'ouvre avec le fichier analysé.
   </Step>
   <Step title="Vérifier les séparateurs">
-    Le séparateur de champs (virgule, point-virgule, tabulation, espace, ou un caractère personnalisé) est deviné automatiquement à partir des premières lignes du fichier. Le séparateur décimal, lui, n'est **pas** détecté automatiquement : il est réglé par défaut sur **point** et doit être basculé manuellement sur **virgule** si le fichier utilise des décimales à la française.
+    Le **Séparateur de champs** (virgule, point-virgule, tabulation, espace ou caractère personnalisé) est deviné à partir des premières lignes. Le **Séparateur décimal** est réglé sur **Point** par défaut ; basculez-le sur **Virgule** si le fichier utilise des décimales à la française.
   </Step>
   <Step title="Assigner chaque colonne">
-    Sous chaque numéro de colonne, un menu déroulant permet d'assigner son rôle — voir le tableau ci-dessous. Quand le fichier a une ligne d'en-tête reconnaissable, les rôles sont pré-remplis automatiquement à partir des intitulés de colonnes (`x`/`easting`, `y`/`northing`, `lat`/`latitude`, `lon`/`longitude`, `z`/`elevation`/`alt`, `id`/`name`/`point`…). Il faut assigner au minimum **Easting + Northing** ou **Latitude + Longitude** pour pouvoir importer.
+    Sous chaque colonne, un menu assigne son rôle (tableau ci-dessous). Avec un en-tête reconnaissable, les rôles sont pré-remplis. Il faut au minimum **Easting (X)** et **Northing (Y)**, ou **Latitude** et **Longitude** : *Assignez au minimum Easting + Northing (ou Latitude + Longitude).*
   </Step>
   <Step title="Choisir le système de coordonnées source (si nécessaire)">
-    Si les colonnes assignées sont **Latitude/Longitude**, le fichier est déjà en WGS84 et cette étape est ignorée. Si ce sont des colonnes **Easting/Northing** (coordonnées projetées), recherchez le système de coordonnées source dans le champ dédié : tapez un code EPSG (ex. `2154`) ou un nom (`Lambert`, `UTM`, `RGF93`…) pour faire apparaître jusqu'à 10 résultats dans le catalogue EPSG embarqué (~7000 systèmes, projetés et géographiques).
+    Pour des colonnes **Latitude** et **Longitude**, le fichier est déjà en WGS84 et la sélection EPSG ne sert pas. Pour des colonnes **Easting (X)** et **Northing (Y)**, cherchez le **Système de coordonnées source** par code EPSG (`2154`) ou par nom (`Lambert`, `UTM`, `RGF93`…) dans le catalogue embarqué. Le choix initial est `EPSG:2154` (Lambert-93).
   </Step>
   <Step title="Vérifier l'aperçu et importer">
-    Un tableau affiche les 12 premières lignes du fichier avec, en bout de ligne, la **latitude/longitude WGS84** recalculée pour chaque point. Le compteur en bas de fenêtre indique le nombre de lignes valides. Cliquez sur **Importer** : seules les lignes converties avec succès sont créées comme points GCP dans la mission.
+    L'aperçu affiche les 12 premières lignes avec la latitude et la longitude WGS84 recalculées. Cliquez sur **Importer** : seules les lignes converties avec succès deviennent des GCP.
   </Step>
 </Steps>
 
-### Rôles de colonne disponibles
+### Rôles de colonne
 
 | Rôle | Usage |
 |---|---|
 | **Non défini** | Colonne ignorée. |
-| **Nom** | Identifiant du point. Si absent, un nom générique est généré (`GCP-001`, `GCP-002`, …). |
-| **Easting (X)** | Coordonnée projetée est-ouest — nécessite de choisir le système source. |
-| **Northing (Y)** | Coordonnée projetée nord-sud — nécessite de choisir le système source. |
-| **Élévation (Z)** | Affichée dans l'aperçu à titre indicatif uniquement. |
-| **Latitude** | Coordonnée géographique — dispense de choisir un système source. |
-| **Longitude** | Coordonnée géographique — dispense de choisir un système source. |
+| **Nom** | Identifiant du point. Sans colonne de nom, un nom générique est généré (`GCP-001`, `GCP-002`…). |
+| **Easting (X)** | Coordonnée projetée est-ouest ; demande un système source. |
+| **Northing (Y)** | Coordonnée projetée nord-sud ; demande un système source. |
+| **Élévation (Z)** | Affichée à titre indicatif seulement. |
+| **Latitude** | Coordonnée géographique. |
+| **Longitude** | Coordonnée géographique. |
 
 <Warning>
-  La colonne **Élévation (Z)**, si présente, n'est **jamais** utilisée pour positionner le point importé : elle n'est reprojetée par aucun calcul et n'est pas conservée — le GCP créé dans la mission ne stocke aucune altitude (import 2D uniquement, latitude/longitude seules). Sur le globe, la cible du GCP est calée visuellement sur le terrain affiché (mode « collé au sol ») en continu, ce n'est pas une valeur de MNT calculée une fois et mémorisée à l'import.
+  La colonne **Élévation (Z)** n'est pas utilisée : le GCP créé ne conserve aucune altitude (latitude et longitude seulement). Sur le globe, la cible suit le terrain affiché.
 </Warning>
 
 <Tip>
-  La reprojection vers WGS84 s'exécute automatiquement dès que le mappage de colonnes et le système source sont valides, et se met à jour à chaque changement — pas besoin de bouton « appliquer ». Une ligne qui échoue à se reprojeter (coordonnée hors du domaine du système choisi, valeur non numérique…) apparaît surlignée dans l'aperçu et n'est pas comptée dans les lignes valides.
+  La reprojection vers WGS84 se met à jour à chaque changement de colonne ou de système source. Une ligne qui échoue à se reprojeter apparaît surlignée dans l'aperçu et n'est pas comptée parmi les lignes valides.
 </Tip>
 
-## Affichage des GCP importés sur le globe
+## Affichage des GCP sur le globe
 
-Chaque GCP importé apparaît sur le globe sous la forme d'une **cible en damier noir et blanc**, avec une étiquette portant son nom juste au-dessus. La cible garde une taille constante à l'écran quel que soit le niveau de zoom (comme un repère sur une carte), et s'estompe progressivement puis disparaît complètement lorsque la caméra s'éloigne beaucoup du sol — à ce niveau de zoom, les cibles seraient de toute façon trop petites et trop nombreuses pour rester lisibles.
+Chaque GCP apparaît sur le globe sous la forme d'une cible en damier noir et blanc, avec une étiquette portant son nom. La cible garde une taille constante à l'écran et s'estompe quand la caméra s'éloigne beaucoup du sol.

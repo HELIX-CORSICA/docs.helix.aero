@@ -5,9 +5,9 @@ description: "Présentation générale de Helix Flight Planner et de son fonctio
 
 # Introduction
 
-Helix Flight Planner est une application desktop **Windows** de planification de vol pour le relevé aérien. Elle s'adresse aux opérateurs drone, avion et hélicoptère qui préparent des missions de **photogrammétrie**, de **LiDAR** ou de capteurs **pushbroom** : tracer la zone à survoler, régler les paramètres de vol, vérifier la couverture, puis exporter un plan prêt à charger dans le FMS ou l'application de vol de l'aéronef.
+Helix Flight Planner est une application de bureau de planification de vol pour le relevé aérien. Elle s'adresse aux opérateurs drone, avion et hélicoptère qui préparent des missions de **photogrammétrie** ou de **LiDAR** : tracer la zone à survoler, régler les paramètres de vol, vérifier la couverture, puis exporter un plan prêt à charger dans l'application de vol de l'aéronef.
 
-Cette page présente la structure générale de l'application avant d'entrer dans le détail de chaque écran — voir les guides listés en bas de page pour les étapes concrètes.
+Cette page présente la structure générale de l'application avant le détail de chaque écran ; les guides listés en bas de page donnent les étapes concrètes.
 
 ## Deux espaces de travail
 
@@ -15,47 +15,47 @@ Une fois connecté, l'application s'organise autour de deux écrans principaux.
 
 <CardGroup cols={2}>
   <Card title="Tableau de bord" icon="layout-grid">
-    Écran d'accueil après connexion. Il liste toutes vos missions (recherche, tri, vue grille ou liste) et donne accès à deux catalogues : **Capteurs** et **Appareils** (aéronefs). C'est aussi ici que vous créez une nouvelle mission ou importez un fichier `.helix`.
+    Écran d'accueil après connexion. Il liste vos missions (recherche, tri, vue cartes ou liste) et donne accès aux catalogues **Capteurs** et **Appareils**. Vous y créez une mission ou importez un fichier `.helix`.
   </Card>
   <Card title="Éditeur de mission" icon="globe">
-    Ouvert en cliquant sur une mission. Un globe 3D (Cesium) occupe le centre de l'écran : vous y tracez les zones à survoler, réglez les paramètres de vol dans le panneau latéral, suivez la couverture et lancez l'export du plan.
+    Ouvert en cliquant sur une mission. Un globe 3D occupe le centre de l'écran : vous y tracez les zones à survoler, réglez les paramètres de vol dans le panneau latéral, suivez la couverture et lancez l'export du plan.
   </Card>
 </CardGroup>
 
-Dans le tableau de bord, l'onglet **Missions** affiche vos plans de vol ; les onglets **Capteurs** et **Appareils** ouvrent les catalogues de capteurs (caméras, LiDAR, pushbroom) et d'aéronefs que vous utilisez pour configurer vos missions.
+Dans le tableau de bord, l'onglet **Missions** affiche vos plans de vol ; les onglets **Capteurs** et **Appareils** ouvrent les catalogues de capteurs (caméras, LiDAR) et d'aéronefs que vous utilisez pour configurer vos missions.
 
-Dans l'éditeur de mission, chaque mission peut contenir plusieurs **vols** — un vol correspond à un aéronef et un capteur donnés, avec sa ou ses zones à survoler (polygone ou corridor). Le globe 3D, la barre d'outils de dessin, le panneau de paramètres et la barre d'export sont les points d'entrée que vous retrouverez dans les guides suivants.
+Dans l'éditeur, une mission peut contenir plusieurs **vols**. Un vol correspond à un aéronef et regroupe une ou plusieurs zones à survoler (polygone ou corridor), chacune avec son capteur. Le globe 3D, la barre d'outils de dessin, le panneau de paramètres et la barre d'export sont les points d'entrée décrits dans les guides suivants.
 
 ## Compte et licence
 
-Helix Flight Planner nécessite un **compte Helix Aero** pour se connecter. La licence est rattachée à la machine : à la connexion, l'application enregistre ce poste auprès du serveur de licence (dans la limite du nombre de postes inclus dans votre abonnement).
+Helix Flight Planner nécessite un **compte Helix Aero**. La licence est rattachée à la machine : à la connexion, l'application enregistre ce poste auprès du serveur de licence, dans la limite du nombre de postes de votre offre. Les droits ouverts par chaque offre sont décrits dans [Offres et droits](/fr/compte/offres-et-droits).
 
 <CardGroup cols={2}>
   <Card title="Synchronisation automatique" icon="cloud">
-    Vos missions, vos capteurs et aéronefs personnalisés se synchronisent automatiquement avec le cloud Helix Aero. Vous retrouvez votre espace de travail à l'identique en vous connectant depuis un autre poste.
+    Vos missions, vos capteurs et aéronefs personnalisés se synchronisent avec le cloud Helix Aero. Vous retrouvez votre espace de travail en vous connectant depuis un autre poste.
   </Card>
   <Card title="Mode hors ligne" icon="wifi-off">
-    Une fois activée, l'application reste utilisable sans connexion internet pendant **7 jours**. Passé ce délai, une reconnexion est nécessaire pour continuer à travailler.
+    Une fois la licence vérifiée, l'application reste utilisable sans connexion Internet pendant **7 jours**. Passé ce délai, une reconnexion est nécessaire.
   </Card>
 </CardGroup>
 
 <Note>
-  Le réseau reste nécessaire pour la connexion initiale, la synchronisation et certains services en ligne (météo, NOTAM, imagerie/relief). Le mode hors ligne couvre la poursuite du travail de planification, pas l'ensemble des fonctionnalités.
+  Le réseau reste nécessaire pour la connexion initiale, la synchronisation et certains services en ligne (météo, NOTAM, imagerie et relief). Le mode hors ligne permet de poursuivre la planification, pas d'utiliser tous les services.
 </Note>
 
 ## Pour commencer
 
 <CardGroup cols={2}>
   <Card title="Démarrage rapide" icon="rocket" href="/fr/quickstart">
-    Installez l'application et créez votre première mission.
+    Connectez-vous et créez votre première mission.
   </Card>
-  <Card title="Planification de mission" icon="map" href="/fr/guides/mission-planning">
-    Le flux complet : tableau de bord, tracé de zone, paramètres, export.
+  <Card title="Dessiner une zone" icon="map" href="/fr/mission/dessiner-une-zone">
+    Le tracé des zones, corridors, obstructions et points de décollage.
   </Card>
-  <Card title="Catalogue capteurs" icon="camera" href="/fr/guides/sensors">
-    Parcourir le catalogue de capteurs et d'aéronefs, ou en créer des personnalisés.
+  <Card title="Capteurs et appareils" icon="camera" href="/fr/capteurs/choisir-capteur-et-appareil">
+    Choisir un capteur et un appareil pour une zone.
   </Card>
-  <Card title="Formats d'export" icon="download" href="/fr/guides/export-formats">
+  <Card title="Formats d'export" icon="download" href="/fr/export/vue-densemble">
     Les formats disponibles et dans quel cas les utiliser.
   </Card>
 </CardGroup>
