@@ -1,0 +1,132 @@
+---
+title: "Arguments"
+description: "Comment écrire les arguments d'une commande : valeurs, booléens, clés imbriquées, listes de points, options répétées et objets JSON."
+icon: "code"
+---
+
+Les arguments d'un outil s'écrivent sous la forme de paires `--cle valeur`. `helix-cli` convertit chaque valeur dans le type que l'outil attend, d'après le schéma affiché par `helix-cli help <outil>`. Vous n'avez donc jamais à préciser si une valeur est un nombre ou un texte.
+
+## Syntaxe de base
+
+```sh
+helix-cli mission_load --missionId abc123
+helix-cli terrain_at --lat 42.30 --lon 9.15
+```
+
+Vous pouvez aussi attacher la valeur à la clé avec un signe égal :
+
+```sh
+helix-cli terrain_at --lat=42.30 --lon=9.15
+```
+
+L'ordre des arguments n'a pas d'importance. L'option `--pretty` peut se placer n'importe où et n'est pas un argument de l'outil.
+
+## Les types
+
+| Type dans le schéma | Comment l'écrire | Exemple |
+|---|---|---|
+| `string` | Le texte tel quel. Mettez-le entre guillemets s'il contient des espaces. | `--name "Corte, lot 3"` |
+| `number` | Un nombre avec un **point décimal**. Les nombres négatifs sont acceptés. | `--lon -73.5` |
+| `integer` | Un nombre entier. | `--vertexIndex 2` |
+| `boolean` | `true` ou `false`. La clé seule vaut `true`. | `--params.doubleGrid` |
+| `enum` | Une des valeurs permises, avec l'orthographe et la casse exactes. | `--kind polygon` |
+
+Les valeurs sont typées d'après le schéma. Par exemple, `--name 2024` envoie le texte `2024`, car `name` est une chaîne.
+
+## Clés imbriquées
+
+Certains arguments sont des objets. Atteignez leurs champs avec un point :
+
+```sh
+helix-cli params_set --params.altitudeM 120 --params.altitudeMode AGL --params.doubleGrid
+```
+
+Ici `params` est un objet à trois champs. La clé seule, `--params.doubleGrid`, met ce booléen à `true`. Pour le mettre à `false`, écrivez `--params.doubleGrid false`.
+
+La même notation sert pour la cible de la caméra :
+
+```sh
+helix-cli camera_set --lat 42.30 --lon 9.15 --height 400 --target.lat 42.302 --target.lon 9.153
+```
+
+## Listes de points
+
+Les arguments qui attendent une liste de points `lat`, `lon` (`points` de `element_add`, `vertices` de `obstruction_add`) acceptent une forme compacte : les points séparés par des espaces, chacun écrit `lat,lon`.
+
+```sh
+helix-cli element_add --kind polygon --points "42.3000,9.1500 42.3000,9.1560 42.3040,9.1560 42.3040,9.1500"
+```
+
+- Latitude d'abord, longitude ensuite, séparées par une virgule, **sans espace** autour de la virgule.
+- Les points sont séparés par un espace ou un point-virgule (`;`).
+- Le séparateur décimal est le point. La virgule est toujours le séparateur entre latitude et longitude.
+- Les coordonnées sont en degrés décimaux WGS84.
+
+Vous pouvez aussi passer la liste en JSON, dès que la valeur commence par `[` :
+
+```sh
+helix-cli element_add --kind polygon --points '[{"lat":42.30,"lon":9.15},{"lat":42.30,"lon":9.156},{"lat":42.304,"lon":9.156}]'
+```
+
+## Listes de textes : répéter l'option
+
+Pour un argument qui attend une liste de textes, répétez l'option une fois par valeur :
+
+```sh
+helix-cli kml_import --paths /data/zone-nord.kml --paths /data/zone-sud.kml
+helix-cli element_delete --elementIds <id1> --elementIds <id2>
+```
+
+Une seule occurrence donne une liste d'un élément. Vous pouvez aussi passer la liste en JSON, dès que la valeur commence par `[` :
+
+```sh
+helix-cli kml_import --paths '["/data/zone-nord.kml","/data/zone-sud.kml"]'
+```
+
+## Objets et JSON complet
+
+Un argument de type objet peut s'écrire en JSON d'un seul bloc :
+
+```sh
+helix-cli params_set --params '{"altitudeM":120,"overlapFrontPct":80,"doubleGrid":true}'
+```
+
+Vous pouvez aussi donner tous les arguments de l'outil sous la forme d'un unique objet JSON. Il doit alors être le **premier** argument :
+
+```sh
+helix-cli params_set '{"params":{"altitudeM":120,"overlapFrontPct":80}}'
+```
+
+<Warning>
+Dans un terminal, les guillemets doubles d'un texte JSON peuvent être modifiés avant d'atteindre `helix-cli`, selon le shell et sa version (Windows PowerShell est le cas habituel). Si vous obtenez `JSON invalide`, passez à la forme `--cle valeur`, qui évite les guillemets imbriqués, ou écrivez le JSON dans un fichier et lisez-le dans une variable.
+</Warning>
+
+## Chemins de fichiers
+
+Les outils qui lisent ou écrivent un fichier (`kml_import`, `obstructions_import`, `mission_export`) reçoivent un **chemin que l'application interprète**, pas `helix-cli`. Donnez toujours un **chemin absolu**, sur un disque que l'application peut atteindre :
+
+```sh
+helix-cli mission_export --format kmz --path "C:/Missions/corte-lot3.kmz"
+```
+
+Sous Windows, les barres obliques (`C:/Missions/...`) sont le moyen le plus simple d'éviter de protéger les barres obliques inverses.
+
+## Erreurs d'arguments
+
+Quand un argument est incorrect, la commande affiche un message sur la sortie d'erreur et se termine avec le **code de sortie 2**, sans contacter l'application :
+
+| Message | Cause |
+|---|---|
+| `INVALID_ARGS: arguments requis: missionId` | Un argument obligatoire manque. |
+| `INVALID_ARGS: argument inconnu: foo` | L'outil n'a pas d'argument nommé `foo`. |
+| `INVALID_ARGS: kind: valeur hors de …` | La valeur n'est pas une des valeurs permises (`enum`). |
+| `--lat : nombre attendu, reçu « abc »` | La valeur n'est pas un nombre. La même forme existe pour `entier attendu` et `true\|false attendu`. |
+| `--lat : valeur manquante` | La clé est le dernier mot de la commande et n'a pas de valeur. |
+| `argument inattendu « x » (forme --cle valeur)` | Un mot qui n'est pas une `--cle` a été trouvé là où une clé était attendue. |
+| `point « 42.3 » : lat,lon attendu` | Un point n'est pas écrit `lat,lon`. |
+| `JSON invalide : …` ou `objet JSON attendu` | Le JSON complet passé en premier argument n'est pas un objet valide. |
+
+## Voir aussi
+
+- [Sorties et codes de retour](/fr/cli/utilisation/sorties-et-codes-de-retour)
+- [Référence des commandes](/fr/cli/reference/missions-et-vols)

@@ -1,0 +1,69 @@
+---
+title: "Quality control"
+description: "Reference of the tools that run the quality check of the coverage (GSD, density, overlap) and choose the metric shown on the globe."
+icon: "gauge"
+---
+
+The quality check shows, before the flight, whether the planned coverage meets your needs: resolution (GSD), density, overlap. It is the same check as the **QC** panel of the application. See [Quality control (QC)](/flight-planner/qualite/controle-qualite).
+
+| Tool | Role |
+|---|---|
+| [`qc_compute`](#qc_compute) | Runs the quality check of the active flight. |
+| [`qc_view`](#qc_view) | Chooses the metric and the scale shown on the globe. |
+
+Compute the plan first with [`plan_compute`](/cli/reference/planification#plan_compute), then run the quality check.
+
+## `qc_compute`
+
+Runs the coverage quality check (GSD, density, overlap) of the active flight and waits for the end of the check, which can take up to 180 seconds.
+
+**Arguments:** none.
+
+```sh
+helix-cli qc_compute --pretty
+```
+
+**Result:** the state of the quality check once it is finished:
+
+| Field | Content |
+|---|---|
+| `computing` | `false` once the check is finished. |
+| `progressPct` | Progress of the check, as a percentage. |
+| `metric` | The metric currently shown: `Density`, `Gsd`, `Sidelap`, `OverlapCount` or `Footprint`. |
+| `scale` | The scale currently shown: `Vol` (the whole flight) or `Element` (one element). |
+| `error` | The error message of the check, or `null`. |
+| `status` | `AJour` (up to date), `Perime` (out of date), `Vide` (nothing computed) or `EnCours` (running). |
+
+If the check cannot start, the command ends with `APP_ERROR` and the reason in the message. If it is still running at the end of the waiting time, you get `APP_TIMEOUT`.
+
+## `qc_view`
+
+Chooses the metric and the scale shown on the globe. The tool only changes the display: it does not run the check. Use [`qc_compute`](#qc_compute) for that.
+
+| Argument | Type | Required | Description |
+|---|---|---|---|
+| `metric` | `gsd`, `density`, `sidelap`, `overlapCount` or `footprint` | No | The metric to show. |
+| `scale` | `flight` or `element` | No | `flight` for the whole flight, `element` for one element. |
+| `elementId` | text | No | The element to show when the scale is `element`. Only taken into account together with `scale`. It becomes the active element. |
+
+The values match the criteria of the QC panel: `gsd` is **GSD**, `overlapCount` is **Passes**, and `footprint` is **Footprint**. `density` is the density, and `sidelap` is the side overlap.
+
+```sh
+helix-cli qc_view --scale element --elementId <elementId> --metric sidelap
+```
+
+**Result:** `metric` and `scale`, as they are after the change (`Gsd`, `Vol`…).
+
+Things to know:
+
+- All the arguments are optional. Give only what you want to change.
+- The scale is applied **before** the metric, so one call can give both, as in the example above.
+- The `sidelap` metric requires the `element` scale. Asking for `sidelap` while the scale is `flight` fails with `APP_ERROR: critère refusé par l'état QC (Sidelap exige l'échelle élément : passez scale=element)`. Add `--scale element` to the call.
+- A metric that does not apply to the type of sensor of the mission is refused with `APP_ERROR`.
+
+To show or hide the quality layers on the globe, see [`layers_set`](/cli/reference/camera-terrain-et-couches#layers_set).
+
+## See also
+
+- [Planning](/cli/reference/planification)
+- [Camera, terrain and layers](/cli/reference/camera-terrain-et-couches)

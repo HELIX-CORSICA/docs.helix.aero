@@ -1,0 +1,166 @@
+---
+title: "Caméra, terrain et couches"
+description: "Référence des outils qui lisent et placent la caméra, cadrent un élément, donnent la hauteur du sol en un point et affichent ou masquent les couches du globe."
+icon: "camera"
+---
+
+Ces cinq outils commandent ce que vous voyez sur le globe et donnent accès au terrain.
+
+| Outil | Rôle |
+|---|---|
+| [`camera_get`](#camera_get) | Lit la caméra actuelle. |
+| [`camera_set`](#camera_set) | Place la caméra, par des angles ou en visant une cible. |
+| [`camera_frame`](#camera_frame) | Amène la caméra sur un élément ou sur toute la mission. |
+| [`terrain_at`](#terrain_at) | Donne la hauteur du sol en un point. |
+| [`layers_set`](#layers_set) | Affiche ou masque des couches. |
+
+## Les hauteurs : HAE, AMSL et AGL
+
+Plusieurs arguments prennent une hauteur avec une **référence** :
+
+| Référence | Signification |
+|---|---|
+| `hae` | Hauteur au-dessus de l'ellipsoïde WGS84. C'est la valeur par défaut. |
+| `amsl` | Altitude au-dessus du niveau moyen de la mer (géoïde EGM2008). |
+| `agl` | Hauteur au-dessus du sol, au point concerné. |
+
+Les différences entre ces références sont expliquées dans [Terrain (MNT) et géoïdes](/fr/flight-planner/carte/terrain-et-geoides).
+
+## `camera_get`
+
+Lit la caméra actuelle : position, cap et tangage.
+
+**Arguments :** aucun.
+
+```sh
+helix-cli camera_get
+```
+
+**Résultat :**
+
+| Champ | Contenu |
+|---|---|
+| `lat`, `lon` | Position de la caméra, en degrés décimaux. |
+| `heightHaeM` | Hauteur au-dessus de l'ellipsoïde, en mètres. |
+| `heightAmslM` | Altitude au-dessus du niveau de la mer, en mètres. Elle vaut `null` si le géoïde n'a pas pu être lu. |
+| `headingDeg` | Cap, en degrés. |
+| `pitchDeg` | Tangage, en degrés. |
+| `ortho` | `true` quand la vue est orthographique. |
+
+## `camera_set`
+
+Place la caméra. Vous donnez sa position et soit les angles, soit une **cible** que la caméra regarde.
+
+| Argument | Type | Obligatoire | Description |
+|---|---|---|---|
+| `lat` | nombre | Oui | Latitude de la caméra. |
+| `lon` | nombre | Oui | Longitude de la caméra. |
+| `height` | nombre | Oui | Hauteur de la caméra, en mètres. |
+| `heightRef` | `hae`, `amsl` ou `agl` | Non | Référence de `height`. Par défaut `hae`. |
+| `headingDeg` | nombre | Non | Cap, en degrés. Par défaut 0. |
+| `pitchDeg` | nombre, de -90 à 90 | Non | Tangage, en degrés. Par défaut -90, c'est-à-dire le **nadir** : la caméra regarde droit vers le bas. |
+| `target` | objet | Non | Le point à regarder. Ses champs sont ci-dessous. Quand il est donné, il l'emporte sur `headingDeg` et `pitchDeg`. |
+
+Champs de `target` :
+
+| Champ | Type | Obligatoire | Description |
+|---|---|---|---|
+| `lat` | nombre | Oui | Latitude de la cible. |
+| `lon` | nombre | Oui | Longitude de la cible. |
+| `alt` | nombre | Non | Hauteur de la cible. Sans elle, la cible est le point au sol. |
+| `altRef` | `hae`, `amsl` ou `agl` | Non | Référence de `alt`. Par défaut `hae`. |
+
+Placer la caméra à 400 m au-dessus d'une zone, regardant droit vers le bas :
+
+```sh
+helix-cli camera_set --lat 42.302 --lon 9.153 --height 400 --heightRef agl
+```
+
+La placer au sud de la zone et lui faire regarder le sol au centre de la zone :
+
+```sh
+helix-cli camera_set --lat 42.295 --lon 9.153 --height 300 --heightRef agl --target.lat 42.302 --target.lon 9.153
+```
+
+**Résultat :** la caméra telle qu'elle a été placée : `lat`, `lon`, `heightHaeM`, `headingDeg` et `pitchDeg` (la hauteur et les angles sont arrondis à deux décimales). Avec une `target`, le résultat contient aussi un objet `target` : `heightHaeM` de la cible, `distanceM` jusqu'à la cible, et `pitchClamped`, qui vaut `true` si le tangage a dû être limité au maximum que le viewer autorise.
+
+Erreurs possibles :
+
+- `INVALID_ARGS` si la latitude est hors plage, ou si la cible coïncide avec la caméra.
+- `NOT_FOUND` avec `aucune hauteur de terrain à ce point` quand vous demandez une hauteur `agl` et qu'aucune hauteur de terrain n'est disponible en ce point.
+
+## `camera_frame`
+
+Amène la caméra sur un élément, ou sur toute la mission quand vous ne donnez pas d'élément.
+
+| Argument | Type | Obligatoire | Description |
+|---|---|---|---|
+| `elementId` | texte | Non | L'élément à cadrer. Sans lui, la caméra cadre toute la mission. |
+
+```sh
+helix-cli camera_frame --elementId <elementId>
+```
+
+**Résultat :** `lat`, `lon` et `heightM`, la position vers laquelle la caméra se rend. Un élément inconnu donne `NOT_FOUND`, de même qu'une mission sans rien à cadrer (`rien à cadrer`).
+
+## `terrain_at`
+
+Donne la hauteur du sol en un point.
+
+| Argument | Type | Obligatoire | Description |
+|---|---|---|---|
+| `lat` | nombre | Oui | Latitude du point. |
+| `lon` | nombre | Oui | Longitude du point. |
+
+```sh
+helix-cli terrain_at --lat 42.302 --lon 9.153
+```
+
+**Résultat :**
+
+| Champ | Contenu |
+|---|---|
+| `lat`, `lon` | Le point demandé. |
+| `groundHaeM` | Hauteur du sol au-dessus de l'ellipsoïde, en mètres. |
+| `groundAmslM` | Altitude du sol au-dessus du niveau de la mer, en mètres. |
+| `geoidUndulationM` | Ondulation du géoïde en ce point, en mètres. `groundAmslM` vaut `groundHaeM` moins cette valeur. |
+
+Les valeurs sont arrondies au centimètre. Si aucune hauteur de terrain n'est disponible en ce point, la commande donne `NOT_FOUND` (`aucune hauteur de terrain à ce point`).
+
+## `layers_set`
+
+Affiche ou masque des couches du globe.
+
+| Argument | Type | Obligatoire | Description |
+|---|---|---|---|
+| `layers` | objet | Oui | Les couches à modifier, avec `true` pour afficher et `false` pour masquer. |
+
+Champs de `layers`, tous `true` ou `false` :
+
+| Couche | Ce qu'elle affiche |
+|---|---|
+| `flight_lines` | Les lignes de vol. |
+| `obstructions` | Les obstructions. |
+| `airports` | Les aéroports. |
+| `gcp` | Les points de calage au sol (GCP). |
+| `qc_gsd` | La carte de GSD du contrôle qualité. |
+| `qc_density` | La carte de densité du contrôle qualité. |
+| `qc_sidelap` | La carte de recouvrement latéral du contrôle qualité. |
+| `sensor_footprint` | L'empreinte du capteur. |
+
+```sh
+helix-cli layers_set --layers.obstructions true --layers.qc_gsd true --layers.airports false
+```
+
+**Résultat :** `layers`, avec la valeur que prend désormais chaque couche nommée. Les couches que vous n'avez pas nommées restent comme elles étaient.
+
+<Note>
+Un nom de couche inconnu refuse **tout l'appel** : rien n'est appliqué, et la commande se termine avec `INVALID_ARGS: calque inconnu : <noms> (calques : flight_lines, obstructions, airports, gcp, qc_gsd, qc_density, qc_sidelap, sensor_footprint)`. Les noms s'écrivent en minuscules avec des tirets bas. Les alias `qc_passes` (même couche que `qc_sidelap`) et `qc_footprint` (même couche que `sensor_footprint`) sont aussi acceptés. Une valeur qui n'est ni `true` ni `false` refuse aussi tout l'appel, avec `INVALID_ARGS: <nom>: booléen attendu`.
+</Note>
+
+Pour les couches du fond de carte, voir [Fonds de carte et couches](/fr/flight-planner/carte/fonds-et-couches). Pour les cartes de qualité, voir [`qc_view`](/fr/cli/reference/controle-qualite#qc_view).
+
+## Voir aussi
+
+- [Contrôle qualité](/fr/cli/reference/controle-qualite)
+- [Éléments et géométrie](/fr/cli/reference/elements-et-geometrie)

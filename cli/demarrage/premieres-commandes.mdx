@@ -1,0 +1,132 @@
+---
+title: "First commands"
+description: "List the tools with helix-cli tools, read the help of a tool, check the application with status, and make a first call."
+icon: "play"
+---
+
+This page walks you through the five commands to know before anything else. Flight Planner must be running and signed in.
+
+## The shape of a command
+
+```text
+helix-cli <tool> [--key value ...]
+```
+
+A **tool** is one action of the application, such as `missions_list` or `plan_compute`. Its arguments follow as `--key value` pairs. The full syntax is in [Arguments](/cli/utilisation/arguments).
+
+Besides the tools, `helix-cli` has a few commands of its own:
+
+| Command | What it does |
+|---|---|
+| `helix-cli tools` | Lists the tools. |
+| `helix-cli help <tool>` | Shows the description and the arguments of a tool. |
+| `helix-cli status` | Tells whether the application answers. |
+| `helix-cli mcp` | Starts the MCP bridge for an AI assistant. See [AI assistants](/cli/mcp/assistants-ia). |
+| `helix-cli docs` | Opens this documentation in your browser (in French if your system language is French). The address is also printed in the terminal. |
+| `helix-cli --help` | Shows the usage text. |
+
+The option `--pretty`, which you can put anywhere, indents the JSON result to make it readable.
+
+## List the tools
+
+```sh
+helix-cli tools
+```
+
+The command prints one line per tool (31 in the application you installed), with its name and a short description (in English), for example:
+
+```text
+app_status         Planner snapshot: mission, active flight and element, camera pose, compute and QC state.
+missions_list      List stored missions (id, name, client, status, updatedAt). client is the project's client name, null for a local mission.
+mission_load       Open a stored mission by id (see missions_list).
+```
+
+The list contains only these 31 tools. A development build of the application also lists tools whose name starts with `dev_`, followed by a note saying that they exist only outside production; you will not see them in the application you installed.
+
+This command does not contact the application, so it works even if Flight Planner is closed. The same list, organized by theme, is in the [command reference](/cli/reference/missions-et-vols).
+
+## Read the help of a tool
+
+```sh
+helix-cli help mission_load
+```
+
+The command prints the name of the tool, its description and the schema of its arguments, in JSON:
+
+```json
+{
+  "args": {
+    "additionalProperties": false,
+    "properties": {
+      "missionId": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "missionId"
+    ],
+    "type": "object"
+  },
+  "description": "Open a stored mission by id (see missions_list).",
+  "name": "mission_load"
+}
+```
+
+How to read the schema:
+
+- `properties` lists the accepted arguments, with their type (`string`, `number`, `integer`, `boolean`, `array`, `object`) or their allowed values (`enum`).
+- `required` lists the mandatory arguments. Here, `missionId`.
+- `additionalProperties: false` means that any other argument is rejected.
+
+If you give an unknown tool name, the command prints the usage text and ends with exit code 2.
+
+## Check that the application answers
+
+```sh
+helix-cli status
+```
+
+The command answers with a line of JSON that contains the name and the version of the application. If the application is not running, you get exit code 3 and an explanatory message. See [Troubleshooting](/cli/aide/depannage).
+
+## Make a first call
+
+<Steps>
+  <Step title="Read the state of the planner">
+    ```sh
+    helix-cli app_status --pretty
+    ```
+
+    The result describes the open mission (if any), the active flight and element, the camera, and the state of the computation and of the quality check. See [`app_status`](/cli/reference/missions-et-vols#app_status).
+  </Step>
+  <Step title="List your missions">
+    ```sh
+    helix-cli missions_list --pretty
+    ```
+
+    Each mission comes with an `id`. Copy the identifier of the mission you want.
+  </Step>
+  <Step title="Open a mission">
+    ```sh
+    helix-cli mission_load --missionId <missionId>
+    ```
+
+    Replace `<missionId>` with the identifier you copied. The mission opens in the application, exactly as if you had clicked it in the dashboard.
+  </Step>
+  <Step title="Read its geometry">
+    ```sh
+    helix-cli mission_geometry --pretty
+    ```
+
+    The result lists the elements of the active flight with their vertices. The identifiers it contains are those that the other tools expect.
+  </Step>
+</Steps>
+
+<Note>
+The tools work on the **active** flight and the **active** element. If a command answers that there is no active element, select one with [`element_select`](/cli/reference/elements-et-geometrie#element_select), or create one with [`element_add`](/cli/reference/elements-et-geometrie#element_add).
+</Note>
+
+## Next steps
+
+- Learn to write the arguments: [Arguments](/cli/utilisation/arguments).
+- Understand the results and the errors: [Output and exit codes](/cli/utilisation/sorties-et-codes-de-retour).
+- Browse the tools: [Missions and flights](/cli/reference/missions-et-vols).

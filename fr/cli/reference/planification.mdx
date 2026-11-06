@@ -1,0 +1,123 @@
+---
+title: "Planification"
+description: "Référence des outils qui lisent et règlent les paramètres de vol d'un élément, calculent le plan de vol et lisent son résumé."
+icon: "sliders"
+---
+
+Ces quatre outils agissent sur l'**élément actif**. Sélectionnez-en un d'abord avec [`element_select`](/fr/cli/reference/elements-et-geometrie#element_select), ou créez-en un avec [`element_add`](/fr/cli/reference/elements-et-geometrie#element_add). Sans élément actif, ils répondent `NOT_FOUND`.
+
+| Outil | Rôle |
+|---|---|
+| [`params_get`](#params_get) | Lit les paramètres de vol de l'élément actif. |
+| [`params_set`](#params_set) | Les règle. |
+| [`plan_compute`](#plan_compute) | Calcule le plan de vol et attend le résumé. |
+| [`plan_get`](#plan_get) | Lit le résumé du plan déjà calculé. |
+
+## `params_get`
+
+Lit les paramètres de vol de l'élément actif.
+
+**Arguments :** aucun.
+
+```sh
+helix-cli params_get --pretty
+```
+
+**Résultat :** `elementId`, et un objet `params` qui contient tous les paramètres listés dans le tableau de [`params_set`](#params_set), avec leur valeur actuelle. `altitudeMode` s'écrit en majuscules (`AMSL`, `AGL`…).
+
+## `params_set`
+
+Règle un ou plusieurs paramètres de vol de l'élément actif.
+
+| Argument | Type | Obligatoire | Description |
+|---|---|---|---|
+| `params` | objet | Oui | Les paramètres à modifier, parmi ceux ci-dessous. Ne donnez que ceux que vous voulez changer. |
+
+Champs de `params` :
+
+| Paramètre | Type | Ce qu'il règle |
+|---|---|---|
+| `altitudeMode` | `AMSL`, `AGL`, `IAGL`, `FGL` ou `RANGEFINDER` | Référence de l'altitude de vol. `AMSL`, `AGL` et `IAGL` sont expliqués dans [Altitude, GSD et vitesse](/fr/flight-planner/parametres/onglet-vol). |
+| `altitudeM` | nombre | Altitude de vol, en mètres, dans le mode choisi. |
+| `gsdCm` | nombre | GSD, en centimètres. Dans l'application, l'altitude et le GSD sont liés : lisez le résultat pour voir les valeurs appliquées. |
+| `speedKmh` | nombre | Vitesse de vol, en km/h. |
+| `terrainTolM` | nombre | Tolérance AGL, en mètres. |
+| `overlapFrontPct` | nombre | Recouvrement avant, en %. |
+| `overlapSidePct` | nombre | Recouvrement latéral, en %. |
+| `directionDeg` | nombre | Direction des bandes, en degrés. |
+| `directionAuto` | `true` ou `false` | Laisse l'application proposer la direction (le bouton **AUTO**). |
+| `bufferM` | nombre | Marge **Buffer AOI** autour de la zone, en mètres. |
+| `overshootM` | nombre | **Overshoot** : distance ajoutée au-delà des extrémités des bandes, en mètres. |
+| `doubleGrid` | `true` ou `false` | **Double grille** : une seconde série de bandes. |
+| `strictZone` | `true` ou `false` | **Zone stricte** : cadre les bandes sur le contour. |
+| `photosInTurns` | `true` ou `false` | Photos prises dans les virages. |
+| `corridorLeftM` | nombre | Largeur d'un corridor à gauche de son axe, en mètres. |
+| `corridorRightM` | nombre | Largeur d'un corridor à droite de son axe, en mètres. |
+| `gimbalPitchDeg` | nombre | Tangage de la nacelle, en degrés. |
+
+Le recouvrement, la direction, le buffer, l'overshoot, la double grille et la zone stricte sont décrits dans [Recouvrement et orientation](/fr/flight-planner/parametres/onglet-geometrie).
+
+```sh
+helix-cli params_set --params.altitudeMode AGL --params.altitudeM 120 --params.overlapFrontPct 80 --params.overlapSidePct 70
+```
+
+**Résultat :** le même que `params_get` : `elementId` et les `params` tels qu'ils sont **après** la modification.
+
+Comment l'outil traite vos valeurs :
+
+- **Clé inconnue :** refusée avec `INVALID_ARGS` (`paramètre inconnu: …`).
+- **Mauvais type :** refusé avec `INVALID_ARGS` (par exemple `altitudeM: nombre attendu`).
+- **Lot accepté ou refusé en entier :** si une clé est incorrecte, aucune n'est appliquée.
+- **Valeur hors plage :** ramenée dans la plage valide. Lisez le résultat pour voir la valeur retenue.
+- **`IAGL` sur un avion :** refusé avec `LICENSE_REQUIRED` quand votre licence ne l'autorise pas. Tout le lot est alors refusé.
+
+## `plan_compute`
+
+Calcule le plan de vol de l'élément actif et attend la fin du calcul, qui peut durer jusqu'à 180 secondes. Le plan est ensuite enregistré avec la mission et affiché dans l'application.
+
+**Arguments :** aucun.
+
+Un capteur doit être réglé sur le vol (voir [`flight_configure`](/fr/cli/reference/missions-et-vols#flight_configure)).
+
+```sh
+helix-cli plan_compute --pretty
+```
+
+**Résultat :** `elementId`, et un objet `plan` avec le résumé du calcul :
+
+| Champ | Contenu |
+|---|---|
+| `primaryStrips` | Nombre de bandes principales. |
+| `crossStrips` | Nombre de bandes croisées (avec la double grille). |
+| `correctiveStrips` | Nombre de bandes correctives. |
+| `distanceM` | Distance totale de vol, en mètres. |
+| `timeS` | Durée totale de vol, en secondes. |
+| `areaM2` | Surface de la zone, en mètres carrés. |
+| `stripSpacingM` | Espacement entre les bandes, en mètres. |
+| `frames` | Nombre total de photos. |
+| `gsdCm` | GSD transversal, en centimètres. |
+| `altitudeAglM` | Altitude effective au-dessus du sol, en mètres. |
+| `altitudeAmslM` | Altitude effective au-dessus du niveau de la mer, en mètres. |
+| `sweepDeg` | Direction des bandes, en degrés. |
+
+Une valeur que le calcul ne fournit pas vaut `null`. Elle n'est jamais remplacée par 0.
+
+Si le calcul échoue, la commande se termine avec `APP_ERROR` et la raison. `aucun élément calculable` signifie que l'application n'a rien trouvé à calculer. `résultat périmé` signifie que l'élément a changé pendant le calcul : relancez la commande.
+
+## `plan_get`
+
+Lit le résumé du plan déjà calculé pour l'élément actif, **sans recalculer**.
+
+**Arguments :** aucun.
+
+```sh
+helix-cli plan_get
+```
+
+**Résultat :** le même que `plan_compute`. Si l'élément n'a pas de plan calculé, la commande donne `NOT_FOUND`.
+
+## Voir aussi
+
+- [Contrôle qualité](/fr/cli/reference/controle-qualite)
+- [Les bandes de vol](/fr/flight-planner/parametres/bandes)
+- [Exemples](/fr/cli/exemples/scenarios)

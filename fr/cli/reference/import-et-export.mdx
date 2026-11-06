@@ -1,0 +1,99 @@
+---
+title: "Import et export"
+description: "Référence des outils qui importent des zones et des obstructions depuis des fichiers et exportent la mission en KMZ, KML ou .helix."
+icon: "file-export"
+---
+
+Ces trois outils lisent et écrivent des fichiers. Ils font le même travail que le menu **Import** et la fenêtre **Export** de l'application. Voir [Importer des données](/fr/flight-planner/import-export/importer) et [Exporter le plan de vol](/fr/flight-planner/import-export/exporter).
+
+| Outil | Rôle |
+|---|---|
+| [`kml_import`](#kml_import) | Importe des polygones de fichiers en zones. |
+| [`obstructions_import`](#obstructions_import) | Importe des obstructions depuis un fichier. |
+| [`mission_export`](#mission_export) | Écrit la mission en fichier KMZ, KML ou .helix. |
+
+<Warning>
+Les chemins que vous donnez sont **lus et écrits par l'application**, pas par `helix-cli`. Donnez toujours des chemins absolus, sur un disque que l'application peut atteindre. Voir [Arguments](/fr/cli/utilisation/arguments#chemins-de-fichiers).
+</Warning>
+
+## `kml_import`
+
+Importe les polygones de fichiers KML, KMZ, GeoJSON ou GPX en zones du vol actif. Le nom de chaque polygone dans le fichier (le nom du Placemark dans un KML) devient le nom de la zone. Si la mission n'a pas encore de vol, un vol est créé.
+
+| Argument | Type | Obligatoire | Description |
+|---|---|---|---|
+| `paths` | liste de textes | Oui | Les chemins des fichiers. Au moins 1. Répétez l'option une fois par fichier. |
+
+```sh
+helix-cli kml_import --paths "C:/Data/zone-nord.kml"
+helix-cli kml_import --paths "C:/Data/zone-nord.kml" --paths "C:/Data/zone-sud.kmz"
+```
+
+**Résultat :**
+
+| Champ | Contenu |
+|---|---|
+| `elementIds` | Les identifiants des zones créées. |
+| `skipped` | Nombre d'entités ignorées : celles qui ne sont pas des polygones valides. |
+| `files` | Nombre de fichiers donnés. |
+| `failed` | Les fichiers illisibles : une liste d'objets avec le `path` du fichier et l'`error` qui en donne la raison. La liste est vide quand tous les fichiers ont pu être lus. |
+
+À savoir :
+
+- **Plusieurs fichiers à la fois exigent le plan Pro.** Sans lui, la commande se termine avec `LICENSE_REQUIRED: plusieurs fichiers : plan Pro requis (import.multi_kml)` et le code de sortie 4. Avec un seul fichier, il n'y a pas de restriction de ce genre.
+- Les zones de tous les fichiers arrivent ensemble, en une seule étape de l'historique : un seul [`history`](/fr/cli/reference/elements-et-geometrie#history) `--action undo` annule tout l'import.
+- **Un fichier illisible n'arrête pas la commande.** Les autres fichiers sont importés, et le fichier illisible est listé dans `failed` avec sa raison. Dans un script, vérifiez `failed`.
+- Si **aucun** fichier ne donne de polygone, la commande échoue avec `INVALID_ARGS`. Quand des fichiers étaient illisibles, le message les liste avec leur raison (`chemin : raison`), puis donne le nombre d'entités ignorées. Aucune zone n'est créée dans ce cas.
+
+## `obstructions_import`
+
+Importe les obstructions d'un fichier KML, KMZ ou GeoJSON dans le vol actif.
+
+| Argument | Type | Obligatoire | Description |
+|---|---|---|---|
+| `path` | texte | Oui | Le chemin du fichier. |
+
+```sh
+helix-cli obstructions_import --path "C:/Data/obstacles.geojson"
+```
+
+**Résultat :** `obstructionIds`, les identifiants des obstructions ajoutées. Si rien n'a pu être importé, la commande se termine avec `INVALID_ARGS`, avec la raison donnée par l'application quand il y en a une.
+
+Pour ajouter une seule obstruction à partir de ses coordonnées, utilisez [`obstruction_add`](/fr/cli/reference/elements-et-geometrie#obstruction_add).
+
+## `mission_export`
+
+Écrit la mission dans un fichier.
+
+| Argument | Type | Obligatoire | Description |
+|---|---|---|---|
+| `format` | `kmz`, `kml` ou `helix` | Oui | Le format du fichier. |
+| `path` | texte | Oui | Le chemin du fichier à écrire. |
+| `flightIds` | liste de textes | Non | Les vols à exporter. Par défaut, le vol actif. |
+
+Les formats :
+
+| `format` | Fichier | Remarques |
+|---|---|---|
+| `kmz` | Wayline DJI (KMZ WPML) | Pour des vols calculés. |
+| `kml` | Lignes de vol | |
+| `helix` | Fichier de mission `.helix` | Écrit toute la mission. `flightIds` est sans effet. |
+
+```sh
+helix-cli mission_export --format kmz --path "C:/Missions/corte-lot3.kmz"
+helix-cli mission_export --format kml --path "C:/Missions/corte-lot3.kml" --flightIds <vol1> --flightIds <vol2>
+```
+
+**Résultat :** `path`, `format` et `flightIds`, tels qu'ils ont été utilisés. La commande répond **une fois le fichier écrit**.
+
+À savoir :
+
+- Calculez le plan des vols avant un export `kmz` (voir [`plan_compute`](/fr/cli/reference/planification#plan_compute)).
+- Chaque format suit les règles de licence de l'interface. Un format que votre licence n'autorise pas donne `LICENSE_REQUIRED` et le code de sortie 4.
+- Si l'export est refusé ou échoue, la commande se termine avec la vraie raison, par exemple un terrain manquant ou un appareil absent. Les mêmes contrôles que dans la fenêtre **Export** s'appliquent.
+- Sans vol à exporter, la commande donne `NOT_FOUND` (`aucun vol à exporter`). Un `path` vide donne `INVALID_ARGS`.
+
+## Voir aussi
+
+- [Éléments et géométrie](/fr/cli/reference/elements-et-geometrie)
+- [Exemples](/fr/cli/exemples/scenarios)

@@ -1,0 +1,167 @@
+---
+title: "Dépannage"
+description: "Retrouver la cause d'une erreur de helix-cli d'après son code de sortie ou son message : application injoignable, licence, usage, erreurs des outils."
+icon: "wrench"
+---
+
+Partez du **code de sortie** de la commande (`$?` dans un shell, `$LASTEXITCODE` dans PowerShell), puis cherchez le message affiché sur la sortie d'erreur. La signification des codes est dans [Sorties et codes de retour](/fr/cli/utilisation/sorties-et-codes-de-retour).
+
+| Code de sortie | Section |
+|---|---|
+| 3 | [L'application est injoignable](#code-de-sortie-3--lapplication-est-injoignable) |
+| 4 | [Licence](#code-de-sortie-4--licence) |
+| 2 | [Usage](#code-de-sortie-2--usage) |
+| 1 | [Erreurs des outils](#code-de-sortie-1--erreurs-des-outils) |
+
+## Code de sortie 3 : l'application est injoignable
+
+Le message est rédigé en français et énumère les vérifications à faire. Il se termine par les adresses qui ont été cherchées :
+
+```text
+helix-cli ne trouve pas AERO Flight Planner. Vérifiez que :
+- l'application est lancée et vous y êtes connecté ;
+- votre licence inclut la ligne de commande (plan Pro) : sans elle, le serveur ne démarre pas ;
+- le serveur est démarré (Réglages → Serveur).
+Adresse cherchée : …
+```
+
+Ces vérifications donnent quatre causes à parcourir (le premier point du message couvre les deux premières) :
+
+| Cause | Comment vérifier | Que faire |
+|---|---|---|
+| L'application n'est pas lancée. | Cherchez le Flight Planner sur votre ordinateur. | Lancez-le et attendez la fin du démarrage. |
+| Aucune session n'est ouverte. | L'application affiche l'écran de connexion. | Connectez-vous. La licence est lue depuis votre session. Voir [Se connecter](/fr/flight-planner/demarrage/connexion). |
+| La licence n'inclut pas la ligne de commande. | Dans **Réglages**, section **Serveur**, la ligne **Accès** de la carte **Serveur MCP (agent IA)** n'affiche pas `CLI ✓`, et la ligne **État** indique **Add-on MCP ou CLI requis**. | Vérifiez votre plan : la ligne de commande est incluse dans le plan Pro. Voir [Prérequis et licence](/fr/cli/demarrage/prerequis-et-licence). |
+| Le serveur n'est pas démarré. | La ligne **État** indique **Arrêté** ou **Arrêté dans les Réglages**, ou **Erreur** suivi d'un code comme `PORT_IN_USE` ou `BIND_FAILED`. | Cliquez sur **Démarrer**, ou sur **Relancer** après une erreur. Si l'erreur persiste, quittez puis relancez l'application. |
+
+<Warning>
+Sans licence qui inclut la ligne de commande, le serveur ne démarre pas : le message est alors **exactement le même** que si l'application était fermée. `helix-cli` ne peut pas distinguer les deux cas : il constate seulement que personne n'est là. Vérifiez les quatre points ci-dessus.
+</Warning>
+
+Un second message signifie que le fichier contenant l'adresse du serveur a été trouvé, mais que personne ne répond :
+
+```text
+AERO Flight Planner ne répond pas sur le port … (…). Il a peut-être été fermé : relancez-le et réessayez.
+```
+
+L'application a probablement été fermée. Relancez-la, puis relancez la commande.
+
+<Note>
+Si deux exemplaires du Flight Planner sont ouverts en même temps, `helix-cli` parle à celui dont le fichier d'adresse est le plus récent.
+</Note>
+
+## Code de sortie 4 : licence
+
+```text
+LICENSE_REQUIRED: add-on addon.cli requis par la licence
+```
+
+Votre licence n'inclut pas la ligne de commande. Regardez la ligne **Accès** de la carte **Serveur MCP (agent IA)** : elle doit afficher `CLI ✓`. Le plan Pro inclut la ligne de commande, le plan Carto ne l'inclut pas. Un changement de licence est pris en compte sans relancer l'application.
+
+D'autres messages `LICENSE_REQUIRED` concernent une opération particulière :
+
+| Situation | Que faire |
+|---|---|
+| `kml_import` avec plusieurs fichiers : `plusieurs fichiers : plan Pro requis (import.multi_kml)` | Importez les fichiers un par un, ou utilisez le plan Pro. |
+| `mission_create` est refusé. | Votre licence n'autorise pas la création de missions. |
+| `mission_export` est refusé pour un format. | Votre licence n'autorise pas ce format. Essayez-en un autre. |
+| `params_set` avec `altitudeMode` à `IAGL` sur un avion. | Votre licence ne l'autorise pas. Choisissez un autre mode d'altitude. Tout le lot de paramètres a été refusé. |
+
+## Code de sortie 2 : usage
+
+La commande n'a pas contacté l'application. Le message dit ce qu'il faut corriger.
+
+| Message | Cause et correction |
+|---|---|
+| `outil inconnu : …` suivi du texte d'utilisation | Le nom de l'outil est mal orthographié. Listez les outils avec `helix-cli tools`. |
+| `INVALID_ARGS: arguments requis: …` | Un argument obligatoire manque. Lisez `helix-cli help <outil>`. |
+| `INVALID_ARGS: argument inconnu: …` | L'argument n'existe pas pour cet outil. |
+| `INVALID_ARGS: … valeur hors de […]` | La valeur n'est pas parmi celles permises. Attention à la casse : `AGL`, pas `agl`. |
+| `--… : nombre attendu, reçu « … »` | La valeur n'est pas un nombre. Utilisez un point décimal, pas une virgule. |
+| `point « … » : lat,lon attendu` | Un point n'est pas écrit `lat,lon`, ou il y a un espace autour de la virgule. |
+| `JSON invalide : …` | Le JSON a été modifié par le shell. Utilisez la forme `--cle valeur`. |
+
+Tous les détails de la syntaxe sont dans [Arguments](/fr/cli/utilisation/arguments).
+
+## Code de sortie 1 : erreurs des outils
+
+Le message a la forme `CODE: message`. Le code vous dit où chercher.
+
+### `NOT_FOUND`
+
+| Message | Cause et correction |
+|---|---|
+| `aucun élément actif (element_select ou element_add)` | Aucun élément n'est actif. Sélectionnez-en un avec `element_select`, ou créez-en un avec `element_add`. |
+| `aucun résultat pour l'élément actif` | L'élément actif n'a pas de plan calculé. Lancez `plan_compute`. |
+| `aucun vol (flight_add)` | La mission n'a pas de vol. Lancez `flight_add`, ou `element_add`, qui en crée un. |
+| `élément inconnu: …`, `vol inconnu: …` | L'identifiant n'existe pas. Relisez les identifiants avec `mission_geometry` ou `flights_list`. Ils changent d'une mission à l'autre. |
+| `aircraftId inconnu (equipment_list)`, `sensorId inconnu (equipment_list)` | L'identifiant n'est pas dans le catalogue. Relisez-le avec `equipment_list`. |
+| `aucun vol à exporter` | `mission_export` n'a trouvé aucun vol. Donnez `flightIds`, ou sélectionnez un vol. |
+| `aucune hauteur de terrain à ce point` | Aucune hauteur de terrain n'est disponible en ce point. Vérifiez les données de terrain. Voir [Terrain (MNT) et géoïdes](/fr/flight-planner/carte/terrain-et-geoides). |
+| `rien à cadrer` | `camera_frame` n'a rien à cadrer : la mission est vide. |
+
+### `INVALID_ARGS`
+
+L'application a rejeté un argument.
+
+| Message | Cause et correction |
+|---|---|
+| `géométrie invalide (coordonnées hors plage ou dégénérées)` | Latitudes entre -90 et 90, longitudes dans la plage, et une forme non dégénérée. |
+| `… point(s) pour …` | Mauvais nombre de points pour le type d'élément : 3 ou plus pour un polygone, 2 ou plus pour un corridor ou un segment, 1 pour un waypoint ou un décollage. |
+| `paramètre inconnu: …` | `params_set` ne connaît pas cette clé. Comparez-la au tableau de [Planification](/fr/cli/reference/planification#params_set). |
+| `aucun polygone valide (… entité(s) ignorée(s))` | Les fichiers ont été lus mais ne contiennent aucun polygone valide. |
+| `<chemin> : <raison> (aucun polygone valide, … entité(s) ignorée(s))` | Aucun fichier n'a donné de polygone, et le message liste les fichiers illisibles avec la raison. Vérifiez les chemins (absolus) et les formats. Si au moins un fichier est valide, la commande réussit et liste les illisibles dans `failed`. |
+| `calque inconnu : … (calques : …)` | `layers_set` a reçu un nom de couche qu'il ne connaît pas. Rien n'a été appliqué. Utilisez un des noms listés dans le message. |
+| `obstacle refusé (polygone invalide ou aucun vol actif)` | Vérifiez le polygone, et qu'un vol est actif. |
+
+### `APP_ERROR`
+
+L'application a essayé et a échoué. La raison est dans le message.
+
+| Message | Cause et correction |
+|---|---|
+| `aucun élément calculable` | Il n'y a rien à calculer. Vérifiez `mission_geometry`. |
+| `résultat périmé` | L'élément a changé pendant le calcul. Relancez `plan_compute`. |
+| Un message sur le capteur ou le terrain | Le plan ne peut pas être calculé. Un capteur est nécessaire : réglez-le avec `flight_configure`. |
+| `critère non applicable à la famille de capteurs de la mission` | `qc_view` a reçu un critère qui ne s'applique pas à ce capteur. |
+| `critère refusé par l'état QC (Sidelap exige l'échelle élément : passez scale=element)` | Vous avez demandé `sidelap` à l'échelle du vol. Ajoutez `--scale element` dans le même appel. |
+| Une erreur d'export | `mission_export` donne la vraie raison. Calculez le plan avant un export `kmz`. |
+
+### `APP_TIMEOUT` et `UNAVAILABLE`
+
+- `APP_TIMEOUT` (`pas de réponse après … s`) : l'application n'a pas répondu à temps. Lisez son état avec `app_status` : le champ `computing` indique si un calcul est encore en cours. Attendez la fin, puis relancez la commande.
+- `UNAVAILABLE` (`l'application démarre encore`) : l'application est en train de démarrer. Relancez la commande dans quelques secondes.
+
+### `UNAUTHORIZED`
+
+```text
+UNAUTHORIZED: jeton absent ou invalide
+```
+
+Le jeton d'accès lu par `helix-cli` n'est pas celui que l'application attend. Fermez puis relancez l'application, puis relancez la commande.
+
+### `HTTP:` sans message
+
+L'application traite trop de connexions en même temps. Attendez quelques secondes et relancez la commande.
+
+## Autres symptômes
+
+<AccordionGroup>
+  <Accordion title="La commande n'est pas reconnue">
+    Sous Windows, ouvrez un nouveau terminal après l'installation, ou utilisez le chemin complet de `helix-cli.exe`. Sous macOS, vérifiez que la ligne **Flight Planner CLI** affiche **Installée**. Voir [Installation](/fr/cli/demarrage/installation).
+  </Accordion>
+  <Accordion title="Il n'y a pas de bouton Installer sous macOS">
+    La ligne **Flight Planner CLI** n'apparaît que si votre licence inclut la ligne de commande, et seulement quand vous lancez l'application installée.
+  </Accordion>
+  <Accordion title="Une commande réussit mais rien ne change à l'écran">
+    Vérifiez avec `app_status` quel vol et quel élément sont actifs.
+  </Accordion>
+  <Accordion title="L'assistant IA ne liste pas les outils">
+    Vérifiez que la ligne **Accès** affiche `MCP ✓`, que `helix-cli` est joignable par l'assistant (mettez son chemin complet dans `command` si besoin) et que le Flight Planner est lancé. Voir [Assistants IA](/fr/cli/mcp/assistants-ia).
+  </Accordion>
+  <Accordion title="Les résultats concernent une autre mission">
+    Les outils agissent sur la mission ouverte, le vol actif et l'élément actif. Ils sont partagés avec l'application et avec tout autre script en cours. Lisez `app_status` avant d'agir.
+  </Accordion>
+</AccordionGroup>
+
+Si le problème persiste, notez la commande exacte, le code de sortie et le message, puis contactez le support à info@helix.aero.

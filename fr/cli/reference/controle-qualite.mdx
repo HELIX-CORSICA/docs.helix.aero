@@ -1,0 +1,69 @@
+---
+title: "Contrôle qualité"
+description: "Référence des outils qui lancent le contrôle qualité de la couverture (GSD, densité, recouvrement) et choisissent le critère affiché sur le globe."
+icon: "gauge"
+---
+
+Le contrôle qualité montre, avant le vol, si la couverture prévue répond à votre besoin : résolution (GSD), densité, recouvrement. C'est le même contrôle que le panneau **QC** de l'application. Voir [Contrôle qualité (QC)](/fr/flight-planner/qualite/controle-qualite).
+
+| Outil | Rôle |
+|---|---|
+| [`qc_compute`](#qc_compute) | Lance le contrôle qualité du vol actif. |
+| [`qc_view`](#qc_view) | Choisit le critère et la portée affichés sur le globe. |
+
+Calculez d'abord le plan avec [`plan_compute`](/fr/cli/reference/planification#plan_compute), puis lancez le contrôle qualité.
+
+## `qc_compute`
+
+Lance le contrôle qualité de la couverture (GSD, densité, recouvrement) du vol actif et attend la fin du contrôle, qui peut durer jusqu'à 180 secondes.
+
+**Arguments :** aucun.
+
+```sh
+helix-cli qc_compute --pretty
+```
+
+**Résultat :** l'état du contrôle qualité une fois terminé :
+
+| Champ | Contenu |
+|---|---|
+| `computing` | `false` une fois le contrôle terminé. |
+| `progressPct` | Avancement du contrôle, en pourcentage. |
+| `metric` | Le critère actuellement affiché : `Density`, `Gsd`, `Sidelap`, `OverlapCount` ou `Footprint`. |
+| `scale` | La portée actuellement affichée : `Vol` (tout le vol) ou `Element` (un élément). |
+| `error` | Le message d'erreur du contrôle, ou `null`. |
+| `status` | `AJour` (à jour), `Perime` (périmé), `Vide` (rien de calculé) ou `EnCours` (en cours). |
+
+Si le contrôle ne peut pas démarrer, la commande se termine avec `APP_ERROR` et la raison dans le message. S'il tourne encore à la fin du délai, vous obtenez `APP_TIMEOUT`.
+
+## `qc_view`
+
+Choisit le critère et la portée affichés sur le globe. L'outil ne change que l'affichage : il ne lance pas le contrôle. Pour cela, utilisez [`qc_compute`](#qc_compute).
+
+| Argument | Type | Obligatoire | Description |
+|---|---|---|---|
+| `metric` | `gsd`, `density`, `sidelap`, `overlapCount` ou `footprint` | Non | Le critère à afficher. |
+| `scale` | `flight` ou `element` | Non | `flight` pour tout le vol, `element` pour un seul élément. |
+| `elementId` | texte | Non | L'élément à afficher quand la portée est `element`. Pris en compte seulement avec `scale`. Il devient l'élément actif. |
+
+Les valeurs correspondent aux critères du panneau QC : `gsd` est **GSD**, `overlapCount` est **Passes**, et `footprint` est **Empreinte**. `density` est la densité, et `sidelap` le recouvrement latéral.
+
+```sh
+helix-cli qc_view --scale element --elementId <elementId> --metric sidelap
+```
+
+**Résultat :** `metric` et `scale`, tels qu'ils sont après la modification (`Gsd`, `Vol`…).
+
+À savoir :
+
+- Tous les arguments sont facultatifs. Ne donnez que ce que vous voulez changer.
+- La portée est appliquée **avant** le critère : un seul appel peut donc donner les deux, comme dans l'exemple ci-dessus.
+- Le critère `sidelap` exige la portée `element`. Demander `sidelap` quand la portée est `flight` échoue avec `APP_ERROR: critère refusé par l'état QC (Sidelap exige l'échelle élément : passez scale=element)`. Ajoutez `--scale element` à l'appel.
+- Un critère qui ne s'applique pas au type de capteur de la mission est refusé avec `APP_ERROR`.
+
+Pour afficher ou masquer les couches de qualité sur le globe, voir [`layers_set`](/fr/cli/reference/camera-terrain-et-couches#layers_set).
+
+## Voir aussi
+
+- [Planification](/fr/cli/reference/planification)
+- [Caméra, terrain et couches](/fr/cli/reference/camera-terrain-et-couches)

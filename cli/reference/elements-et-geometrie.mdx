@@ -1,0 +1,163 @@
+---
+title: "Elements and geometry"
+description: "Reference of the tools that read the geometry of a flight, add, select, rename and delete elements, move a vertex, add an obstruction and undo."
+icon: "draw-polygon"
+---
+
+An **element** is a task of the active flight: a zone (polygon), a corridor, a segment, a waypoint or a takeoff point. These eight tools create, find and edit elements. Every change goes through the same path as a gesture in the interface: it is checked, added to the history and saved.
+
+| Tool | Role |
+|---|---|
+| [`mission_geometry`](#mission_geometry) | Lists the elements of the active flight and their vertices. |
+| [`element_select`](#element_select) | Makes an element active. |
+| [`element_add`](#element_add) | Adds an element from points. |
+| [`element_delete`](#element_delete) | Deletes elements. |
+| [`element_rename`](#element_rename) | Renames an element. |
+| [`vertex_move`](#vertex_move) | Moves one vertex. |
+| [`obstruction_add`](#obstruction_add) | Adds an obstruction. |
+| [`history`](#history) | Undoes or redoes the last change. |
+
+All the coordinates are **decimal degrees WGS84**: `lat` for the latitude, `lon` for the longitude. For the notation of the points on the command line, see [Arguments](/cli/utilisation/arguments#lists-of-points).
+
+## `mission_geometry`
+
+Lists the elements of the active flight with their vertices. It gives the identifiers that the other tools expect.
+
+**Arguments:** none.
+
+```sh
+helix-cli mission_geometry --pretty
+```
+
+**Result:**
+
+| Field | Content |
+|---|---|
+| `activeFlight` | Position of the active flight in the mission (a number). |
+| `activeElementId` | Identifier of the active element, or `null`. |
+| `elements` | The elements of the flight. Each one has its `id`, its `kind` (`Polygon`, `Corridor`, `Segment`, `Wayline` or `Waypoint`), `disabled`, `active`, and its `vertices`: a list of `index`, `lat` and `lon`. |
+| `takeoffs` | The takeoff points of the flight, each with its `id`, `kind` (`Takeoff`) and `lat`. |
+
+With no flight, the result has an empty `elements` list. Obstructions are not listed here: their identifier is returned when you add them.
+
+## `element_select`
+
+Makes an element active. `params_get`, `params_set` and `plan_compute` act on the active element.
+
+| Argument | Type | Required | Description |
+|---|---|---|---|
+| `elementId` | text | Yes | Identifier of the element, as returned by `mission_geometry`. |
+
+```sh
+helix-cli element_select --elementId <elementId>
+```
+
+**Result:** `activeElementId`. An unknown identifier gives `NOT_FOUND`.
+
+## `element_add`
+
+Adds an element to the active flight from a list of points. The new element becomes active. If the mission has no flight yet, a flight is created.
+
+| Argument | Type | Required | Description |
+|---|---|---|---|
+| `kind` | `polygon`, `corridor`, `segment`, `waypoint` or `takeoff` | Yes | The type of element. |
+| `points` | list of `lat`, `lon` points | Yes | The WGS84 points. At least 1. |
+
+The number of points depends on the type:
+
+| `kind` | Points |
+|---|---|
+| `polygon` | At least 3. |
+| `corridor`, `segment` | At least 2. |
+| `waypoint`, `takeoff` | Exactly 1. |
+
+A `takeoff` replaces the takeoff point that already exists.
+
+```sh
+helix-cli element_add --kind polygon --points "42.3000,9.1500 42.3000,9.1560 42.3040,9.1560 42.3040,9.1500"
+```
+
+**Result:** `elementId`, the identifier of the new element, and `kind` (for example `Polygon`). A wrong number of points, coordinates out of range or a degenerate shape give `INVALID_ARGS`.
+
+## `element_delete`
+
+Deletes elements by identifier. The change can be undone with [`history`](#history).
+
+| Argument | Type | Required | Description |
+|---|---|---|---|
+| `elementIds` | list of texts | Yes | The identifiers to delete. At least 1. Repeat the option once per identifier. |
+
+```sh
+helix-cli element_delete --elementIds <id1> --elementIds <id2>
+```
+
+**Result:** `deleted`, the list of the deleted identifiers. If one identifier is unknown, the command gives `NOT_FOUND` and deletes nothing.
+
+## `element_rename`
+
+Renames an element.
+
+| Argument | Type | Required | Description |
+|---|---|---|---|
+| `elementId` | text | Yes | Identifier of the element. |
+| `name` | text | Yes | The new name. It cannot be empty. |
+
+```sh
+helix-cli element_rename --elementId <elementId> --name "North zone"
+```
+
+**Result:** `elementId` and `name`. An unknown element gives `NOT_FOUND`, an empty name gives `INVALID_ARGS`.
+
+## `vertex_move`
+
+Moves one vertex of an element or of an obstruction. The move is validated like a drag with the mouse, and can be undone.
+
+| Argument | Type | Required | Description |
+|---|---|---|---|
+| `elementId` | text | Yes | Identifier of the element or of the obstruction. |
+| `vertexIndex` | integer, 0 or more | Yes | Index of the vertex, as shown by `mission_geometry`. The first vertex is 0. |
+| `lat` | number | Yes | New latitude. |
+| `lon` | number | Yes | New longitude. |
+
+```sh
+helix-cli vertex_move --elementId <elementId> --vertexIndex 2 --lat 42.3042 --lon 9.1558
+```
+
+**Result:** `elementId`, `vertexIndex`, `lat` and `lon`. If the move is refused (unknown element, index out of range, invalid geometry), the command ends with `APP_ERROR` and the reason.
+
+## `obstruction_add`
+
+Adds an obstruction, a no-fly polygon, to the active flight. The plans avoid it with the margin you give.
+
+| Argument | Type | Required | Description |
+|---|---|---|---|
+| `vertices` | list of `lat`, `lon` points | Yes | The vertices of the polygon. At least 3. |
+| `name` | text | No | Name of the obstruction. |
+| `marginM` | number, 0 or more | No | Safety margin around the obstruction, in meters. Without it, 0. |
+| `heightM` | number, 0 or more | No | Height of the obstruction, in meters. |
+
+```sh
+helix-cli obstruction_add --vertices "42.3010,9.1520 42.3010,9.1525 42.3015,9.1525 42.3015,9.1520" --name "Mast" --marginM 30 --heightM 25
+```
+
+**Result:** `obstructionId`. You can use this identifier with `vertex_move`. An invalid polygon, or the absence of an active flight, gives `INVALID_ARGS`. To import obstructions from a file, see [`obstructions_import`](/cli/reference/import-et-export#obstructions_import).
+
+## `history`
+
+Undoes or redoes the last change, like **Ctrl+Z** and **Ctrl+Y** in the application.
+
+| Argument | Type | Required | Description |
+|---|---|---|---|
+| `action` | `undo` or `redo` | Yes | The direction. |
+
+```sh
+helix-cli history --action undo
+```
+
+**Result:** `applied`, `true` if a change was undone or redone, `false` if there was nothing to do. The history is the one of the application: it also contains your changes made with the mouse.
+
+## See also
+
+- [Planning](/cli/reference/planification)
+- [Import and export](/cli/reference/import-et-export)
+- [Draw tasks](/flight-planner/missions/taches)
