@@ -49,8 +49,7 @@ Chooses the metric and the scale shown on the globe. The tool only changes the d
 The values match the criteria of the QC panel: `gsd` is **GSD**, `overlapCount` is **Passes**, and `footprint` is **Footprint**. `density` is the density, and `sidelap` is the side overlap.
 
 ```sh
-helix-cli qc_view --scale element --elementId <elementId>
-helix-cli qc_view --metric sidelap
+helix-cli qc_view --scale element --elementId <elementId> --metric sidelap
 ```
 
 **Result:** `metric` and `scale`, as they are after the change (`Gsd`, `Vol`…).
@@ -58,8 +57,9 @@ helix-cli qc_view --metric sidelap
 Things to know:
 
 - All the arguments are optional. Give only what you want to change.
-- The `sidelap` metric requires the `element` scale. **Set the scale first, then the metric**, in two calls, as in the example above. In one call, the metric is applied before the scale.
-- A metric that does not apply to the type of sensor of the mission is refused with `APP_ERROR`. The message lists the metrics that are offered.
+- The scale is applied **before** the metric, so one call can give both, as in the example above.
+- The `sidelap` metric requires the `element` scale. Asking for `sidelap` while the scale is `flight` fails with `APP_ERROR: critère refusé par l'état QC (Sidelap exige l'échelle élément : passez scale=element)`. Add `--scale element` to the call.
+- A metric that does not apply to the type of sensor of the mission is refused with `APP_ERROR`.
 
 To show or hide the quality layers on the globe, see [`layers_set`](/cli/reference/camera-terrain-et-couches#layers_set).
 

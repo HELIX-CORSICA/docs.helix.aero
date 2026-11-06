@@ -48,10 +48,14 @@ The application checks the right **on every request**, and a license change star
     The server does not listen at all. The **Status** line of the card reads **MCP or CLI add-on required**, and every command ends with exit code **3** and a message like this one (the message is written in French, whatever the language of the application):
 
     ```text
-    AERO Flight Planner n'est pas lancé, ou son serveur MCP est arrêté (Réglages → Serveur). Cherché : …
+    helix-cli ne trouve pas AERO Flight Planner. Vérifiez que :
+    - l'application est lancée et vous y êtes connecté ;
+    - votre licence inclut la ligne de commande (plan Pro) : sans elle, le serveur ne démarre pas ;
+    - le serveur est démarré (Réglages → Serveur).
+    Adresse cherchée : …
     ```
 
-    After the colon, the message lists the files where `helix-cli` looked for the server address.
+    After `Adresse cherchée :`, the message lists the addresses where `helix-cli` looked for the server. This is also the message you get when the application is closed: `helix-cli` cannot tell the two cases apart.
   </Accordion>
   <Accordion title="Only one of the two rights is present">
     The server runs, and the door that is not unlocked answers with a license error. For the command line:

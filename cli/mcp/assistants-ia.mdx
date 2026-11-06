@@ -81,7 +81,7 @@ If your license includes the command line but not MCP, the application refuses *
 add-on addon.mcp requis par la licence
 ```
 
-If the application is closed, the assistant receives an error with the message `AERO Flight Planner n'est pas lancé, ou son serveur MCP est arrêté (Réglages → Serveur)`, followed by the files that were searched.
+If the application cannot be found, the bridge answers with an error whose message is the one of the command line, starting with `helix-cli ne trouve pas AERO Flight Planner. Vérifiez que :` and ending with `Adresse cherchée :` followed by the addresses searched. It lists the checks to make: application running and signed in, license, server started (see [Troubleshooting](/cli/aide/depannage)). If the address is found but nobody answers, the message is `AERO Flight Planner ne répond pas sur le port … (…). Il a peut-être été fermé : relancez-le et réessayez.`
 
 These messages are written in French, whatever the language of the application.
 

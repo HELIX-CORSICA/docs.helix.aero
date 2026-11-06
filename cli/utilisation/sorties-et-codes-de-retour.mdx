@@ -41,7 +41,7 @@ The part before the colon is a **stable code**. A script can rely on it. The mes
 | `0` | Success | The result is on `stdout`. |
 | `1` | The tool reported an error | Unknown element, invalid geometry, computation failed, timeout… The `CODE: message` is on `stderr`. |
 | `2` | Usage error | Unknown tool, missing or invalid argument, malformed JSON. The command did not contact the application. |
-| `3` | Application unreachable | Flight Planner is not running, its server is stopped, or the license includes neither the command line nor MCP. |
+| `3` | Application unreachable | Flight Planner is not running, its server is stopped, or the license does not include the command line. The message is the same in all these cases. |
 | `4` | License | `LICENSE_REQUIRED`: your license does not include the command line, or the right needed by this operation. |
 
 ## Error codes of the application

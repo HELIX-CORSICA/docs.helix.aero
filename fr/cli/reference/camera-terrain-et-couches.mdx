@@ -155,7 +155,7 @@ helix-cli layers_set --layers.obstructions true --layers.qc_gsd true --layers.ai
 **Résultat :** `layers`, avec la valeur que prend désormais chaque couche nommée. Les couches que vous n'avez pas nommées restent comme elles étaient.
 
 <Note>
-`layers_set` ne signale pas un nom de couche qu'il ne connaît pas : il l'ignore. Si rien ne change sur le globe, vérifiez l'orthographe du nom, qui s'écrit en minuscules avec des tirets bas.
+Un nom de couche inconnu refuse **tout l'appel** : rien n'est appliqué, et la commande se termine avec `INVALID_ARGS: calque inconnu : <noms> (calques : flight_lines, obstructions, airports, gcp, qc_gsd, qc_density, qc_sidelap, sensor_footprint)`. Les noms s'écrivent en minuscules avec des tirets bas. Les alias `qc_passes` (même couche que `qc_sidelap`) et `qc_footprint` (même couche que `sensor_footprint`) sont aussi acceptés. Une valeur qui n'est ni `true` ni `false` refuse aussi tout l'appel, avec `INVALID_ARGS: <nom>: booléen attendu`.
 </Note>
 
 Pour les couches du fond de carte, voir [Fonds de carte et couches](/fr/flight-planner/carte/fonds-et-couches). Pour les cartes de qualité, voir [`qc_view`](/fr/cli/reference/controle-qualite#qc_view).

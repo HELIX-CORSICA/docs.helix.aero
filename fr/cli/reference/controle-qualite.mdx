@@ -49,8 +49,7 @@ Choisit le critère et la portée affichés sur le globe. L'outil ne change que 
 Les valeurs correspondent aux critères du panneau QC : `gsd` est **GSD**, `overlapCount` est **Passes**, et `footprint` est **Empreinte**. `density` est la densité, et `sidelap` le recouvrement latéral.
 
 ```sh
-helix-cli qc_view --scale element --elementId <elementId>
-helix-cli qc_view --metric sidelap
+helix-cli qc_view --scale element --elementId <elementId> --metric sidelap
 ```
 
 **Résultat :** `metric` et `scale`, tels qu'ils sont après la modification (`Gsd`, `Vol`…).
@@ -58,8 +57,9 @@ helix-cli qc_view --metric sidelap
 À savoir :
 
 - Tous les arguments sont facultatifs. Ne donnez que ce que vous voulez changer.
-- Le critère `sidelap` exige la portée `element`. **Réglez d'abord la portée, puis le critère**, en deux appels, comme dans l'exemple ci-dessus. Dans un seul appel, le critère est appliqué avant la portée.
-- Un critère qui ne s'applique pas au type de capteur de la mission est refusé avec `APP_ERROR`. Le message liste les critères proposés.
+- La portée est appliquée **avant** le critère : un seul appel peut donc donner les deux, comme dans l'exemple ci-dessus.
+- Le critère `sidelap` exige la portée `element`. Demander `sidelap` quand la portée est `flight` échoue avec `APP_ERROR: critère refusé par l'état QC (Sidelap exige l'échelle élément : passez scale=element)`. Ajoutez `--scale element` à l'appel.
+- Un critère qui ne s'applique pas au type de capteur de la mission est refusé avec `APP_ERROR`.
 
 Pour afficher ou masquer les couches de qualité sur le globe, voir [`layers_set`](/fr/cli/reference/camera-terrain-et-couches#layers_set).
 

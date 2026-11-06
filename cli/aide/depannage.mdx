@@ -15,29 +15,36 @@ Start from the **exit code** of the command (`$?` in a shell, `$LASTEXITCODE` in
 
 ## Exit code 3: the application is unreachable
 
-The first message is written in French and ends with the list of the files that were searched:
+The message is written in French and lists the checks to make. It ends with the addresses that were searched:
 
 ```text
-AERO Flight Planner n'est pas lancé, ou son serveur MCP est arrêté (Réglages → Serveur). Cherché : …
+helix-cli ne trouve pas AERO Flight Planner. Vérifiez que :
+- l'application est lancée et vous y êtes connecté ;
+- votre licence inclut la ligne de commande (plan Pro) : sans elle, le serveur ne démarre pas ;
+- le serveur est démarré (Réglages → Serveur).
+Adresse cherchée : …
 ```
 
-Go through these causes in order:
+These checks give four causes to go through (the first point of the message covers the first two):
 
 | Cause | How to check | What to do |
 |---|---|---|
 | The application is not running. | Look for Flight Planner on your computer. | Launch it and wait for the end of the start-up. |
 | No session is open. | The application shows the sign-in screen. | Sign in. The license is read from your session. See [Sign in](/flight-planner/demarrage/connexion). |
-| The server was stopped. | In **Settings**, **Server** section, the **Status** line of the **MCP server (AI agent)** card reads **Stopped** or **Stopped in Settings**. | Click **Start**. |
-| The license has neither the command line nor MCP. | The **Status** line reads **MCP or CLI add-on required**. | Check your plan. See [Requirements and license](/cli/demarrage/prerequis-et-licence). |
-| The server could not start. | The **Status** line reads **Error** followed by a code such as `PORT_IN_USE` or `BIND_FAILED`. | Click **Restart**. If the error remains, quit and relaunch the application. |
+| The license does not include the command line. | In **Settings**, **Server** section, the **Access** row of the **MCP server (AI agent)** card does not read `CLI ✓`, and the **Status** line reads **MCP or CLI add-on required**. | Check your plan: the command line is included in the Pro plan. See [Requirements and license](/cli/demarrage/prerequis-et-licence). |
+| The server is not started. | The **Status** line reads **Stopped** or **Stopped in Settings**, or **Error** followed by a code such as `PORT_IN_USE` or `BIND_FAILED`. | Click **Start**, or **Restart** after an error. If the error remains, quit and relaunch the application. |
+
+<Warning>
+Without a license that includes the command line, the server does not start, so the message is **exactly the same** as when the application is closed. `helix-cli` cannot tell the two cases apart: it only sees that nobody is there. Check the four points above.
+</Warning>
 
 A second message means that the file with the address of the server was found, but that nobody answers:
 
 ```text
-serveur Helix injoignable (port …) : …
+AERO Flight Planner ne répond pas sur le port … (…). Il a peut-être été fermé : relancez-le et réessayez.
 ```
 
-The application no longer answers on the port that the file announces, for example because it was closed abruptly. Relaunch the application, then run the command again.
+The application was probably closed. Relaunch it, then run the command again.
 
 <Note>
 If two copies of Flight Planner are open at the same time, `helix-cli` talks to the one whose address file is the most recent.
@@ -102,8 +109,9 @@ The application rejected an argument.
 | `géométrie invalide (coordonnées hors plage ou dégénérées)` | Latitudes between -90 and 90, longitudes in range, and a shape that is not degenerate. |
 | `… point(s) pour …` | Wrong number of points for the type of element: 3 or more for a polygon, 2 or more for a corridor or segment, 1 for a waypoint or takeoff. |
 | `paramètre inconnu: …` | `params_set` does not know this key. Compare it with the table of [Planning](/cli/reference/planification#params_set). |
-| `aucun polygone valide (… entité(s) ignorée(s))` | The imported files contain no valid polygon. |
-| `<path> : …` | The file could not be read. Check the path (absolute) and the format. |
+| `aucun polygone valide (… entité(s) ignorée(s))` | The files were read but contain no valid polygon. |
+| `<path> : <reason> (aucun polygone valide, … entité(s) ignorée(s))` | No file gave a polygon, and the message lists the unreadable files with the reason. Check the paths (absolute) and the formats. If at least one file is valid, the command succeeds and lists the unreadable ones in `failed`. |
+| `calque inconnu : … (calques : …)` | `layers_set` received a layer name it does not know. Nothing was applied. Use one of the names listed in the message. |
 | `obstacle refusé (polygone invalide ou aucun vol actif)` | Check the polygon, and that a flight is active. |
 
 ### `APP_ERROR`
@@ -115,8 +123,8 @@ The application tried and failed. The reason is in the message.
 | `aucun élément calculable` | There is nothing to compute. Check `mission_geometry`. |
 | `résultat périmé` | The element changed during the computation. Run `plan_compute` again. |
 | A message about the sensor or the terrain | The plan cannot be computed. A sensor is required: set it with `flight_configure`. |
-| `critère non applicable à la famille de capteurs de la mission` | `qc_view` was asked for a metric that does not apply to this sensor. The message lists the metrics offered. |
-| `critère refusé par l'état QC (Sidelap exige l'échelle élément)` | Set the `element` scale first, then the `sidelap` metric. |
+| `critère non applicable à la famille de capteurs de la mission` | `qc_view` was asked for a metric that does not apply to this sensor. |
+| `critère refusé par l'état QC (Sidelap exige l'échelle élément : passez scale=element)` | You asked for `sidelap` at the flight scale. Add `--scale element` in the same call. |
 | An export error | `mission_export` shows the real reason. Compute the plan before a `kmz` export. |
 
 ### `APP_TIMEOUT` and `UNAVAILABLE`
@@ -146,7 +154,7 @@ The application is handling too many connections at the same time. Wait a few se
     The **Flight Planner CLI** row appears only if your license includes the command line, and only when you run the installed application.
   </Accordion>
   <Accordion title="A command succeeds but nothing changes on screen">
-    Check which flight and which element are active with `app_status`. For `layers_set`, check the spelling of the layer names: an unknown name is ignored without an error.
+    Check which flight and which element are active with `app_status`.
   </Accordion>
   <Accordion title="The AI assistant does not list the tools">
     Check that the **Access** row shows `MCP ✓`, that `helix-cli` is reachable by the assistant (put its full path in `command` if needed), and that Flight Planner is running. See [AI assistants](/cli/mcp/assistants-ia).

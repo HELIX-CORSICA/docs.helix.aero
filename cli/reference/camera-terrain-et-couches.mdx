@@ -155,7 +155,7 @@ helix-cli layers_set --layers.obstructions true --layers.qc_gsd true --layers.ai
 **Result:** `layers`, with the value that each layer you named now has. Layers you did not name are left as they were.
 
 <Note>
-`layers_set` does not report a layer name it does not know: it ignores it. If nothing changes on the globe, check the spelling of the name, which uses underscores and lowercase letters.
+An unknown layer name refuses the **whole call**: nothing is applied, and the command ends with `INVALID_ARGS: calque inconnu : <names> (calques : flight_lines, obstructions, airports, gcp, qc_gsd, qc_density, qc_sidelap, sensor_footprint)`. The names use underscores and lowercase letters. The aliases `qc_passes` (same layer as `qc_sidelap`) and `qc_footprint` (same layer as `sensor_footprint`) are also accepted. A value that is not `true` or `false` refuses the whole call too, with `INVALID_ARGS: <name>: booléen attendu`.
 </Note>
 
 For the layers of the basemap, see [Basemap and layers](/flight-planner/carte/fonds-et-couches). For the quality maps, see [`qc_view`](/cli/reference/controle-qualite#qc_view).

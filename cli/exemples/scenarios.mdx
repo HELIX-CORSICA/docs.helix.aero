@@ -113,7 +113,7 @@ You have two KML files, one per sector, and you want a plan for each zone. Impor
     helix-cli kml_import --paths "C:/Data/zone-nord.kml" --paths "C:/Data/zone-sud.kml"
     ```
 
-    The result gives the `elementIds` of the zones created, the `skipped` count (entities that are not valid polygons) and the number of `files` read. Each zone is named after the polygon in its file.
+    The result gives the `elementIds` of the zones created, the `skipped` count (entities that are not valid polygons) the number of `files` given, and `failed`, the list of unreadable files (the others are imported anyway). Each zone is named after the polygon in its file.
   </Step>
   <Step title="Choose the aircraft and the sensor">
     Do it as in step 3 of scenario 1, **after** the import: the sensor is applied to the zones that exist at that moment.

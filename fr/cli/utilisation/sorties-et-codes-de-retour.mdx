@@ -41,7 +41,7 @@ La partie avant les deux-points est un **code stable**. Un script peut s'y fier.
 | `0` | Succès | Le résultat est sur `stdout`. |
 | `1` | L'outil a signalé une erreur | Élément inconnu, géométrie invalide, calcul en échec, délai dépassé… Le `CODE: message` est sur `stderr`. |
 | `2` | Erreur d'usage | Outil inconnu, argument manquant ou invalide, JSON mal formé. La commande n'a pas contacté l'application. |
-| `3` | Application injoignable | Le Flight Planner n'est pas lancé, son serveur est arrêté, ou la licence n'inclut ni la ligne de commande ni le MCP. |
+| `3` | Application injoignable | Le Flight Planner n'est pas lancé, son serveur est arrêté, ou la licence n'inclut pas la ligne de commande. Le message est le même dans tous ces cas. |
 | `4` | Licence | `LICENSE_REQUIRED` : votre licence n'inclut pas la ligne de commande, ou le droit que demande cette opération. |
 
 ## Codes d'erreur de l'application

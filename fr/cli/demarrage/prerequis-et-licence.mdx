@@ -48,10 +48,14 @@ L'application vérifie le droit **à chaque requête**, et un changement de lice
     Le serveur n'écoute pas du tout. La ligne **État** de la carte indique **Add-on MCP ou CLI requis**, et chaque commande se termine avec le code de sortie **3** et un message de ce type :
 
     ```text
-    AERO Flight Planner n'est pas lancé, ou son serveur MCP est arrêté (Réglages → Serveur). Cherché : …
+    helix-cli ne trouve pas AERO Flight Planner. Vérifiez que :
+    - l'application est lancée et vous y êtes connecté ;
+    - votre licence inclut la ligne de commande (plan Pro) : sans elle, le serveur ne démarre pas ;
+    - le serveur est démarré (Réglages → Serveur).
+    Adresse cherchée : …
     ```
 
-    Après les deux-points, le message liste les fichiers dans lesquels `helix-cli` a cherché l'adresse du serveur.
+    Après `Adresse cherchée :`, le message liste les adresses où `helix-cli` a cherché le serveur. C'est aussi le message que vous obtenez quand l'application est fermée : `helix-cli` ne peut pas distinguer les deux cas.
   </Accordion>
   <Accordion title="Un seul des deux droits est présent">
     Le serveur tourne, et l'accès qui n'est pas déverrouillé répond par une erreur de licence. Pour la ligne de commande :

@@ -32,15 +32,15 @@ The option `--pretty`, which you can put anywhere, indents the JSON result to ma
 helix-cli tools
 ```
 
-The command prints one line per tool, with its name and a one-sentence description (in English), for example:
+The command prints one line per tool (31 in the application you installed), with its name and a short description (in English), for example:
 
 ```text
 app_status         Planner snapshot: mission, active flight and element, camera pose, compute and QC state.
-missions_list      List stored missions (id, name, status, updatedAt).
+missions_list      List stored missions (id, name, client, status, updatedAt). client is the project's client name, null for a local mission.
 mission_load       Open a stored mission by id (see missions_list).
 ```
 
-The list ends with the note `(les outils dev_* n'existent que dans une build hors production)`. Lines whose name starts with `dev_` are development tools: they do not exist in the application you installed, and you can ignore them.
+The list contains only these 31 tools. A development build of the application also lists tools whose name starts with `dev_`, followed by a note saying that they exist only outside production; you will not see them in the application you installed.
 
 This command does not contact the application, so it works even if Flight Planner is closed. The same list, organized by theme, is in the [command reference](/cli/reference/missions-et-vols).
 

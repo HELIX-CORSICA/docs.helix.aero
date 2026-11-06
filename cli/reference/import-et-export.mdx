@@ -35,14 +35,15 @@ helix-cli kml_import --paths "C:/Data/zone-nord.kml" --paths "C:/Data/zone-sud.k
 |---|---|
 | `elementIds` | The identifiers of the zones that were created. |
 | `skipped` | Number of entities that were ignored: those that are not valid polygons. |
-| `files` | Number of files read. |
+| `files` | Number of files given. |
+| `failed` | The unreadable files: a list of objects with the `path` of the file and the `error` that explains why. The list is empty when every file could be read. |
 
 Things to know:
 
 - **Several files at once require the Pro plan.** Without it, the command ends with `LICENSE_REQUIRED: plusieurs fichiers : plan Pro requis (import.multi_kml)` and exit code 4. With a single file, there is no restriction of this kind.
 - The zones of all the files arrive together, in one step of the history: a single [`history`](/cli/reference/elements-et-geometrie#history) `--action undo` cancels the whole import.
-- An unreadable file stops the command with `INVALID_ARGS`, and the message starts with the path of the file. No zone is created in that case.
-- If no valid polygon is found, the command gives `INVALID_ARGS` with the number of ignored entities.
+- **An unreadable file does not stop the command.** The other files are imported, and the unreadable one is listed in `failed` with its reason. Check `failed` in a script.
+- If **no** file gives a polygon, the command fails with `INVALID_ARGS`. When some files were unreadable, the message lists them with their reason (`path : reason`), then gives the number of ignored entities. No zone is created in that case.
 
 ## `obstructions_import`
 

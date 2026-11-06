@@ -113,7 +113,7 @@ Vous avez deux fichiers KML, un par secteur, et vous voulez un plan pour chaque 
     helix-cli kml_import --paths "C:/Data/zone-nord.kml" --paths "C:/Data/zone-sud.kml"
     ```
 
-    Le résultat donne les `elementIds` des zones créées, le compte `skipped` (les entités qui ne sont pas des polygones valides) et le nombre de `files` lus. Chaque zone porte le nom du polygone de son fichier.
+    Le résultat donne les `elementIds` des zones créées, le compte `skipped` (les entités qui ne sont pas des polygones valides) le nombre de `files` donnés, et `failed`, la liste des fichiers illisibles (les autres sont importés quand même). Chaque zone porte le nom du polygone de son fichier.
   </Step>
   <Step title="Choisir l'appareil et le capteur">
     Faites-le comme à l'étape 3 du scénario 1, **après** l'import : le capteur est appliqué aux zones qui existent à ce moment.

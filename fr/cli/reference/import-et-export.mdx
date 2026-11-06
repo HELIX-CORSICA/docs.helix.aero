@@ -35,14 +35,15 @@ helix-cli kml_import --paths "C:/Data/zone-nord.kml" --paths "C:/Data/zone-sud.k
 |---|---|
 | `elementIds` | Les identifiants des zones créées. |
 | `skipped` | Nombre d'entités ignorées : celles qui ne sont pas des polygones valides. |
-| `files` | Nombre de fichiers lus. |
+| `files` | Nombre de fichiers donnés. |
+| `failed` | Les fichiers illisibles : une liste d'objets avec le `path` du fichier et l'`error` qui en donne la raison. La liste est vide quand tous les fichiers ont pu être lus. |
 
 À savoir :
 
 - **Plusieurs fichiers à la fois exigent le plan Pro.** Sans lui, la commande se termine avec `LICENSE_REQUIRED: plusieurs fichiers : plan Pro requis (import.multi_kml)` et le code de sortie 4. Avec un seul fichier, il n'y a pas de restriction de ce genre.
 - Les zones de tous les fichiers arrivent ensemble, en une seule étape de l'historique : un seul [`history`](/fr/cli/reference/elements-et-geometrie#history) `--action undo` annule tout l'import.
-- Un fichier illisible arrête la commande avec `INVALID_ARGS`, et le message commence par le chemin du fichier. Aucune zone n'est créée dans ce cas.
-- Si aucun polygone valide n'est trouvé, la commande donne `INVALID_ARGS` avec le nombre d'entités ignorées.
+- **Un fichier illisible n'arrête pas la commande.** Les autres fichiers sont importés, et le fichier illisible est listé dans `failed` avec sa raison. Dans un script, vérifiez `failed`.
+- Si **aucun** fichier ne donne de polygone, la commande échoue avec `INVALID_ARGS`. Quand des fichiers étaient illisibles, le message les liste avec leur raison (`chemin : raison`), puis donne le nombre d'entités ignorées. Aucune zone n'est créée dans ce cas.
 
 ## `obstructions_import`
 

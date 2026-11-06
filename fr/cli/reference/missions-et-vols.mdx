@@ -53,7 +53,7 @@ Liste les missions enregistrées pour le compte connecté.
 helix-cli missions_list
 ```
 
-**Résultat :** un objet avec une liste `missions`. Chaque mission porte son `id`, son `name`, son `status`, sa date `updatedAt` et son `client` (le nom du client). Utilisez l'`id` avec `mission_load`.
+**Résultat :** un objet avec une liste `missions`. Chaque mission porte son `id`, son `name`, son `status`, sa date `updatedAt` et son `client` : le nom du client du projet, ou `null` pour une mission locale. Utilisez l'`id` avec `mission_load`.
 
 ## `mission_load`
 

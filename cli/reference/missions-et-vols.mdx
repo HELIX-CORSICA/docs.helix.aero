@@ -53,7 +53,7 @@ Lists the missions stored for the signed-in account.
 helix-cli missions_list
 ```
 
-**Result:** an object with a `missions` list. Each mission has its `id`, its `name`, its `status`, its `updatedAt` date and its `client` (the client name). Use the `id` with `mission_load`.
+**Result:** an object with a `missions` list. Each mission has its `id`, its `name`, its `status`, its `updatedAt` date and its `client`: the client name of the project, or `null` for a local mission. Use the `id` with `mission_load`.
 
 ## `mission_load`
 

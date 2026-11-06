@@ -15,29 +15,36 @@ Partez du **code de sortie** de la commande (`$?` dans un shell, `$LASTEXITCODE`
 
 ## Code de sortie 3 : l'application est injoignable
 
-Le premier message est rédigé en français et se termine par la liste des fichiers qui ont été cherchés :
+Le message est rédigé en français et énumère les vérifications à faire. Il se termine par les adresses qui ont été cherchées :
 
 ```text
-AERO Flight Planner n'est pas lancé, ou son serveur MCP est arrêté (Réglages → Serveur). Cherché : …
+helix-cli ne trouve pas AERO Flight Planner. Vérifiez que :
+- l'application est lancée et vous y êtes connecté ;
+- votre licence inclut la ligne de commande (plan Pro) : sans elle, le serveur ne démarre pas ;
+- le serveur est démarré (Réglages → Serveur).
+Adresse cherchée : …
 ```
 
-Parcourez ces causes dans l'ordre :
+Ces vérifications donnent quatre causes à parcourir (le premier point du message couvre les deux premières) :
 
 | Cause | Comment vérifier | Que faire |
 |---|---|---|
 | L'application n'est pas lancée. | Cherchez le Flight Planner sur votre ordinateur. | Lancez-le et attendez la fin du démarrage. |
 | Aucune session n'est ouverte. | L'application affiche l'écran de connexion. | Connectez-vous. La licence est lue depuis votre session. Voir [Se connecter](/fr/flight-planner/demarrage/connexion). |
-| Le serveur a été arrêté. | Dans **Réglages**, section **Serveur**, la ligne **État** de la carte **Serveur MCP (agent IA)** indique **Arrêté** ou **Arrêté dans les Réglages**. | Cliquez sur **Démarrer**. |
-| La licence n'a ni la ligne de commande ni le MCP. | La ligne **État** indique **Add-on MCP ou CLI requis**. | Vérifiez votre plan. Voir [Prérequis et licence](/fr/cli/demarrage/prerequis-et-licence). |
-| Le serveur n'a pas pu démarrer. | La ligne **État** indique **Erreur** suivi d'un code comme `PORT_IN_USE` ou `BIND_FAILED`. | Cliquez sur **Relancer**. Si l'erreur persiste, quittez puis relancez l'application. |
+| La licence n'inclut pas la ligne de commande. | Dans **Réglages**, section **Serveur**, la ligne **Accès** de la carte **Serveur MCP (agent IA)** n'affiche pas `CLI ✓`, et la ligne **État** indique **Add-on MCP ou CLI requis**. | Vérifiez votre plan : la ligne de commande est incluse dans le plan Pro. Voir [Prérequis et licence](/fr/cli/demarrage/prerequis-et-licence). |
+| Le serveur n'est pas démarré. | La ligne **État** indique **Arrêté** ou **Arrêté dans les Réglages**, ou **Erreur** suivi d'un code comme `PORT_IN_USE` ou `BIND_FAILED`. | Cliquez sur **Démarrer**, ou sur **Relancer** après une erreur. Si l'erreur persiste, quittez puis relancez l'application. |
+
+<Warning>
+Sans licence qui inclut la ligne de commande, le serveur ne démarre pas : le message est alors **exactement le même** que si l'application était fermée. `helix-cli` ne peut pas distinguer les deux cas : il constate seulement que personne n'est là. Vérifiez les quatre points ci-dessus.
+</Warning>
 
 Un second message signifie que le fichier contenant l'adresse du serveur a été trouvé, mais que personne ne répond :
 
 ```text
-serveur Helix injoignable (port …) : …
+AERO Flight Planner ne répond pas sur le port … (…). Il a peut-être été fermé : relancez-le et réessayez.
 ```
 
-L'application ne répond plus sur le port annoncé par le fichier, par exemple parce qu'elle a été fermée brutalement. Relancez l'application, puis relancez la commande.
+L'application a probablement été fermée. Relancez-la, puis relancez la commande.
 
 <Note>
 Si deux exemplaires du Flight Planner sont ouverts en même temps, `helix-cli` parle à celui dont le fichier d'adresse est le plus récent.
@@ -102,8 +109,9 @@ L'application a rejeté un argument.
 | `géométrie invalide (coordonnées hors plage ou dégénérées)` | Latitudes entre -90 et 90, longitudes dans la plage, et une forme non dégénérée. |
 | `… point(s) pour …` | Mauvais nombre de points pour le type d'élément : 3 ou plus pour un polygone, 2 ou plus pour un corridor ou un segment, 1 pour un waypoint ou un décollage. |
 | `paramètre inconnu: …` | `params_set` ne connaît pas cette clé. Comparez-la au tableau de [Planification](/fr/cli/reference/planification#params_set). |
-| `aucun polygone valide (… entité(s) ignorée(s))` | Les fichiers importés ne contiennent aucun polygone valide. |
-| `<chemin> : …` | Le fichier n'a pas pu être lu. Vérifiez le chemin (absolu) et le format. |
+| `aucun polygone valide (… entité(s) ignorée(s))` | Les fichiers ont été lus mais ne contiennent aucun polygone valide. |
+| `<chemin> : <raison> (aucun polygone valide, … entité(s) ignorée(s))` | Aucun fichier n'a donné de polygone, et le message liste les fichiers illisibles avec la raison. Vérifiez les chemins (absolus) et les formats. Si au moins un fichier est valide, la commande réussit et liste les illisibles dans `failed`. |
+| `calque inconnu : … (calques : …)` | `layers_set` a reçu un nom de couche qu'il ne connaît pas. Rien n'a été appliqué. Utilisez un des noms listés dans le message. |
 | `obstacle refusé (polygone invalide ou aucun vol actif)` | Vérifiez le polygone, et qu'un vol est actif. |
 
 ### `APP_ERROR`
@@ -115,8 +123,8 @@ L'application a essayé et a échoué. La raison est dans le message.
 | `aucun élément calculable` | Il n'y a rien à calculer. Vérifiez `mission_geometry`. |
 | `résultat périmé` | L'élément a changé pendant le calcul. Relancez `plan_compute`. |
 | Un message sur le capteur ou le terrain | Le plan ne peut pas être calculé. Un capteur est nécessaire : réglez-le avec `flight_configure`. |
-| `critère non applicable à la famille de capteurs de la mission` | `qc_view` a reçu un critère qui ne s'applique pas à ce capteur. Le message liste les critères proposés. |
-| `critère refusé par l'état QC (Sidelap exige l'échelle élément)` | Réglez d'abord la portée `element`, puis le critère `sidelap`. |
+| `critère non applicable à la famille de capteurs de la mission` | `qc_view` a reçu un critère qui ne s'applique pas à ce capteur. |
+| `critère refusé par l'état QC (Sidelap exige l'échelle élément : passez scale=element)` | Vous avez demandé `sidelap` à l'échelle du vol. Ajoutez `--scale element` dans le même appel. |
 | Une erreur d'export | `mission_export` donne la vraie raison. Calculez le plan avant un export `kmz`. |
 
 ### `APP_TIMEOUT` et `UNAVAILABLE`
@@ -146,7 +154,7 @@ L'application traite trop de connexions en même temps. Attendez quelques second
     La ligne **Flight Planner CLI** n'apparaît que si votre licence inclut la ligne de commande, et seulement quand vous lancez l'application installée.
   </Accordion>
   <Accordion title="Une commande réussit mais rien ne change à l'écran">
-    Vérifiez avec `app_status` quel vol et quel élément sont actifs. Pour `layers_set`, vérifiez l'orthographe des noms de couches : un nom inconnu est ignoré sans erreur.
+    Vérifiez avec `app_status` quel vol et quel élément sont actifs.
   </Accordion>
   <Accordion title="L'assistant IA ne liste pas les outils">
     Vérifiez que la ligne **Accès** affiche `MCP ✓`, que `helix-cli` est joignable par l'assistant (mettez son chemin complet dans `command` si besoin) et que le Flight Planner est lancé. Voir [Assistants IA](/fr/cli/mcp/assistants-ia).

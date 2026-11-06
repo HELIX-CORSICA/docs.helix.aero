@@ -81,7 +81,7 @@ Si votre licence inclut la ligne de commande mais pas le MCP, l'application refu
 add-on addon.mcp requis par la licence
 ```
 
-Si l'application est fermée, l'assistant reçoit une erreur avec le message `AERO Flight Planner n'est pas lancé, ou son serveur MCP est arrêté (Réglages → Serveur)`, suivi des fichiers qui ont été cherchés.
+Si l'application est introuvable, le pont répond par une erreur dont le message est celui de la ligne de commande, qui commence par `helix-cli ne trouve pas AERO Flight Planner. Vérifiez que :` et se termine par `Adresse cherchée :` suivi des adresses cherchées. Il énumère les vérifications à faire : application lancée et connectée, licence, serveur démarré (voir [Dépannage](/fr/cli/aide/depannage)). Si l'adresse est trouvée mais que personne ne répond, le message est `AERO Flight Planner ne répond pas sur le port … (…). Il a peut-être été fermé : relancez-le et réessayez.`
 
 ## Tester le pont à la main
 

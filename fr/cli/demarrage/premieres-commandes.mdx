@@ -32,15 +32,15 @@ L'option `--pretty`, que vous pouvez placer n'importe où, indente le résultat 
 helix-cli tools
 ```
 
-La commande affiche une ligne par outil, avec son nom et une description d'une phrase (en anglais), par exemple :
+La commande affiche une ligne par outil (31 dans l'application que vous avez installée), avec son nom et une courte description (en anglais), par exemple :
 
 ```text
 app_status         Planner snapshot: mission, active flight and element, camera pose, compute and QC state.
-missions_list      List stored missions (id, name, status, updatedAt).
+missions_list      List stored missions (id, name, client, status, updatedAt). client is the project's client name, null for a local mission.
 mission_load       Open a stored mission by id (see missions_list).
 ```
 
-La liste se termine par la note `(les outils dev_* n'existent que dans une build hors production)`. Les lignes dont le nom commence par `dev_` sont des outils de développement : ils n'existent pas dans l'application que vous avez installée, et vous pouvez les ignorer.
+La liste ne contient que ces 31 outils. Une build de développement de l'application liste aussi des outils dont le nom commence par `dev_`, suivis d'une note précisant qu'ils n'existent que hors production ; vous ne les verrez pas dans l'application que vous avez installée.
 
 Cette commande ne contacte pas l'application : elle fonctionne même si le Flight Planner est fermé. La même liste, classée par thème, se trouve dans la [référence des commandes](/fr/cli/reference/missions-et-vols).
 
