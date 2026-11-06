@@ -1,0 +1,91 @@
+---
+title: "Requirements and license"
+description: "What the command line needs to work: a running application, an open session and the Pro plan. What happens without the license."
+icon: "key"
+---
+
+`helix-cli` does not work alone. It drives Flight Planner, so the application must be running and ready. This page lists what must be in place, then explains what you see when the license is missing.
+
+## What must be in place
+
+<Steps>
+  <Step title="Flight Planner installed and running">
+    Launch the application and leave it open. The command line can only act on a running application. If the application is closed, every command fails with exit code 3.
+  </Step>
+  <Step title="A session open">
+    Sign in in the application, as usual. See [Sign in](/flight-planner/demarrage/connexion). **The command line has no sign-in command of its own**: the sign-in always happens in the application.
+  </Step>
+  <Step title="The Pro plan">
+    The Pro plan includes the command line and the MCP bridge for AI assistants. The Carto plan does not include them.
+  </Step>
+  <Step title="helix-cli installed">
+    The command is delivered with the application. See [Installation](/cli/demarrage/installation).
+  </Step>
+</Steps>
+
+## Two doors, two rights
+
+The application exposes two ways in, and each one is unlocked by its own license right:
+
+| Door | Used by | Included in the Pro plan |
+|---|---|---|
+| Command line | `helix-cli <tool>` and scripts | Yes |
+| MCP | `helix-cli mcp` and AI assistants | Yes |
+
+You can see the state of both in the application: **Settings**, **Server** section, **MCP server (AI agent)** card.
+
+- **Status** shows **Running**, **Stopped**, **Stopped in Settings**, **MCP or CLI add-on required** or **Error**.
+- **Access** shows `MCP ✓ · CLI ✓` when both rights are present, and a `✗` in front of the one that is missing.
+
+The server starts with the application, on the local machine only. The **Start** and **Stop** buttons turn it on and off, and **Restart** restarts it.
+
+## What happens without the license
+
+The application checks the right **on every request**, and a license change starts or stops the server without restarting the application.
+
+<AccordionGroup>
+  <Accordion title="Neither right is present">
+    The server does not listen at all. The **Status** line of the card reads **MCP or CLI add-on required**, and every command ends with exit code **3** and a message like this one (the message is written in French, whatever the language of the application):
+
+    ```text
+    AERO Flight Planner n'est pas lancé, ou son serveur MCP est arrêté (Réglages → Serveur). Cherché : …
+    ```
+
+    After the colon, the message lists the files where `helix-cli` looked for the server address.
+  </Accordion>
+  <Accordion title="Only one of the two rights is present">
+    The server runs, and the door that is not unlocked answers with a license error. For the command line:
+
+    ```text
+    LICENSE_REQUIRED: add-on addon.cli requis par la licence
+    ```
+
+    The exit code is **4**. For the MCP bridge, the refusal reads `add-on addon.mcp requis par la licence`, and it applies from the very first message (initialization).
+  </Accordion>
+  <Accordion title="Both rights are present">
+    All the tools work, within the limits below.
+  </Accordion>
+</AccordionGroup>
+
+<Note>
+`helix-cli status` does not check the license. It only tells you whether the application answers. A `status` that succeeds therefore does not prove that your license includes the command line: make a real call, such as `helix-cli app_status`.
+</Note>
+
+## Other rights that apply to some tools
+
+Having the command line is not enough for a few operations, which follow the same rules as the interface. When a right is missing, the command fails with `LICENSE_REQUIRED` and exit code 4:
+
+- [`mission_create`](/cli/reference/missions-et-vols#mission_create) requires the right to create missions.
+- [`kml_import`](/cli/reference/import-et-export#kml_import) with several files at once requires the Pro plan.
+- [`mission_export`](/cli/reference/import-et-export#mission_export) applies the license rules of the chosen format.
+- [`params_set`](/cli/reference/planification#params_set) refuses the `IAGL` altitude mode on an airplane when the license does not allow it. The whole batch of parameters is then refused.
+
+## Security
+
+- The server listens on `127.0.0.1` only. It cannot be reached from the network.
+- Every request carries an access token. `helix-cli` reads it from the file that the application publishes, so you never handle it.
+- Requests that announce a non-local origin are refused.
+
+## Next step
+
+Install the command: [Installation](/cli/demarrage/installation).

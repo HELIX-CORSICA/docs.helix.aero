@@ -1,0 +1,123 @@
+---
+title: "Planning"
+description: "Reference of the tools that read and set the flight parameters of an element, compute the flight plan and read its summary."
+icon: "sliders"
+---
+
+These four tools act on the **active element**. Select one first with [`element_select`](/cli/reference/elements-et-geometrie#element_select), or create one with [`element_add`](/cli/reference/elements-et-geometrie#element_add). Without an active element, they answer `NOT_FOUND`.
+
+| Tool | Role |
+|---|---|
+| [`params_get`](#params_get) | Reads the flight parameters of the active element. |
+| [`params_set`](#params_set) | Sets them. |
+| [`plan_compute`](#plan_compute) | Computes the flight plan and waits for the summary. |
+| [`plan_get`](#plan_get) | Reads the summary of the plan already computed. |
+
+## `params_get`
+
+Reads the flight parameters of the active element.
+
+**Arguments:** none.
+
+```sh
+helix-cli params_get --pretty
+```
+
+**Result:** `elementId`, and a `params` object that contains all the parameters listed in the table of [`params_set`](#params_set), with their current value. `altitudeMode` is written in capitals (`AMSL`, `AGL`…).
+
+## `params_set`
+
+Sets one or several flight parameters of the active element.
+
+| Argument | Type | Required | Description |
+|---|---|---|---|
+| `params` | object | Yes | The parameters to change, among those below. Give only the ones you want to change. |
+
+Fields of `params`:
+
+| Parameter | Type | What it sets |
+|---|---|---|
+| `altitudeMode` | `AMSL`, `AGL`, `IAGL`, `FGL` or `RANGEFINDER` | Reference of the flight altitude. `AMSL`, `AGL` and `IAGL` are explained in [Altitude, GSD and speed](/flight-planner/parametres/onglet-vol). |
+| `altitudeM` | number | Flight altitude, in meters, in the chosen mode. |
+| `gsdCm` | number | GSD, in centimeters. In the application, altitude and GSD are linked: read the result to see the values that were applied. |
+| `speedKmh` | number | Flight speed, in km/h. |
+| `terrainTolM` | number | AGL tolerance, in meters. |
+| `overlapFrontPct` | number | Front overlap, in %. |
+| `overlapSidePct` | number | Side overlap, in %. |
+| `directionDeg` | number | Direction of the strips, in degrees. |
+| `directionAuto` | `true` or `false` | Lets the application propose the direction (the **AUTO** button). |
+| `bufferM` | number | **Buffer AOI** margin around the zone, in meters. |
+| `overshootM` | number | **Overshoot**: distance added past the ends of the strips, in meters. |
+| `doubleGrid` | `true` or `false` | **Double grid**: a second series of strips. |
+| `strictZone` | `true` or `false` | **Strict zone**: frames the strips on the outline. |
+| `photosInTurns` | `true` or `false` | Photos taken in the turns. |
+| `corridorLeftM` | number | Width of a corridor on the left of its axis, in meters. |
+| `corridorRightM` | number | Width of a corridor on the right of its axis, in meters. |
+| `gimbalPitchDeg` | number | Gimbal pitch, in degrees. |
+
+The overlap, the direction, the buffer, the overshoot, the double grid and the strict zone are described in [Overlap and orientation](/flight-planner/parametres/onglet-geometrie).
+
+```sh
+helix-cli params_set --params.altitudeMode AGL --params.altitudeM 120 --params.overlapFrontPct 80 --params.overlapSidePct 70
+```
+
+**Result:** the same as `params_get`: `elementId` and the `params` as they are **after** the change.
+
+How the tool treats your values:
+
+- **Unknown key:** refused with `INVALID_ARGS` (`paramètre inconnu: …`).
+- **Wrong type:** refused with `INVALID_ARGS` (for example `altitudeM: nombre attendu`).
+- **Batch accepted or refused as a whole:** if one key is wrong, none is applied.
+- **Out-of-range value:** brought back into the valid range. Read the result to see the value that was kept.
+- **`IAGL` on an airplane:** refused with `LICENSE_REQUIRED` when your license does not allow it. The whole batch is then refused.
+
+## `plan_compute`
+
+Computes the flight plan of the active element and waits for the end of the computation, which can take up to 180 seconds. The plan is then saved with the mission and displayed in the application.
+
+**Arguments:** none.
+
+A sensor must be set on the flight (see [`flight_configure`](/cli/reference/missions-et-vols#flight_configure)).
+
+```sh
+helix-cli plan_compute --pretty
+```
+
+**Result:** `elementId`, and a `plan` object with the summary of the computation:
+
+| Field | Content |
+|---|---|
+| `primaryStrips` | Number of main strips. |
+| `crossStrips` | Number of cross strips (with the double grid). |
+| `correctiveStrips` | Number of corrective strips. |
+| `distanceM` | Total flight distance, in meters. |
+| `timeS` | Total flight time, in seconds. |
+| `areaM2` | Area of the zone, in square meters. |
+| `stripSpacingM` | Spacing between strips, in meters. |
+| `frames` | Total number of photos. |
+| `gsdCm` | GSD across the track, in centimeters. |
+| `altitudeAglM` | Effective altitude above ground, in meters. |
+| `altitudeAmslM` | Effective altitude above sea level, in meters. |
+| `sweepDeg` | Direction of the strips, in degrees. |
+
+A value that the computation does not provide is `null`. It is never replaced by 0.
+
+If the computation fails, the command ends with `APP_ERROR` and the reason. `aucun élément calculable` means that the application found nothing to compute. `résultat périmé` means that the element changed during the computation: run the command again.
+
+## `plan_get`
+
+Reads the summary of the plan already computed for the active element, **without recomputing**.
+
+**Arguments:** none.
+
+```sh
+helix-cli plan_get
+```
+
+**Result:** the same as `plan_compute`. If the element has no computed plan, the command gives `NOT_FOUND`.
+
+## See also
+
+- [Quality control](/cli/reference/controle-qualite)
+- [Flight strips](/flight-planner/parametres/bandes)
+- [Worked examples](/cli/exemples/scenarios)

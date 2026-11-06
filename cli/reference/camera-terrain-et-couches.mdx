@@ -1,0 +1,166 @@
+---
+title: "Camera, terrain and layers"
+description: "Reference of the tools that read and place the camera, frame an element, read the ground height at a point and show or hide the layers of the globe."
+icon: "camera"
+---
+
+These five tools control what you see on the globe and give access to the terrain.
+
+| Tool | Role |
+|---|---|
+| [`camera_get`](#camera_get) | Reads the current camera. |
+| [`camera_set`](#camera_set) | Places the camera, by angles or by aiming at a target. |
+| [`camera_frame`](#camera_frame) | Flies the camera to an element or to the whole mission. |
+| [`terrain_at`](#terrain_at) | Gives the ground height at a point. |
+| [`layers_set`](#layers_set) | Shows or hides layers. |
+
+## Heights: HAE, AMSL and AGL
+
+Several arguments take a height with a **reference**:
+
+| Reference | Meaning |
+|---|---|
+| `hae` | Height above the WGS84 ellipsoid. This is the default. |
+| `amsl` | Altitude above mean sea level (EGM2008 geoid). |
+| `agl` | Height above the ground, at the point concerned. |
+
+The differences between these references are explained in [Terrain (DEM) and geoids](/flight-planner/carte/terrain-et-geoides).
+
+## `camera_get`
+
+Reads the current camera: position, heading and pitch.
+
+**Arguments:** none.
+
+```sh
+helix-cli camera_get
+```
+
+**Result:**
+
+| Field | Content |
+|---|---|
+| `lat`, `lon` | Position of the camera, in decimal degrees. |
+| `heightHaeM` | Height above the ellipsoid, in meters. |
+| `heightAmslM` | Altitude above sea level, in meters. It is `null` if the geoid could not be read. |
+| `headingDeg` | Heading, in degrees. |
+| `pitchDeg` | Pitch, in degrees. |
+| `ortho` | `true` when the view is orthographic. |
+
+## `camera_set`
+
+Places the camera. You give its position and either the angles, or a **target** at which it looks.
+
+| Argument | Type | Required | Description |
+|---|---|---|---|
+| `lat` | number | Yes | Latitude of the camera. |
+| `lon` | number | Yes | Longitude of the camera. |
+| `height` | number | Yes | Height of the camera, in meters. |
+| `heightRef` | `hae`, `amsl` or `agl` | No | Reference of `height`. By default `hae`. |
+| `headingDeg` | number | No | Heading, in degrees. By default 0. |
+| `pitchDeg` | number, from -90 to 90 | No | Pitch, in degrees. By default -90, which is **nadir**: the camera looks straight down. |
+| `target` | object | No | The point to look at. Its fields are below. When it is given, it wins over `headingDeg` and `pitchDeg`. |
+
+Fields of `target`:
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `lat` | number | Yes | Latitude of the target. |
+| `lon` | number | Yes | Longitude of the target. |
+| `alt` | number | No | Height of the target. Without it, the target is the point on the ground. |
+| `altRef` | `hae`, `amsl` or `agl` | No | Reference of `alt`. By default `hae`. |
+
+Place the camera 400 m above a zone, looking straight down:
+
+```sh
+helix-cli camera_set --lat 42.302 --lon 9.153 --height 400 --heightRef agl
+```
+
+Place it south of the zone and make it look at the ground at the center of the zone:
+
+```sh
+helix-cli camera_set --lat 42.295 --lon 9.153 --height 300 --heightRef agl --target.lat 42.302 --target.lon 9.153
+```
+
+**Result:** the camera as it was placed: `lat`, `lon`, `heightHaeM`, `headingDeg` and `pitchDeg` (the height and the angles are rounded to two decimals). With a `target`, the result also has a `target` object: `heightHaeM` of the target, `distanceM` to the target, and `pitchClamped`, which is `true` if the pitch had to be limited to the maximum that the viewer allows.
+
+Possible errors:
+
+- `INVALID_ARGS` if the latitude is out of range, or if the target coincides with the camera.
+- `NOT_FOUND` with `aucune hauteur de terrain à ce point` when you ask for an `agl` height and no terrain height is available at that point.
+
+## `camera_frame`
+
+Flies the camera to an element, or to the whole mission when you give no element.
+
+| Argument | Type | Required | Description |
+|---|---|---|---|
+| `elementId` | text | No | The element to frame. Without it, the camera frames the whole mission. |
+
+```sh
+helix-cli camera_frame --elementId <elementId>
+```
+
+**Result:** `lat`, `lon` and `heightM`, the position that the camera is flying to. An unknown element gives `NOT_FOUND`, and so does a mission with nothing to frame (`rien à cadrer`).
+
+## `terrain_at`
+
+Gives the ground height at a point.
+
+| Argument | Type | Required | Description |
+|---|---|---|---|
+| `lat` | number | Yes | Latitude of the point. |
+| `lon` | number | Yes | Longitude of the point. |
+
+```sh
+helix-cli terrain_at --lat 42.302 --lon 9.153
+```
+
+**Result:**
+
+| Field | Content |
+|---|---|
+| `lat`, `lon` | The point you asked for. |
+| `groundHaeM` | Ground height above the ellipsoid, in meters. |
+| `groundAmslM` | Ground altitude above sea level, in meters. |
+| `geoidUndulationM` | Geoid undulation at that point, in meters. `groundAmslM` is `groundHaeM` minus this value. |
+
+The values are rounded to the centimeter. If no terrain height is available at this point, the command gives `NOT_FOUND` (`aucune hauteur de terrain à ce point`).
+
+## `layers_set`
+
+Shows or hides layers of the globe.
+
+| Argument | Type | Required | Description |
+|---|---|---|---|
+| `layers` | object | Yes | The layers to change, with `true` to show and `false` to hide. |
+
+Fields of `layers`, all `true` or `false`:
+
+| Layer | What it shows |
+|---|---|
+| `flight_lines` | The flight lines. |
+| `obstructions` | The obstructions. |
+| `airports` | The airports. |
+| `gcp` | The ground control points (GCP). |
+| `qc_gsd` | The GSD map of the quality check. |
+| `qc_density` | The density map of the quality check. |
+| `qc_sidelap` | The side overlap map of the quality check. |
+| `sensor_footprint` | The footprint of the sensor. |
+
+```sh
+helix-cli layers_set --layers.obstructions true --layers.qc_gsd true --layers.airports false
+```
+
+**Result:** `layers`, with the value that each layer you named now has. Layers you did not name are left as they were.
+
+<Note>
+`layers_set` does not report a layer name it does not know: it ignores it. If nothing changes on the globe, check the spelling of the name, which uses underscores and lowercase letters.
+</Note>
+
+For the layers of the basemap, see [Basemap and layers](/flight-planner/carte/fonds-et-couches). For the quality maps, see [`qc_view`](/cli/reference/controle-qualite#qc_view).
+
+## See also
+
+- [Quality control](/cli/reference/controle-qualite)
+- [Elements and geometry](/cli/reference/elements-et-geometrie)

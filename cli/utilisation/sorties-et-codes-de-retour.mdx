@@ -1,0 +1,134 @@
+---
+title: "Output and exit codes"
+description: "Where the result and the errors go, what the exit codes mean, the error codes of the application and how to use helix-cli in a script."
+icon: "list-check"
+---
+
+`helix-cli` is designed to be used by programs as much as by people. The result goes to one place, the errors to another, and the exit code tells a script what happened.
+
+## The result: JSON on the standard output
+
+When a command succeeds, it prints **the result of the tool as JSON, on a single line**, on the standard output (`stdout`). Nothing else is printed there.
+
+```sh
+helix-cli flights_list
+```
+
+The result is the object of the tool itself, without any wrapper: its fields are described for each tool in the [command reference](/cli/reference/missions-et-vols).
+
+Add `--pretty` to get an indented, readable JSON:
+
+```sh
+helix-cli flights_list --pretty
+```
+
+Two commands do not follow this rule: `helix-cli tools` prints a list as text, and `helix-cli help <tool>` always prints an indented JSON.
+
+## Errors: `CODE: message` on the standard error
+
+When a command fails, nothing is printed on `stdout`. The error goes to the error output (`stderr`), on the form:
+
+```text
+NOT_FOUND: élément inconnu: abc123
+```
+
+The part before the colon is a **stable code**. A script can rely on it. The message after the colon is written in French and is meant for a human. Do not parse it.
+
+## Exit codes
+
+| Code | Meaning | Typical cause |
+|---|---|---|
+| `0` | Success | The result is on `stdout`. |
+| `1` | The tool reported an error | Unknown element, invalid geometry, computation failed, timeout… The `CODE: message` is on `stderr`. |
+| `2` | Usage error | Unknown tool, missing or invalid argument, malformed JSON. The command did not contact the application. |
+| `3` | Application unreachable | Flight Planner is not running, its server is stopped, or the license includes neither the command line nor MCP. |
+| `4` | License | `LICENSE_REQUIRED`: your license does not include the command line, or the right needed by this operation. |
+
+## Error codes of the application
+
+When the application answers with an error, the code is one of the following:
+
+| Code | Exit code | Meaning |
+|---|---|---|
+| `LICENSE_REQUIRED` | 4 | A license right is missing. Example: `LICENSE_REQUIRED: add-on addon.cli requis par la licence`. |
+| `UNAUTHORIZED` | 1 | The access token is missing or invalid (`jeton absent ou invalide`). |
+| `UNKNOWN_TOOL` | 1 | The application does not know this tool. |
+| `INVALID_ARGS` | 1 | An argument is rejected by the application (invalid geometry, empty name, unknown parameter…). The same code with exit code 2 means that `helix-cli` caught the mistake before sending anything. |
+| `NOT_FOUND` | 1 | An element, a flight or a mission does not exist, or there is no active element, or no computed plan to read. |
+| `APP_TIMEOUT` | 1 | The application did not answer in time (`pas de réponse après … s`). |
+| `APP_ERROR` | 1 | The application tried and failed. The message gives the reason (computation error, export failure…). |
+| `UNAVAILABLE` | 1 | The application is still starting (`l'application démarre encore`). Try again in a moment. |
+
+The maximum waiting time depends on the tool: 5 to 20 seconds for most of them, 30 seconds for creating or opening a mission and for the imports, 60 seconds for [`mission_export`](/cli/reference/import-et-export#mission_export), and up to 180 seconds for [`plan_compute`](/cli/reference/planification#plan_compute) and [`qc_compute`](/cli/reference/controle-qualite#qc_compute).
+
+<Note>
+If the application is too busy (a server that already handles 16 connections), the CLI can print `HTTP:` with no detail and exit with code 1. Run the command again after a few seconds.
+</Note>
+
+## Commands wait for the end
+
+A command returns once the operation is done:
+
+- `plan_compute` waits for the end of the computation, then prints the summary of the plan.
+- `qc_compute` waits for the end of the quality check.
+- `mission_export` returns once the file is written, and reports the real error if it could not be written.
+- Every change is saved by the application as soon as the command answers.
+
+A script can therefore chain commands without any pause.
+
+## Use in a script
+
+<Tabs>
+  <Tab title="bash">
+    ```sh
+    #!/bin/sh
+    set -e   # stop at the first command that fails
+
+    # read a field of the result with jq
+    id=$(helix-cli missions_list | jq -r '.missions[0].id')
+    helix-cli mission_load --missionId "$id" > /dev/null
+
+    # handle an error by its exit code
+    code=0
+    helix-cli plan_compute > plan.json 2> erreur.txt || code=$?
+    if [ "$code" -ne 0 ]; then
+      case $code in
+        3) echo "Start Flight Planner and sign in" ;;
+        4) echo "License: $(cat erreur.txt)" ;;
+        *) echo "Computation failed: $(cat erreur.txt)" ;;
+      esac
+      exit "$code"
+    fi
+    ```
+  </Tab>
+  <Tab title="PowerShell">
+    ```powershell
+    $m = helix-cli missions_list | ConvertFrom-Json
+    $id = $m.missions[0].id
+    helix-cli mission_load --missionId $id | Out-Null
+
+    $plan = helix-cli plan_compute 2> erreur.txt
+    if ($LASTEXITCODE -ne 0) {
+        switch ($LASTEXITCODE) {
+            3 { Write-Host "Start Flight Planner and sign in" }
+            4 { Write-Host "License: $(Get-Content erreur.txt)" }
+            default { Write-Host "Computation failed: $(Get-Content erreur.txt)" }
+        }
+        exit $LASTEXITCODE
+    }
+    $summary = $plan | ConvertFrom-Json
+    $summary.plan.distanceM
+    ```
+  </Tab>
+</Tabs>
+
+Good habits:
+
+- Test the exit code, not the text of the message.
+- Keep `stdout` and `stderr` separate: the result is on one, the diagnosis on the other.
+- Do not run two scripts at the same time on the same application. The tools act on the active flight and the active element, which are shared.
+
+## See also
+
+- [Arguments](/cli/utilisation/arguments)
+- [Troubleshooting](/cli/aide/depannage)

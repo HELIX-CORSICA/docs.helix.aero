@@ -86,6 +86,51 @@
                 ]
               }
             ]
+          },
+          {
+            "tab": "Command line",
+            "groups": [
+              {
+                "group": "CLI: getting started",
+                "pages": [
+                  "cli/index",
+                  "cli/demarrage/prerequis-et-licence",
+                  "cli/demarrage/installation",
+                  "cli/demarrage/premieres-commandes"
+                ]
+              },
+              {
+                "group": "CLI: usage",
+                "pages": [
+                  "cli/utilisation/arguments",
+                  "cli/utilisation/sorties-et-codes-de-retour"
+                ]
+              },
+              {
+                "group": "CLI: command reference",
+                "pages": [
+                  "cli/reference/missions-et-vols",
+                  "cli/reference/elements-et-geometrie",
+                  "cli/reference/planification",
+                  "cli/reference/controle-qualite",
+                  "cli/reference/camera-terrain-et-couches",
+                  "cli/reference/import-et-export"
+                ]
+              },
+              {
+                "group": "AI assistants (MCP)",
+                "pages": [
+                  "cli/mcp/assistants-ia"
+                ]
+              },
+              {
+                "group": "CLI: examples and help",
+                "pages": [
+                  "cli/exemples/scenarios",
+                  "cli/aide/depannage"
+                ]
+              }
+            ]
           }
         ]
       },
@@ -158,6 +203,51 @@
                 "pages": [
                   "fr/flight-planner/aide/faq",
                   "fr/flight-planner/aide/glossaire"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "Ligne de commande",
+            "groups": [
+              {
+                "group": "CLI : pour commencer",
+                "pages": [
+                  "fr/cli/index",
+                  "fr/cli/demarrage/prerequis-et-licence",
+                  "fr/cli/demarrage/installation",
+                  "fr/cli/demarrage/premieres-commandes"
+                ]
+              },
+              {
+                "group": "CLI : utilisation",
+                "pages": [
+                  "fr/cli/utilisation/arguments",
+                  "fr/cli/utilisation/sorties-et-codes-de-retour"
+                ]
+              },
+              {
+                "group": "CLI : référence des commandes",
+                "pages": [
+                  "fr/cli/reference/missions-et-vols",
+                  "fr/cli/reference/elements-et-geometrie",
+                  "fr/cli/reference/planification",
+                  "fr/cli/reference/controle-qualite",
+                  "fr/cli/reference/camera-terrain-et-couches",
+                  "fr/cli/reference/import-et-export"
+                ]
+              },
+              {
+                "group": "Assistants IA (MCP)",
+                "pages": [
+                  "fr/cli/mcp/assistants-ia"
+                ]
+              },
+              {
+                "group": "CLI : exemples et aide",
+                "pages": [
+                  "fr/cli/exemples/scenarios",
+                  "fr/cli/aide/depannage"
                 ]
               }
             ]

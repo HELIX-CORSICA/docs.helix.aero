@@ -1,0 +1,163 @@
+---
+title: "Éléments et géométrie"
+description: "Référence des outils qui lisent la géométrie d'un vol, ajoutent, sélectionnent, renomment et suppriment des éléments, déplacent un sommet, ajoutent une obstruction et annulent."
+icon: "draw-polygon"
+---
+
+Un **élément** est une tâche du vol actif : une zone (polygone), un corridor, un segment, un waypoint ou un point de décollage. Ces huit outils créent, retrouvent et modifient les éléments. Chaque modification passe par le même chemin qu'un geste dans l'interface : elle est contrôlée, ajoutée à l'historique et enregistrée.
+
+| Outil | Rôle |
+|---|---|
+| [`mission_geometry`](#mission_geometry) | Liste les éléments du vol actif et leurs sommets. |
+| [`element_select`](#element_select) | Rend un élément actif. |
+| [`element_add`](#element_add) | Ajoute un élément à partir de points. |
+| [`element_delete`](#element_delete) | Supprime des éléments. |
+| [`element_rename`](#element_rename) | Renomme un élément. |
+| [`vertex_move`](#vertex_move) | Déplace un sommet. |
+| [`obstruction_add`](#obstruction_add) | Ajoute une obstruction. |
+| [`history`](#history) | Annule ou rétablit la dernière modification. |
+
+Toutes les coordonnées sont en **degrés décimaux WGS84** : `lat` pour la latitude, `lon` pour la longitude. Pour la notation des points en ligne de commande, voir [Arguments](/fr/cli/utilisation/arguments#listes-de-points).
+
+## `mission_geometry`
+
+Liste les éléments du vol actif avec leurs sommets. Elle donne les identifiants qu'attendent les autres outils.
+
+**Arguments :** aucun.
+
+```sh
+helix-cli mission_geometry --pretty
+```
+
+**Résultat :**
+
+| Champ | Contenu |
+|---|---|
+| `activeFlight` | Position du vol actif dans la mission (un nombre). |
+| `activeElementId` | Identifiant de l'élément actif, ou `null`. |
+| `elements` | Les éléments du vol. Chacun porte son `id`, son `kind` (`Polygon`, `Corridor`, `Segment`, `Wayline` ou `Waypoint`), `disabled`, `active`, et ses `vertices` : une liste de `index`, `lat` et `lon`. |
+| `takeoffs` | Les points de décollage du vol, chacun avec son `id`, son `kind` (`Takeoff`) et sa `lat`. |
+
+Sans vol, le résultat contient une liste `elements` vide. Les obstructions n'y figurent pas : leur identifiant est rendu quand vous les ajoutez.
+
+## `element_select`
+
+Rend un élément actif. `params_get`, `params_set` et `plan_compute` agissent sur l'élément actif.
+
+| Argument | Type | Obligatoire | Description |
+|---|---|---|---|
+| `elementId` | texte | Oui | Identifiant de l'élément, tel que rendu par `mission_geometry`. |
+
+```sh
+helix-cli element_select --elementId <elementId>
+```
+
+**Résultat :** `activeElementId`. Un identifiant inconnu donne `NOT_FOUND`.
+
+## `element_add`
+
+Ajoute un élément au vol actif à partir d'une liste de points. Le nouvel élément devient actif. Si la mission n'a pas encore de vol, un vol est créé.
+
+| Argument | Type | Obligatoire | Description |
+|---|---|---|---|
+| `kind` | `polygon`, `corridor`, `segment`, `waypoint` ou `takeoff` | Oui | Le type d'élément. |
+| `points` | liste de points `lat`, `lon` | Oui | Les points WGS84. Au moins 1. |
+
+Le nombre de points dépend du type :
+
+| `kind` | Points |
+|---|---|
+| `polygon` | Au moins 3. |
+| `corridor`, `segment` | Au moins 2. |
+| `waypoint`, `takeoff` | Exactement 1. |
+
+Un `takeoff` remplace le point de décollage qui existe déjà.
+
+```sh
+helix-cli element_add --kind polygon --points "42.3000,9.1500 42.3000,9.1560 42.3040,9.1560 42.3040,9.1500"
+```
+
+**Résultat :** `elementId`, l'identifiant du nouvel élément, et `kind` (par exemple `Polygon`). Un mauvais nombre de points, des coordonnées hors plage ou une forme dégénérée donnent `INVALID_ARGS`.
+
+## `element_delete`
+
+Supprime des éléments par identifiant. La modification peut être annulée avec [`history`](#history).
+
+| Argument | Type | Obligatoire | Description |
+|---|---|---|---|
+| `elementIds` | liste de textes | Oui | Les identifiants à supprimer. Au moins 1. Répétez l'option une fois par identifiant. |
+
+```sh
+helix-cli element_delete --elementIds <id1> --elementIds <id2>
+```
+
+**Résultat :** `deleted`, la liste des identifiants supprimés. Si un identifiant est inconnu, la commande donne `NOT_FOUND` et ne supprime rien.
+
+## `element_rename`
+
+Renomme un élément.
+
+| Argument | Type | Obligatoire | Description |
+|---|---|---|---|
+| `elementId` | texte | Oui | Identifiant de l'élément. |
+| `name` | texte | Oui | Le nouveau nom. Il ne peut pas être vide. |
+
+```sh
+helix-cli element_rename --elementId <elementId> --name "Zone nord"
+```
+
+**Résultat :** `elementId` et `name`. Un élément inconnu donne `NOT_FOUND`, un nom vide donne `INVALID_ARGS`.
+
+## `vertex_move`
+
+Déplace un sommet d'un élément ou d'une obstruction. Le déplacement est validé comme un glisser à la souris, et peut être annulé.
+
+| Argument | Type | Obligatoire | Description |
+|---|---|---|---|
+| `elementId` | texte | Oui | Identifiant de l'élément ou de l'obstruction. |
+| `vertexIndex` | entier, 0 ou plus | Oui | Indice du sommet, tel qu'affiché par `mission_geometry`. Le premier sommet est le 0. |
+| `lat` | nombre | Oui | Nouvelle latitude. |
+| `lon` | nombre | Oui | Nouvelle longitude. |
+
+```sh
+helix-cli vertex_move --elementId <elementId> --vertexIndex 2 --lat 42.3042 --lon 9.1558
+```
+
+**Résultat :** `elementId`, `vertexIndex`, `lat` et `lon`. Si le déplacement est refusé (élément inconnu, indice hors plage, géométrie invalide), la commande se termine avec `APP_ERROR` et la raison.
+
+## `obstruction_add`
+
+Ajoute une obstruction, un polygone interdit de survol, au vol actif. Les plans l'évitent avec la marge que vous donnez.
+
+| Argument | Type | Obligatoire | Description |
+|---|---|---|---|
+| `vertices` | liste de points `lat`, `lon` | Oui | Les sommets du polygone. Au moins 3. |
+| `name` | texte | Non | Nom de l'obstruction. |
+| `marginM` | nombre, 0 ou plus | Non | Marge de sécurité autour de l'obstruction, en mètres. Sans lui, 0. |
+| `heightM` | nombre, 0 ou plus | Non | Hauteur de l'obstruction, en mètres. |
+
+```sh
+helix-cli obstruction_add --vertices "42.3010,9.1520 42.3010,9.1525 42.3015,9.1525 42.3015,9.1520" --name "Mât" --marginM 30 --heightM 25
+```
+
+**Résultat :** `obstructionId`. Vous pouvez utiliser cet identifiant avec `vertex_move`. Un polygone invalide, ou l'absence de vol actif, donne `INVALID_ARGS`. Pour importer des obstructions depuis un fichier, voir [`obstructions_import`](/fr/cli/reference/import-et-export#obstructions_import).
+
+## `history`
+
+Annule ou rétablit la dernière modification, comme **Ctrl+Z** et **Ctrl+Y** dans l'application.
+
+| Argument | Type | Obligatoire | Description |
+|---|---|---|---|
+| `action` | `undo` ou `redo` | Oui | Le sens. |
+
+```sh
+helix-cli history --action undo
+```
+
+**Résultat :** `applied`, `true` si une modification a été annulée ou rétablie, `false` s'il n'y avait rien à faire. L'historique est celui de l'application : il contient aussi vos modifications faites à la souris.
+
+## Voir aussi
+
+- [Planification](/fr/cli/reference/planification)
+- [Import et export](/fr/cli/reference/import-et-export)
+- [Dessiner les tâches](/fr/flight-planner/missions/taches)

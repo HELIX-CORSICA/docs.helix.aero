@@ -1,0 +1,164 @@
+---
+title: "Missions and flights"
+description: "Reference of the tools that read the state of the planner, open or create a mission, manage flights and choose the aircraft and sensor."
+icon: "folder-open"
+---
+
+These nine tools cover the life of a mission: reading the state of the application, opening or creating a mission, adding and selecting flights, and choosing the equipment.
+
+| Tool | Role |
+|---|---|
+| [`app_status`](#app_status) | Snapshot of the planner. |
+| [`missions_list`](#missions_list) | Lists the stored missions. |
+| [`mission_load`](#mission_load) | Opens a stored mission. |
+| [`mission_create`](#mission_create) | Creates a mission and opens it. |
+| [`flights_list`](#flights_list) | Lists the flights of the mission. |
+| [`flight_add`](#flight_add) | Adds an empty flight. |
+| [`flight_select`](#flight_select) | Makes a flight active. |
+| [`flight_configure`](#flight_configure) | Sets the name, aircraft and sensor of a flight. |
+| [`equipment_list`](#equipment_list) | Lists the aircraft and sensors of the catalog. |
+
+A mission contains one or several **flights**, and a flight contains **elements** (the tasks of the application: zone, corridor, waypoint…). See [Manage flights](/flight-planner/missions/vols).
+
+## `app_status`
+
+Gives a snapshot of the planner: the open mission, the active flight and element, the camera, and the state of the computation and of the quality check. This is the command to run first to know where you stand.
+
+**Arguments:** none.
+
+```sh
+helix-cli app_status --pretty
+```
+
+**Result:**
+
+| Field | Content |
+|---|---|
+| `view` | The screen currently shown: `Dashboard`, `Mission` or `Catalog`. |
+| `mission` | `id` and `name` of the open mission. |
+| `flights` | Number of flights in the mission. |
+| `activeFlight` | `id`, `name` and number of `elements` of the active flight, or `null`. |
+| `activeElement` | `id`, `kind` (`Polygon`, `Corridor`, `Segment`, `Wayline`, `Waypoint` or `Takeoff`), `name`, and `hasResult` (a plan is computed for this element), or `null`. |
+| `computing` | `true` while a plan is being computed. |
+| `qc` | State of the quality check: `computing`, `progressPct`, `metric`, `scale`, `error` and `status`. `status` is `Vide` (nothing computed), `AJour` (up to date), `Perime` (out of date, to run again) or `EnCours` (running). |
+| `camera` | `lat`, `lon`, `heightHaeM`, `headingDeg` and `pitchDeg` of the camera. |
+
+## `missions_list`
+
+Lists the missions stored for the signed-in account.
+
+**Arguments:** none.
+
+```sh
+helix-cli missions_list
+```
+
+**Result:** an object with a `missions` list. Each mission has its `id`, its `name`, its `status`, its `updatedAt` date and its `client` (the client name). Use the `id` with `mission_load`.
+
+## `mission_load`
+
+Opens a stored mission, as if you had clicked it in the dashboard.
+
+| Argument | Type | Required | Description |
+|---|---|---|---|
+| `missionId` | text | Yes | Identifier of the mission, as returned by `missions_list`. |
+
+```sh
+helix-cli mission_load --missionId <missionId>
+```
+
+**Result:** `missionId`, the identifier of the mission that was opened. If the mission cannot be opened, the command ends with `APP_ERROR` and the reason.
+
+## `mission_create`
+
+Creates a mission and opens it.
+
+| Argument | Type | Required | Description |
+|---|---|---|---|
+| `name` | text | Yes | Name of the mission. At least one character. |
+
+```sh
+helix-cli mission_create --name "Corte, lot 3"
+```
+
+**Result:** `missionId` and `name` of the new mission. An empty name gives `INVALID_ARGS`. The tool requires the right to create missions: without it, you get `LICENSE_REQUIRED` (exit code 4).
+
+## `flights_list`
+
+Lists the flights of the open mission.
+
+**Arguments:** none.
+
+```sh
+helix-cli flights_list --pretty
+```
+
+**Result:** `flights`, a list where each flight has its `id`, its `name`, its number of `elements` and its number of `takeoffs`; and `activeFlightId`, the identifier of the active flight.
+
+## `flight_add`
+
+Adds an empty flight to the mission and makes it active.
+
+**Arguments:** none.
+
+```sh
+helix-cli flight_add
+```
+
+**Result:** `flightId`, the identifier of the new flight.
+
+## `flight_select`
+
+Makes a flight active. The tools that add elements ([`element_add`](/cli/reference/elements-et-geometrie#element_add), [`kml_import`](/cli/reference/import-et-export#kml_import)) act on the active flight.
+
+| Argument | Type | Required | Description |
+|---|---|---|---|
+| `flightId` | text | Yes | Identifier of the flight, as returned by `flights_list`. |
+
+```sh
+helix-cli flight_select --flightId <flightId>
+```
+
+**Result:** `activeFlightId`. An unknown identifier gives `NOT_FOUND`.
+
+## `flight_configure`
+
+Sets the name, the aircraft and the sensor of a flight. Only the arguments you give are changed: the others keep their value. A sensor is required before a plan can be computed.
+
+| Argument | Type | Required | Description |
+|---|---|---|---|
+| `flightId` | text | No | The flight to configure. By default, the active flight. |
+| `name` | text | No | New name of the flight. |
+| `aircraftId` | text | No | Identifier of the aircraft, as returned by `equipment_list`. |
+| `sensorId` | text | No | Identifier of the sensor, as returned by `equipment_list`. |
+
+```sh
+helix-cli flight_configure --name "Flight 1" --aircraftId <aircraftId> --sensorId <sensorId>
+```
+
+**Result:** `flightId`, `name`, `aircraftId` and `sensorId` of the flight after the change.
+
+- An unknown `aircraftId` or `sensorId` gives `NOT_FOUND`, with the hint to check `equipment_list`.
+- With no flight in the mission, the command gives `NOT_FOUND` and invites you to run `flight_add`.
+- A sensor given in the call is applied to the elements of the flight that exist at that moment. Configure the flight **after** adding its zones.
+
+## `equipment_list`
+
+Lists the aircraft and sensors of the catalog, to obtain the identifiers that `flight_configure` expects. See also [Sensor and aircraft catalogs](/flight-planner/catalogues/capteurs-et-appareils).
+
+| Argument | Type | Required | Description |
+|---|---|---|---|
+| `kind` | `aircraft` or `sensor` | No | Restricts the list to aircraft or to sensors. Without it, both are returned. |
+| `query` | text | No | Keeps the entries whose name or manufacturer contains this text, regardless of case. |
+
+```sh
+helix-cli equipment_list --kind sensor --query "wide"
+```
+
+**Result:** an `aircraft` list and/or a `sensors` list, depending on `kind`. Each entry has its `id`, its `name`, its `manufacturer` and its `type`.
+
+## See also
+
+- [Elements and geometry](/cli/reference/elements-et-geometrie)
+- [Planning](/cli/reference/planification)
+- [Worked examples](/cli/exemples/scenarios)

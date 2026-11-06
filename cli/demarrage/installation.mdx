@@ -1,0 +1,91 @@
+---
+title: "Installation"
+description: "Get helix-cli on Windows (with the installer) or on macOS (with the Install button in the Settings), then check that it works."
+icon: "download"
+---
+
+`helix-cli` is delivered **with Flight Planner**: there is nothing separate to download. What changes from one system to the other is how the command becomes available in your terminal.
+
+<Tabs>
+  <Tab title="Windows">
+    The Flight Planner installer includes the command: it copies `helix-cli.exe` into a `bin` subfolder of the installation folder.
+
+    By default, the installation folder is `%LOCALAPPDATA%\Programs\Helix Flight Planner`, so the command is at:
+
+    ```text
+    %LOCALAPPDATA%\Programs\Helix Flight Planner\bin\helix-cli.exe
+    ```
+
+    The installer also adds this `bin` folder, and only this one, to the `PATH` of your user account. The folder of the application itself is not added. The uninstaller removes the `PATH` entry and the command.
+
+    <Steps>
+      <Step title="Install or update Flight Planner">
+        Run the installer. If the application is already installed, installing the new version also puts the command in place.
+      </Step>
+      <Step title="Open a new terminal">
+        A terminal that was already open does not see the change to the `PATH`. Open a new PowerShell or Command Prompt window.
+      </Step>
+      <Step title="Check the command">
+        Run `helix-cli --help`. The usage text is displayed.
+      </Step>
+    </Steps>
+  </Tab>
+  <Tab title="macOS">
+    On macOS, the command is inside the application, and you make it available yourself, once, from the Settings.
+
+    <Steps>
+      <Step title="Open the Settings">
+        In Flight Planner, open the **Settings** and choose the **Server** section.
+      </Step>
+      <Step title="Find the Flight Planner CLI row">
+        In the **MCP server (AI agent)** card, look for the **Flight Planner CLI** row. It appears only if your license includes the command line, and only when you run the installed application.
+      </Step>
+      <Step title="Click Install">
+        Click **Install**. The button creates the link `/usr/local/bin/helix-cli`. If the `/usr/local/bin` folder cannot be modified by your account, macOS asks once for the administrator password, with the text **Flight Planner CLI wants to install on this Mac.**
+      </Step>
+      <Step title="Check the row">
+        Once the link exists, the row shows **Installed**. If an error occurs, it is displayed under the button.
+      </Step>
+    </Steps>
+
+    A few rules to know:
+
+    - The application never asks for this password at launch. Only the **Install** button triggers it.
+    - If a regular file already sits at `/usr/local/bin/helix-cli`, it is never replaced.
+    - If the link points to an application that has been moved or deleted, **Install** offers to recreate it.
+  </Tab>
+</Tabs>
+
+## Check that it works
+
+With Flight Planner running and signed in, run:
+
+```sh
+helix-cli status
+```
+
+The command answers with a line of JSON, for example:
+
+```json
+{"ok":true,"name":"helix-flight-planner","version":"<version>"}
+```
+
+`version` is the version of the application that answered. This answer proves that `helix-cli` found the application and can talk to it.
+
+To check the license too, make a real call:
+
+```sh
+helix-cli app_status --pretty
+```
+
+- If you get a JSON object describing the state of the planner, everything is in place.
+- If you get `LICENSE_REQUIRED: add-on addon.cli requis par la licence`, your license does not include the command line. See [Requirements and license](/cli/demarrage/prerequis-et-licence).
+- If you get a message starting with `AERO Flight Planner n'est pas lancé`, start the application and sign in. See [Troubleshooting](/cli/aide/depannage).
+
+<Tip>
+If the terminal answers that `helix-cli` is not a known command, open a new terminal window (Windows) or check that the **Flight Planner CLI** row shows **Installed** (macOS). On Windows, you can also type the full path of `helix-cli.exe`.
+</Tip>
+
+## Next step
+
+Make your first calls: [First commands](/cli/demarrage/premieres-commandes).

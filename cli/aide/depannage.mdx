@@ -1,0 +1,159 @@
+---
+title: "Troubleshooting"
+description: "Find the cause of a helix-cli error from its exit code or its message: application unreachable, license, usage, errors of the tools."
+icon: "wrench"
+---
+
+Start from the **exit code** of the command (`$?` in a shell, `$LASTEXITCODE` in PowerShell), then look for the message printed on the error output. The meaning of the codes is in [Output and exit codes](/cli/utilisation/sorties-et-codes-de-retour).
+
+| Exit code | Section |
+|---|---|
+| 3 | [The application is unreachable](#exit-code-3-the-application-is-unreachable) |
+| 4 | [License](#exit-code-4-license) |
+| 2 | [Usage](#exit-code-2-usage) |
+| 1 | [Errors of the tools](#exit-code-1-errors-of-the-tools) |
+
+## Exit code 3: the application is unreachable
+
+The first message is written in French and ends with the list of the files that were searched:
+
+```text
+AERO Flight Planner n'est pas lancé, ou son serveur MCP est arrêté (Réglages → Serveur). Cherché : …
+```
+
+Go through these causes in order:
+
+| Cause | How to check | What to do |
+|---|---|---|
+| The application is not running. | Look for Flight Planner on your computer. | Launch it and wait for the end of the start-up. |
+| No session is open. | The application shows the sign-in screen. | Sign in. The license is read from your session. See [Sign in](/flight-planner/demarrage/connexion). |
+| The server was stopped. | In **Settings**, **Server** section, the **Status** line of the **MCP server (AI agent)** card reads **Stopped** or **Stopped in Settings**. | Click **Start**. |
+| The license has neither the command line nor MCP. | The **Status** line reads **MCP or CLI add-on required**. | Check your plan. See [Requirements and license](/cli/demarrage/prerequis-et-licence). |
+| The server could not start. | The **Status** line reads **Error** followed by a code such as `PORT_IN_USE` or `BIND_FAILED`. | Click **Restart**. If the error remains, quit and relaunch the application. |
+
+A second message means that the file with the address of the server was found, but that nobody answers:
+
+```text
+serveur Helix injoignable (port …) : …
+```
+
+The application no longer answers on the port that the file announces, for example because it was closed abruptly. Relaunch the application, then run the command again.
+
+<Note>
+If two copies of Flight Planner are open at the same time, `helix-cli` talks to the one whose address file is the most recent.
+</Note>
+
+## Exit code 4: license
+
+```text
+LICENSE_REQUIRED: add-on addon.cli requis par la licence
+```
+
+Your license does not include the command line. Check the **Access** row of the **MCP server (AI agent)** card: it must read `CLI ✓`. The Pro plan includes the command line, and the Carto plan does not. A change of license is taken into account without restarting the application.
+
+Other `LICENSE_REQUIRED` messages concern a particular operation:
+
+| Situation | What to do |
+|---|---|
+| `kml_import` with several files: `plusieurs fichiers : plan Pro requis (import.multi_kml)` | Import the files one at a time, or use the Pro plan. |
+| `mission_create` is refused. | Your license does not allow creating missions. |
+| `mission_export` is refused for a format. | Your license does not allow this format. Try another one. |
+| `params_set` with `altitudeMode` set to `IAGL` on an airplane. | Your license does not allow it. Choose another altitude mode. The whole batch of parameters was refused. |
+
+## Exit code 2: usage
+
+The command did not contact the application. The message tells you what to fix.
+
+| Message | Cause and fix |
+|---|---|
+| `outil inconnu : …` followed by the usage text | The tool name is misspelled. List the tools with `helix-cli tools`. |
+| `INVALID_ARGS: arguments requis: …` | A mandatory argument is missing. Read `helix-cli help <tool>`. |
+| `INVALID_ARGS: argument inconnu: …` | The argument does not exist for this tool. |
+| `INVALID_ARGS: … valeur hors de […]` | The value is not among the allowed ones. Mind the case: `AGL`, not `agl`. |
+| `--… : nombre attendu, reçu « … »` | The value is not a number. Use a decimal point, not a comma. |
+| `point « … » : lat,lon attendu` | A point is not written `lat,lon`, or has a space around the comma. |
+| `JSON invalide : …` | The JSON was altered by the shell. Use the `--key value` form. |
+
+All the details of the syntax are in [Arguments](/cli/utilisation/arguments).
+
+## Exit code 1: errors of the tools
+
+The message has the form `CODE: message`. The code tells you where to look.
+
+### `NOT_FOUND`
+
+| Message | Cause and fix |
+|---|---|
+| `aucun élément actif (element_select ou element_add)` | No element is active. Select one with `element_select`, or create one with `element_add`. |
+| `aucun résultat pour l'élément actif` | The active element has no computed plan. Run `plan_compute`. |
+| `aucun vol (flight_add)` | The mission has no flight. Run `flight_add`, or `element_add`, which creates one. |
+| `élément inconnu: …`, `vol inconnu: …` | The identifier does not exist. Read the identifiers again with `mission_geometry` or `flights_list`. They change from one mission to another. |
+| `aircraftId inconnu (equipment_list)`, `sensorId inconnu (equipment_list)` | The identifier is not in the catalog. Read it again with `equipment_list`. |
+| `aucun vol à exporter` | `mission_export` found no flight. Give `flightIds`, or select a flight. |
+| `aucune hauteur de terrain à ce point` | No terrain height is available there. Check the terrain data. See [Terrain (DEM) and geoids](/flight-planner/carte/terrain-et-geoides). |
+| `rien à cadrer` | `camera_frame` has nothing to frame: the mission is empty. |
+
+### `INVALID_ARGS`
+
+The application rejected an argument.
+
+| Message | Cause and fix |
+|---|---|
+| `géométrie invalide (coordonnées hors plage ou dégénérées)` | Latitudes between -90 and 90, longitudes in range, and a shape that is not degenerate. |
+| `… point(s) pour …` | Wrong number of points for the type of element: 3 or more for a polygon, 2 or more for a corridor or segment, 1 for a waypoint or takeoff. |
+| `paramètre inconnu: …` | `params_set` does not know this key. Compare it with the table of [Planning](/cli/reference/planification#params_set). |
+| `aucun polygone valide (… entité(s) ignorée(s))` | The imported files contain no valid polygon. |
+| `<path> : …` | The file could not be read. Check the path (absolute) and the format. |
+| `obstacle refusé (polygone invalide ou aucun vol actif)` | Check the polygon, and that a flight is active. |
+
+### `APP_ERROR`
+
+The application tried and failed. The reason is in the message.
+
+| Message | Cause and fix |
+|---|---|
+| `aucun élément calculable` | There is nothing to compute. Check `mission_geometry`. |
+| `résultat périmé` | The element changed during the computation. Run `plan_compute` again. |
+| A message about the sensor or the terrain | The plan cannot be computed. A sensor is required: set it with `flight_configure`. |
+| `critère non applicable à la famille de capteurs de la mission` | `qc_view` was asked for a metric that does not apply to this sensor. The message lists the metrics offered. |
+| `critère refusé par l'état QC (Sidelap exige l'échelle élément)` | Set the `element` scale first, then the `sidelap` metric. |
+| An export error | `mission_export` shows the real reason. Compute the plan before a `kmz` export. |
+
+### `APP_TIMEOUT` and `UNAVAILABLE`
+
+- `APP_TIMEOUT` (`pas de réponse après … s`): the application did not answer in time. Read its state with `app_status`: the `computing` field tells whether a computation is still running. Wait for the end, then run the command again.
+- `UNAVAILABLE` (`l'application démarre encore`): the application is starting. Run the command again in a few seconds.
+
+### `UNAUTHORIZED`
+
+```text
+UNAUTHORIZED: jeton absent ou invalide
+```
+
+The access token read by `helix-cli` is not the one the application expects. Close and relaunch the application, then run the command again.
+
+### `HTTP:` with no message
+
+The application is handling too many connections at the same time. Wait a few seconds and run the command again.
+
+## Other symptoms
+
+<AccordionGroup>
+  <Accordion title="The command is not recognized">
+    On Windows, open a new terminal after installing, or use the full path of `helix-cli.exe`. On macOS, check that the **Flight Planner CLI** row shows **Installed**. See [Installation](/cli/demarrage/installation).
+  </Accordion>
+  <Accordion title="There is no Install button on macOS">
+    The **Flight Planner CLI** row appears only if your license includes the command line, and only when you run the installed application.
+  </Accordion>
+  <Accordion title="A command succeeds but nothing changes on screen">
+    Check which flight and which element are active with `app_status`. For `layers_set`, check the spelling of the layer names: an unknown name is ignored without an error.
+  </Accordion>
+  <Accordion title="The AI assistant does not list the tools">
+    Check that the **Access** row shows `MCP ✓`, that `helix-cli` is reachable by the assistant (put its full path in `command` if needed), and that Flight Planner is running. See [AI assistants](/cli/mcp/assistants-ia).
+  </Accordion>
+  <Accordion title="The results are for another mission">
+    The tools act on the open mission, the active flight and the active element. They are shared with the application and with any other script that is running. Read `app_status` before acting.
+  </Accordion>
+</AccordionGroup>
+
+If the problem remains, note the exact command, the exit code and the message, then contact support at info@helix.aero.

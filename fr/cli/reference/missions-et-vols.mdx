@@ -1,0 +1,164 @@
+---
+title: "Missions et vols"
+description: "Référence des outils qui lisent l'état du planificateur, ouvrent ou créent une mission, gèrent les vols et choisissent l'appareil et le capteur."
+icon: "folder-open"
+---
+
+Ces neuf outils couvrent la vie d'une mission : lire l'état de l'application, ouvrir ou créer une mission, ajouter et sélectionner des vols, et choisir le matériel.
+
+| Outil | Rôle |
+|---|---|
+| [`app_status`](#app_status) | Instantané du planificateur. |
+| [`missions_list`](#missions_list) | Liste les missions enregistrées. |
+| [`mission_load`](#mission_load) | Ouvre une mission enregistrée. |
+| [`mission_create`](#mission_create) | Crée une mission et l'ouvre. |
+| [`flights_list`](#flights_list) | Liste les vols de la mission. |
+| [`flight_add`](#flight_add) | Ajoute un vol vide. |
+| [`flight_select`](#flight_select) | Rend un vol actif. |
+| [`flight_configure`](#flight_configure) | Règle le nom, l'appareil et le capteur d'un vol. |
+| [`equipment_list`](#equipment_list) | Liste les appareils et capteurs du catalogue. |
+
+Une mission contient un ou plusieurs **vols**, et un vol contient des **éléments** (les tâches de l'application : zone, corridor, waypoint…). Voir [Organiser les vols](/fr/flight-planner/missions/vols).
+
+## `app_status`
+
+Donne un instantané du planificateur : la mission ouverte, le vol et l'élément actifs, la caméra, et l'état du calcul et du contrôle qualité. C'est la commande à lancer en premier pour savoir où l'on en est.
+
+**Arguments :** aucun.
+
+```sh
+helix-cli app_status --pretty
+```
+
+**Résultat :**
+
+| Champ | Contenu |
+|---|---|
+| `view` | L'écran affiché : `Dashboard`, `Mission` ou `Catalog`. |
+| `mission` | `id` et `name` de la mission ouverte. |
+| `flights` | Nombre de vols de la mission. |
+| `activeFlight` | `id`, `name` et nombre d'`elements` du vol actif, ou `null`. |
+| `activeElement` | `id`, `kind` (`Polygon`, `Corridor`, `Segment`, `Wayline`, `Waypoint` ou `Takeoff`), `name`, et `hasResult` (un plan est calculé pour cet élément), ou `null`. |
+| `computing` | `true` pendant le calcul d'un plan. |
+| `qc` | État du contrôle qualité : `computing`, `progressPct`, `metric`, `scale`, `error` et `status`. `status` vaut `Vide` (rien de calculé), `AJour` (à jour), `Perime` (périmé, à relancer) ou `EnCours` (en cours). |
+| `camera` | `lat`, `lon`, `heightHaeM`, `headingDeg` et `pitchDeg` de la caméra. |
+
+## `missions_list`
+
+Liste les missions enregistrées pour le compte connecté.
+
+**Arguments :** aucun.
+
+```sh
+helix-cli missions_list
+```
+
+**Résultat :** un objet avec une liste `missions`. Chaque mission porte son `id`, son `name`, son `status`, sa date `updatedAt` et son `client` (le nom du client). Utilisez l'`id` avec `mission_load`.
+
+## `mission_load`
+
+Ouvre une mission enregistrée, comme si vous l'aviez cliquée dans le tableau de bord.
+
+| Argument | Type | Obligatoire | Description |
+|---|---|---|---|
+| `missionId` | texte | Oui | Identifiant de la mission, tel que rendu par `missions_list`. |
+
+```sh
+helix-cli mission_load --missionId <missionId>
+```
+
+**Résultat :** `missionId`, l'identifiant de la mission ouverte. Si la mission ne peut pas être ouverte, la commande se termine avec `APP_ERROR` et la raison.
+
+## `mission_create`
+
+Crée une mission et l'ouvre.
+
+| Argument | Type | Obligatoire | Description |
+|---|---|---|---|
+| `name` | texte | Oui | Nom de la mission. Au moins un caractère. |
+
+```sh
+helix-cli mission_create --name "Corte, lot 3"
+```
+
+**Résultat :** `missionId` et `name` de la nouvelle mission. Un nom vide donne `INVALID_ARGS`. L'outil exige le droit de créer des missions : sans lui, vous obtenez `LICENSE_REQUIRED` (code de sortie 4).
+
+## `flights_list`
+
+Liste les vols de la mission ouverte.
+
+**Arguments :** aucun.
+
+```sh
+helix-cli flights_list --pretty
+```
+
+**Résultat :** `flights`, une liste où chaque vol porte son `id`, son `name`, son nombre d'`elements` et son nombre de `takeoffs` ; et `activeFlightId`, l'identifiant du vol actif.
+
+## `flight_add`
+
+Ajoute un vol vide à la mission et le rend actif.
+
+**Arguments :** aucun.
+
+```sh
+helix-cli flight_add
+```
+
+**Résultat :** `flightId`, l'identifiant du nouveau vol.
+
+## `flight_select`
+
+Rend un vol actif. Les outils qui ajoutent des éléments ([`element_add`](/fr/cli/reference/elements-et-geometrie#element_add), [`kml_import`](/fr/cli/reference/import-et-export#kml_import)) agissent sur le vol actif.
+
+| Argument | Type | Obligatoire | Description |
+|---|---|---|---|
+| `flightId` | texte | Oui | Identifiant du vol, tel que rendu par `flights_list`. |
+
+```sh
+helix-cli flight_select --flightId <flightId>
+```
+
+**Résultat :** `activeFlightId`. Un identifiant inconnu donne `NOT_FOUND`.
+
+## `flight_configure`
+
+Règle le nom, l'appareil et le capteur d'un vol. Seuls les arguments que vous donnez sont modifiés : les autres gardent leur valeur. Un capteur est nécessaire avant de pouvoir calculer un plan.
+
+| Argument | Type | Obligatoire | Description |
+|---|---|---|---|
+| `flightId` | texte | Non | Le vol à configurer. Par défaut, le vol actif. |
+| `name` | texte | Non | Nouveau nom du vol. |
+| `aircraftId` | texte | Non | Identifiant de l'appareil, tel que rendu par `equipment_list`. |
+| `sensorId` | texte | Non | Identifiant du capteur, tel que rendu par `equipment_list`. |
+
+```sh
+helix-cli flight_configure --name "Vol 1" --aircraftId <aircraftId> --sensorId <sensorId>
+```
+
+**Résultat :** `flightId`, `name`, `aircraftId` et `sensorId` du vol après la modification.
+
+- Un `aircraftId` ou un `sensorId` inconnu donne `NOT_FOUND`, avec l'indication de consulter `equipment_list`.
+- Sans vol dans la mission, la commande donne `NOT_FOUND` et vous invite à lancer `flight_add`.
+- Un capteur donné dans l'appel est appliqué aux éléments du vol qui existent à ce moment. Configurez le vol **après** avoir ajouté ses zones.
+
+## `equipment_list`
+
+Liste les appareils et capteurs du catalogue, pour obtenir les identifiants qu'attend `flight_configure`. Voir aussi [Catalogues capteurs et appareils](/fr/flight-planner/catalogues/capteurs-et-appareils).
+
+| Argument | Type | Obligatoire | Description |
+|---|---|---|---|
+| `kind` | `aircraft` ou `sensor` | Non | Limite la liste aux appareils ou aux capteurs. Sans lui, les deux sont rendus. |
+| `query` | texte | Non | Garde les entrées dont le nom ou le constructeur contient ce texte, sans tenir compte de la casse. |
+
+```sh
+helix-cli equipment_list --kind sensor --query "wide"
+```
+
+**Résultat :** une liste `aircraft` et/ou une liste `sensors`, selon `kind`. Chaque entrée porte son `id`, son `name`, son `manufacturer` et son `type`.
+
+## Voir aussi
+
+- [Éléments et géométrie](/fr/cli/reference/elements-et-geometrie)
+- [Planification](/fr/cli/reference/planification)
+- [Exemples](/fr/cli/exemples/scenarios)

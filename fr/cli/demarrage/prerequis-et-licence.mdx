@@ -1,0 +1,91 @@
+---
+title: "Prérequis et licence"
+description: "Ce dont la ligne de commande a besoin pour fonctionner : une application lancée, une session ouverte et le plan Pro. Ce qui se passe sans la licence."
+icon: "key"
+---
+
+`helix-cli` ne travaille pas seul. Il pilote le Flight Planner : l'application doit donc être lancée et prête. Cette page liste ce qui doit être en place, puis explique ce que vous voyez quand la licence manque.
+
+## Ce qui doit être en place
+
+<Steps>
+  <Step title="Le Flight Planner installé et lancé">
+    Lancez l'application et laissez-la ouverte. La ligne de commande ne peut agir que sur une application en cours d'exécution. Si l'application est fermée, toutes les commandes échouent avec le code de sortie 3.
+  </Step>
+  <Step title="Une session ouverte">
+    Connectez-vous dans l'application, comme d'habitude. Voir [Se connecter](/fr/flight-planner/demarrage/connexion). **La ligne de commande n'a pas de commande de connexion** : la connexion se fait toujours dans l'application.
+  </Step>
+  <Step title="Le plan Pro">
+    Le plan Pro inclut la ligne de commande et le pont MCP pour les assistants IA. Le plan Carto ne les inclut pas.
+  </Step>
+  <Step title="helix-cli installé">
+    La commande est livrée avec l'application. Voir [Installation](/fr/cli/demarrage/installation).
+  </Step>
+</Steps>
+
+## Deux portes, deux droits
+
+L'application propose deux accès, et chacun est déverrouillé par son propre droit de licence :
+
+| Accès | Utilisé par | Inclus dans le plan Pro |
+|---|---|---|
+| Ligne de commande | `helix-cli <outil>` et les scripts | Oui |
+| MCP | `helix-cli mcp` et les assistants IA | Oui |
+
+Vous voyez l'état des deux dans l'application : **Réglages**, section **Serveur**, carte **Serveur MCP (agent IA)**.
+
+- **État** affiche **Actif**, **Arrêté**, **Arrêté dans les Réglages**, **Add-on MCP ou CLI requis** ou **Erreur**.
+- **Accès** affiche `MCP ✓ · CLI ✓` quand les deux droits sont présents, et un `✗` devant celui qui manque.
+
+Le serveur démarre avec l'application, sur la machine locale uniquement. Les boutons **Démarrer** et **Arrêter** l'activent et le coupent, et **Relancer** le redémarre.
+
+## Ce qui se passe sans la licence
+
+L'application vérifie le droit **à chaque requête**, et un changement de licence démarre ou arrête le serveur sans relancer l'application.
+
+<AccordionGroup>
+  <Accordion title="Aucun des deux droits n'est présent">
+    Le serveur n'écoute pas du tout. La ligne **État** de la carte indique **Add-on MCP ou CLI requis**, et chaque commande se termine avec le code de sortie **3** et un message de ce type :
+
+    ```text
+    AERO Flight Planner n'est pas lancé, ou son serveur MCP est arrêté (Réglages → Serveur). Cherché : …
+    ```
+
+    Après les deux-points, le message liste les fichiers dans lesquels `helix-cli` a cherché l'adresse du serveur.
+  </Accordion>
+  <Accordion title="Un seul des deux droits est présent">
+    Le serveur tourne, et l'accès qui n'est pas déverrouillé répond par une erreur de licence. Pour la ligne de commande :
+
+    ```text
+    LICENSE_REQUIRED: add-on addon.cli requis par la licence
+    ```
+
+    Le code de sortie est **4**. Pour le pont MCP, le refus s'écrit `add-on addon.mcp requis par la licence`, et il s'applique dès le premier message (l'initialisation).
+  </Accordion>
+  <Accordion title="Les deux droits sont présents">
+    Tous les outils fonctionnent, dans les limites ci-dessous.
+  </Accordion>
+</AccordionGroup>
+
+<Note>
+`helix-cli status` ne vérifie pas la licence. Il indique seulement si l'application répond. Un `status` qui réussit ne prouve donc pas que votre licence inclut la ligne de commande : faites un vrai appel, par exemple `helix-cli app_status`.
+</Note>
+
+## Autres droits qui concernent certains outils
+
+Pour quelques opérations, avoir la ligne de commande ne suffit pas : elles suivent les mêmes règles que l'interface. Quand un droit manque, la commande échoue avec `LICENSE_REQUIRED` et le code de sortie 4 :
+
+- [`mission_create`](/fr/cli/reference/missions-et-vols#mission_create) exige le droit de créer des missions.
+- [`kml_import`](/fr/cli/reference/import-et-export#kml_import) avec plusieurs fichiers à la fois exige le plan Pro.
+- [`mission_export`](/fr/cli/reference/import-et-export#mission_export) applique les règles de licence du format choisi.
+- [`params_set`](/fr/cli/reference/planification#params_set) refuse le mode d'altitude `IAGL` sur un avion quand la licence ne l'autorise pas. Tout le lot de paramètres est alors refusé.
+
+## Sécurité
+
+- Le serveur n'écoute que sur `127.0.0.1`. Il n'est pas joignable depuis le réseau.
+- Chaque requête porte un jeton d'accès. `helix-cli` le lit dans le fichier que publie l'application : vous n'avez jamais à le manipuler.
+- Les requêtes qui annoncent une origine non locale sont refusées.
+
+## Étape suivante
+
+Installez la commande : [Installation](/fr/cli/demarrage/installation).

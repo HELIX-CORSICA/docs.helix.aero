@@ -1,0 +1,134 @@
+---
+title: "Sorties et codes de retour"
+description: "Où vont le résultat et les erreurs, ce que signifient les codes de sortie, les codes d'erreur de l'application et l'usage de helix-cli dans un script."
+icon: "list-check"
+---
+
+`helix-cli` est conçu pour être utilisé par des programmes autant que par des personnes. Le résultat va à un endroit, les erreurs à un autre, et le code de sortie dit à un script ce qui s'est passé.
+
+## Le résultat : du JSON sur la sortie standard
+
+Quand une commande réussit, elle affiche **le résultat de l'outil en JSON, sur une seule ligne**, sur la sortie standard (`stdout`). Rien d'autre n'y est écrit.
+
+```sh
+helix-cli flights_list
+```
+
+Le résultat est l'objet de l'outil lui-même, sans enveloppe : ses champs sont décrits outil par outil dans la [référence des commandes](/fr/cli/reference/missions-et-vols).
+
+Ajoutez `--pretty` pour obtenir un JSON indenté et lisible :
+
+```sh
+helix-cli flights_list --pretty
+```
+
+Deux commandes font exception : `helix-cli tools` affiche une liste en texte, et `helix-cli help <outil>` affiche toujours un JSON indenté.
+
+## Les erreurs : `CODE: message` sur la sortie d'erreur
+
+Quand une commande échoue, rien n'est écrit sur `stdout`. L'erreur va sur la sortie d'erreur (`stderr`), sous la forme :
+
+```text
+NOT_FOUND: élément inconnu: abc123
+```
+
+La partie avant les deux-points est un **code stable**. Un script peut s'y fier. Le message après les deux-points est rédigé en français et s'adresse à une personne. Ne l'analysez pas.
+
+## Codes de sortie
+
+| Code | Signification | Cause typique |
+|---|---|---|
+| `0` | Succès | Le résultat est sur `stdout`. |
+| `1` | L'outil a signalé une erreur | Élément inconnu, géométrie invalide, calcul en échec, délai dépassé… Le `CODE: message` est sur `stderr`. |
+| `2` | Erreur d'usage | Outil inconnu, argument manquant ou invalide, JSON mal formé. La commande n'a pas contacté l'application. |
+| `3` | Application injoignable | Le Flight Planner n'est pas lancé, son serveur est arrêté, ou la licence n'inclut ni la ligne de commande ni le MCP. |
+| `4` | Licence | `LICENSE_REQUIRED` : votre licence n'inclut pas la ligne de commande, ou le droit que demande cette opération. |
+
+## Codes d'erreur de l'application
+
+Quand l'application répond par une erreur, le code est l'un des suivants :
+
+| Code | Code de sortie | Signification |
+|---|---|---|
+| `LICENSE_REQUIRED` | 4 | Un droit de licence manque. Exemple : `LICENSE_REQUIRED: add-on addon.cli requis par la licence`. |
+| `UNAUTHORIZED` | 1 | Le jeton d'accès est absent ou invalide (`jeton absent ou invalide`). |
+| `UNKNOWN_TOOL` | 1 | L'application ne connaît pas cet outil. |
+| `INVALID_ARGS` | 1 | Un argument est rejeté par l'application (géométrie invalide, nom vide, paramètre inconnu…). Le même code avec le code de sortie 2 signifie que `helix-cli` a repéré l'erreur avant d'envoyer quoi que ce soit. |
+| `NOT_FOUND` | 1 | Un élément, un vol ou une mission n'existe pas, ou il n'y a pas d'élément actif, ou pas de plan calculé à lire. |
+| `APP_TIMEOUT` | 1 | L'application n'a pas répondu à temps (`pas de réponse après … s`). |
+| `APP_ERROR` | 1 | L'application a essayé et a échoué. Le message donne la raison (erreur de calcul, échec d'export…). |
+| `UNAVAILABLE` | 1 | L'application démarre encore (`l'application démarre encore`). Réessayez dans un instant. |
+
+Le temps d'attente maximal dépend de l'outil : 5 à 20 secondes pour la plupart, 30 secondes pour la création ou l'ouverture d'une mission et les imports, 60 secondes pour [`mission_export`](/fr/cli/reference/import-et-export#mission_export), et jusqu'à 180 secondes pour [`plan_compute`](/fr/cli/reference/planification#plan_compute) et [`qc_compute`](/fr/cli/reference/controle-qualite#qc_compute).
+
+<Note>
+Si l'application est trop sollicitée (un serveur qui traite déjà 16 connexions), la CLI peut afficher `HTTP:` sans détail et se terminer avec le code 1. Relancez la commande après quelques secondes.
+</Note>
+
+## Les commandes attendent la fin
+
+Une commande rend la main quand l'opération est terminée :
+
+- `plan_compute` attend la fin du calcul, puis affiche le résumé du plan.
+- `qc_compute` attend la fin du contrôle qualité.
+- `mission_export` rend la main une fois le fichier écrit, et signale l'erreur réelle s'il n'a pas pu l'être.
+- Chaque modification est enregistrée par l'application dès que la commande répond.
+
+Un script peut donc enchaîner les commandes sans aucune pause.
+
+## Utilisation dans un script
+
+<Tabs>
+  <Tab title="bash">
+    ```sh
+    #!/bin/sh
+    set -e   # s'arrêter à la première commande qui échoue
+
+    # lire un champ du résultat avec jq
+    id=$(helix-cli missions_list | jq -r '.missions[0].id')
+    helix-cli mission_load --missionId "$id" > /dev/null
+
+    # traiter une erreur d'après son code de sortie
+    code=0
+    helix-cli plan_compute > plan.json 2> erreur.txt || code=$?
+    if [ "$code" -ne 0 ]; then
+      case $code in
+        3) echo "Lancez le Flight Planner et connectez-vous" ;;
+        4) echo "Licence : $(cat erreur.txt)" ;;
+        *) echo "Calcul en échec : $(cat erreur.txt)" ;;
+      esac
+      exit "$code"
+    fi
+    ```
+  </Tab>
+  <Tab title="PowerShell">
+    ```powershell
+    $m = helix-cli missions_list | ConvertFrom-Json
+    $id = $m.missions[0].id
+    helix-cli mission_load --missionId $id | Out-Null
+
+    $plan = helix-cli plan_compute 2> erreur.txt
+    if ($LASTEXITCODE -ne 0) {
+        switch ($LASTEXITCODE) {
+            3 { Write-Host "Lancez le Flight Planner et connectez-vous" }
+            4 { Write-Host "Licence : $(Get-Content erreur.txt)" }
+            default { Write-Host "Calcul en échec : $(Get-Content erreur.txt)" }
+        }
+        exit $LASTEXITCODE
+    }
+    $resume = $plan | ConvertFrom-Json
+    $resume.plan.distanceM
+    ```
+  </Tab>
+</Tabs>
+
+Quelques bonnes habitudes :
+
+- Testez le code de sortie, pas le texte du message.
+- Gardez `stdout` et `stderr` séparés : le résultat est sur l'un, le diagnostic sur l'autre.
+- Ne lancez pas deux scripts en même temps sur la même application. Les outils agissent sur le vol actif et l'élément actif, qui sont partagés.
+
+## Voir aussi
+
+- [Arguments](/fr/cli/utilisation/arguments)
+- [Dépannage](/fr/cli/aide/depannage)

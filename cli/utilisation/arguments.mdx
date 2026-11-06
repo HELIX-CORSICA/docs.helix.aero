@@ -1,0 +1,134 @@
+---
+title: "Arguments"
+description: "How to write the arguments of a command: values, booleans, nested keys, lists of points, repeated options and JSON objects."
+icon: "code"
+---
+
+The arguments of a tool are written as `--key value` pairs. `helix-cli` converts each value to the type that the tool expects, according to the schema shown by `helix-cli help <tool>`. You therefore never need to say whether a value is a number or a text.
+
+## Basic syntax
+
+```sh
+helix-cli mission_load --missionId abc123
+helix-cli terrain_at --lat 42.30 --lon 9.15
+```
+
+You can also attach the value to the key with an equal sign:
+
+```sh
+helix-cli terrain_at --lat=42.30 --lon=9.15
+```
+
+The order of the arguments does not matter. The option `--pretty` can go anywhere and is not an argument of the tool.
+
+## Types
+
+| Type in the schema | How to write it | Example |
+|---|---|---|
+| `string` | The text as is. Quote it if it contains spaces. | `--name "Corte, lot 3"` |
+| `number` | A number with a **decimal point**. Negative numbers are accepted. | `--lon -73.5` |
+| `integer` | A whole number. | `--vertexIndex 2` |
+| `boolean` | `true` or `false`. The key alone means `true`. | `--params.doubleGrid` |
+| `enum` | One of the allowed values, with the exact spelling and case. | `--kind polygon` |
+
+Values are typed from the schema. For example, `--name 2024` sends the text `2024`, because `name` is a string.
+
+## Nested keys
+
+Some arguments are objects. Reach their fields with a dot:
+
+```sh
+helix-cli params_set --params.altitudeM 120 --params.altitudeMode AGL --params.doubleGrid
+```
+
+Here `params` is an object with three fields. The key alone, `--params.doubleGrid`, sets that boolean to `true`. To set it to `false`, write `--params.doubleGrid false`.
+
+The same notation works for the target of the camera:
+
+```sh
+helix-cli camera_set --lat 42.30 --lon 9.15 --height 400 --target.lat 42.302 --target.lon 9.153
+```
+
+## Lists of points
+
+The arguments that expect a list of `lat`, `lon` points (`points` of `element_add`, `vertices` of `obstruction_add`) accept a compact form: the points separated by spaces, each point written `lat,lon`.
+
+```sh
+helix-cli element_add --kind polygon --points "42.3000,9.1500 42.3000,9.1560 42.3040,9.1560 42.3040,9.1500"
+```
+
+- Latitude first, longitude second, separated by a comma, **without space** around the comma.
+- Points are separated by a space or a semicolon (`;`).
+- The decimal separator is the point. A comma is always the separator between latitude and longitude.
+- Coordinates are in decimal degrees WGS84.
+
+You can also pass the list as JSON, as soon as the value starts with `[`:
+
+```sh
+helix-cli element_add --kind polygon --points '[{"lat":42.30,"lon":9.15},{"lat":42.30,"lon":9.156},{"lat":42.304,"lon":9.156}]'
+```
+
+## Lists of texts: repeat the option
+
+For an argument that expects a list of texts, repeat the option once per value:
+
+```sh
+helix-cli kml_import --paths /data/zone-nord.kml --paths /data/zone-sud.kml
+helix-cli element_delete --elementIds <id1> --elementIds <id2>
+```
+
+A single occurrence gives a list of one element. You can also pass the list as JSON, as soon as the value starts with `[`:
+
+```sh
+helix-cli kml_import --paths '["/data/zone-nord.kml","/data/zone-sud.kml"]'
+```
+
+## Objects and whole JSON
+
+An object argument can be written in JSON in one go:
+
+```sh
+helix-cli params_set --params '{"altitudeM":120,"overlapFrontPct":80,"doubleGrid":true}'
+```
+
+You can also give all the arguments of the tool as a single JSON object. It must then be the **first** argument:
+
+```sh
+helix-cli params_set '{"params":{"altitudeM":120,"overlapFrontPct":80}}'
+```
+
+<Warning>
+In a terminal, the double quotes of a JSON text may be altered before reaching `helix-cli`, depending on the shell and its version (Windows PowerShell is the usual case). If you get `JSON invalide`, switch to the `--key value` form, which avoids nested quotes, or write the JSON in a file and read it into a variable.
+</Warning>
+
+## File paths
+
+Tools that read or write a file (`kml_import`, `obstructions_import`, `mission_export`) receive a **path that the application interprets**, not `helix-cli`. Always give an **absolute path**, on a disk that the application can reach:
+
+```sh
+helix-cli mission_export --format kmz --path "C:/Missions/corte-lot3.kmz"
+```
+
+On Windows, forward slashes (`C:/Missions/...`) are the easiest way to avoid escaping the backslashes.
+
+## Argument errors
+
+When an argument is wrong, the command prints a message on the error output and ends with **exit code 2**, without contacting the application:
+
+| Message | Cause |
+|---|---|
+| `INVALID_ARGS: arguments requis: missionId` | A mandatory argument is missing. |
+| `INVALID_ARGS: argument inconnu: foo` | The tool has no argument named `foo`. |
+| `INVALID_ARGS: kind: valeur hors de …` | The value is not one of the allowed ones (`enum`). |
+| `--lat : nombre attendu, reçu « abc »` | The value is not a number. The same form exists for `entier attendu` and `true\|false attendu`. |
+| `--lat : valeur manquante` | The key is the last word of the command and has no value. |
+| `argument inattendu « x » (forme --cle valeur)` | A word that is not a `--key` was found where a key was expected. |
+| `point « 42.3 » : lat,lon attendu` | A point is not written `lat,lon`. |
+| `JSON invalide : …` or `objet JSON attendu` | The whole JSON passed as first argument is not a valid object. |
+
+These messages are written in French, whatever the language of the application.
+
+## See also
+
+- [Output and exit codes](/cli/utilisation/sorties-et-codes-de-retour)
+- [Command reference](/cli/reference/missions-et-vols)

@@ -1,0 +1,212 @@
+---
+title: "Exemples"
+description: "Quatre scénarios complets avec les vraies commandes : créer une mission et l'exporter, importer plusieurs zones, comparer deux réglages, sauvegarder toutes vos missions."
+icon: "route"
+---
+
+Ces scénarios enchaînent les outils du début à la fin. Chaque commande est expliquée dans la [référence des commandes](/fr/cli/reference/missions-et-vols).
+
+Avant de commencer :
+
+- Le Flight Planner est lancé et vous êtes connecté.
+- Remplacez les chemins de fichiers par les vôtres. Ils doivent être **absolus**, car l'application lit et écrit les fichiers. Voir [Arguments](/fr/cli/utilisation/arguments#chemins-de-fichiers).
+- Les noms d'appareils et de capteurs dépendent de votre catalogue. Vérifiez-les d'abord avec `helix-cli equipment_list --pretty`.
+
+## Scénario 1 : d'une mission vide à un fichier KMZ
+
+Vous créez une mission, dessinez une zone, choisissez l'appareil et le capteur, réglez les paramètres, calculez le plan, contrôlez la qualité et exportez le fichier pour l'appareil.
+
+<Tabs>
+  <Tab title="bash">
+    Ce script a besoin de [jq](https://jqlang.github.io/jq/) pour lire les identifiants.
+
+    ```sh
+    #!/bin/sh
+    set -e
+    OUT="C:/Missions/corte-lot3.kmz"      # chemin absolu du fichier à écrire
+
+    # 1. Créer la mission (elle s'ouvre dans l'application)
+    helix-cli mission_create --name "Corte, lot 3"
+
+    # 2. Ajouter la zone. Un vol est créé s'il n'y en a pas.
+    ZONE=$(helix-cli element_add --kind polygon \
+      --points "42.3000,9.1500 42.3000,9.1560 42.3040,9.1560 42.3040,9.1500" | jq -r '.elementId')
+    helix-cli element_rename --elementId "$ZONE" --name "Zone principale"
+
+    # 3. Choisir l'appareil et le capteur, après avoir ajouté la zone
+    AIRCRAFT=$(helix-cli equipment_list --kind aircraft --query "Matrice 4E" | jq -r '.aircraft[0].id')
+    SENSOR=$(helix-cli equipment_list --kind sensor --query "Matrice 4E" | jq -r '.sensors[0].id')
+    helix-cli flight_configure --name "Vol 1" --aircraftId "$AIRCRAFT" --sensorId "$SENSOR"
+
+    # 4. Régler les paramètres de l'élément actif (la zone qui vient d'être ajoutée)
+    helix-cli params_set --params.altitudeMode AGL --params.altitudeM 100 \
+      --params.overlapFrontPct 80 --params.overlapSidePct 70
+
+    # 5. Calculer le plan et lire le résumé
+    helix-cli plan_compute --pretty
+
+    # 6. Lancer le contrôle qualité et afficher le GSD sur le globe
+    helix-cli qc_compute --pretty
+    helix-cli qc_view --scale flight
+    helix-cli qc_view --metric gsd
+    helix-cli camera_frame
+
+    # 7. Exporter
+    helix-cli mission_export --format kmz --path "$OUT"
+    ```
+  </Tab>
+  <Tab title="PowerShell">
+    ```powershell
+    $out = "C:/Missions/corte-lot3.kmz"      # chemin absolu du fichier à écrire
+
+    # Une fonction qui arrête le script à la première erreur
+    function hx {
+        $r = & helix-cli @args
+        if ($LASTEXITCODE -ne 0) { throw "helix-cli a échoué (code de sortie $LASTEXITCODE)" }
+        $r
+    }
+
+    # 1. Créer la mission (elle s'ouvre dans l'application)
+    hx mission_create --name "Corte, lot 3"
+
+    # 2. Ajouter la zone. Un vol est créé s'il n'y en a pas.
+    $zone = (hx element_add --kind polygon --points "42.3000,9.1500 42.3000,9.1560 42.3040,9.1560 42.3040,9.1500" | ConvertFrom-Json).elementId
+    hx element_rename --elementId $zone --name "Zone principale"
+
+    # 3. Choisir l'appareil et le capteur, après avoir ajouté la zone
+    $aircraft = (hx equipment_list --kind aircraft --query "Matrice 4E" | ConvertFrom-Json).aircraft[0].id
+    $sensor = (hx equipment_list --kind sensor --query "Matrice 4E" | ConvertFrom-Json).sensors[0].id
+    hx flight_configure --name "Vol 1" --aircraftId $aircraft --sensorId $sensor
+
+    # 4. Régler les paramètres de l'élément actif (la zone qui vient d'être ajoutée)
+    hx params_set --params.altitudeMode AGL --params.altitudeM 100 --params.overlapFrontPct 80 --params.overlapSidePct 70
+
+    # 5. Calculer le plan et lire le résumé
+    hx plan_compute --pretty
+
+    # 6. Lancer le contrôle qualité et afficher le GSD sur le globe
+    hx qc_compute --pretty
+    hx qc_view --scale flight
+    hx qc_view --metric gsd
+    hx camera_frame
+
+    # 7. Exporter
+    hx mission_export --format kmz --path $out
+    ```
+  </Tab>
+</Tabs>
+
+Ce qu'il faut vérifier :
+
+- Après l'étape 5, le `plan` du résultat donne le nombre de bandes, la distance en mètres, la durée en secondes et le nombre de photos.
+- Après l'étape 6, le `status` du résultat de `qc_compute` vaut `AJour` quand le contrôle est à jour.
+- L'export KMZ exige un plan calculé et une licence qui l'autorise. Sinon la commande se termine par une erreur explicite (voir [Dépannage](/fr/cli/aide/depannage)).
+
+## Scénario 2 : importer plusieurs zones et les calculer une à une
+
+Vous avez deux fichiers KML, un par secteur, et vous voulez un plan pour chaque zone. Importer plusieurs fichiers à la fois exige le **plan Pro**.
+
+<Steps>
+  <Step title="Créer la mission et importer les fichiers">
+    ```sh
+    helix-cli mission_create --name "Secteurs nord et sud"
+    helix-cli kml_import --paths "C:/Data/zone-nord.kml" --paths "C:/Data/zone-sud.kml"
+    ```
+
+    Le résultat donne les `elementIds` des zones créées, le compte `skipped` (les entités qui ne sont pas des polygones valides) et le nombre de `files` lus. Chaque zone porte le nom du polygone de son fichier.
+  </Step>
+  <Step title="Choisir l'appareil et le capteur">
+    Faites-le comme à l'étape 3 du scénario 1, **après** l'import : le capteur est appliqué aux zones qui existent à ce moment.
+  </Step>
+  <Step title="Régler et calculer chaque zone">
+    <Tabs>
+      <Tab title="bash">
+        ```sh
+        for id in $(helix-cli mission_geometry | jq -r '.elements[].id'); do
+          helix-cli element_select --elementId "$id" > /dev/null
+          helix-cli params_set --params.altitudeM 100 --params.overlapFrontPct 80 --params.overlapSidePct 70 > /dev/null
+          helix-cli plan_compute | jq -c '{elementId, distanceM: .plan.distanceM, timeS: .plan.timeS}'
+        done
+        ```
+      </Tab>
+      <Tab title="PowerShell">
+        ```powershell
+        $geo = helix-cli mission_geometry | ConvertFrom-Json
+        foreach ($el in $geo.elements) {
+            helix-cli element_select --elementId $el.id | Out-Null
+            helix-cli params_set --params.altitudeM 100 --params.overlapFrontPct 80 --params.overlapSidePct 70 | Out-Null
+            $r = helix-cli plan_compute | ConvertFrom-Json
+            "{0} : {1} m, {2} s" -f $el.id, $r.plan.distanceM, $r.plan.timeS
+        }
+        ```
+      </Tab>
+    </Tabs>
+  </Step>
+  <Step title="Annuler l'import si besoin">
+    Toutes les zones de l'import forment une seule étape de l'historique. Pour les annuler, lancez une fois `helix-cli history --action undo`.
+  </Step>
+</Steps>
+
+## Scénario 3 : essayer une variante et revenir en arrière
+
+Vous voulez savoir ce que coûte un recouvrement latéral plus élevé en distance et en durée, sans perdre votre premier réglage.
+
+```sh
+# Ouvrir la mission et sélectionner l'élément
+helix-cli mission_load --missionId <missionId>
+helix-cli element_select --elementId <elementId>
+
+# Référence : le plan tel qu'il est maintenant
+helix-cli plan_get --pretty
+
+# Variante : plus de recouvrement latéral, puis calcul
+helix-cli params_set --params.overlapSidePct 75
+helix-cli plan_compute --pretty
+
+# Retour : annuler la modification, vérifier, recalculer
+helix-cli history --action undo
+helix-cli params_get --pretty
+helix-cli plan_compute --pretty
+```
+
+Comparez les champs `distanceM`, `timeS` et `frames` des deux résumés. Après `history`, `applied` vaut `true` si une modification a été annulée. Lisez `params_get` pour vous assurer que le paramètre a la valeur attendue avant de recalculer.
+
+## Scénario 4 : sauvegarder toutes vos missions en fichiers .helix
+
+Le script ouvre chaque mission enregistrée et l'exporte au format `.helix`. Le dossier doit exister. Notez que chaque `mission_load` ouvre une mission différente dans l'application : la dernière reste ouverte à la fin.
+
+<Tabs>
+  <Tab title="bash">
+    ```sh
+    #!/bin/sh
+    set -e
+    OUT="C:/Backups/helix"      # dossier existant, chemin absolu
+
+    for id in $(helix-cli missions_list | jq -r '.missions[].id'); do
+      helix-cli mission_load --missionId "$id" > /dev/null
+      helix-cli mission_export --format helix --path "$OUT/$id.helix" > /dev/null
+      echo "exporté : $id"
+    done
+    ```
+  </Tab>
+  <Tab title="PowerShell">
+    ```powershell
+    $out = "C:/Backups/helix"      # dossier existant, chemin absolu
+
+    $missions = (helix-cli missions_list | ConvertFrom-Json).missions
+    foreach ($m in $missions) {
+        helix-cli mission_load --missionId $m.id | Out-Null
+        if ($LASTEXITCODE -ne 0) { Write-Warning "ouverture impossible : $($m.name)"; continue }
+        helix-cli mission_export --format helix --path "$out/$($m.id).helix" | Out-Null
+        if ($LASTEXITCODE -eq 0) { "exporté : $($m.name)" }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+Le format `helix` écrit toute la mission. Si votre licence ne l'autorise pas, la commande se termine avec `LICENSE_REQUIRED` et le code de sortie 4.
+
+## Voir aussi
+
+- [Sorties et codes de retour](/fr/cli/utilisation/sorties-et-codes-de-retour)
+- [Dépannage](/fr/cli/aide/depannage)

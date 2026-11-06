@@ -1,0 +1,91 @@
+---
+title: "Installation"
+description: "Obtenir helix-cli sous Windows (avec l'installeur) ou sous macOS (avec le bouton Installer des Réglages), puis vérifier qu'il fonctionne."
+icon: "download"
+---
+
+`helix-cli` est livré **avec le Flight Planner** : il n'y a rien à télécharger à part. Ce qui change d'un système à l'autre, c'est la façon dont la commande devient disponible dans votre terminal.
+
+<Tabs>
+  <Tab title="Windows">
+    L'installeur du Flight Planner inclut la commande : il copie `helix-cli.exe` dans un sous-dossier `bin` du dossier d'installation.
+
+    Par défaut, le dossier d'installation est `%LOCALAPPDATA%\Programs\Helix Flight Planner`. La commande se trouve donc ici :
+
+    ```text
+    %LOCALAPPDATA%\Programs\Helix Flight Planner\bin\helix-cli.exe
+    ```
+
+    L'installeur ajoute aussi ce dossier `bin`, et lui seul, au `PATH` de votre compte utilisateur. Le dossier de l'application elle-même n'est pas ajouté. Le désinstalleur retire l'entrée du `PATH` et la commande.
+
+    <Steps>
+      <Step title="Installer ou mettre à jour le Flight Planner">
+        Lancez l'installeur. Si l'application est déjà installée, installer la nouvelle version met aussi la commande en place.
+      </Step>
+      <Step title="Ouvrir un nouveau terminal">
+        Un terminal déjà ouvert ne voit pas la modification du `PATH`. Ouvrez une nouvelle fenêtre PowerShell ou Invite de commandes.
+      </Step>
+      <Step title="Vérifier la commande">
+        Lancez `helix-cli --help`. Le texte d'utilisation s'affiche.
+      </Step>
+    </Steps>
+  </Tab>
+  <Tab title="macOS">
+    Sous macOS, la commande est à l'intérieur de l'application, et vous la rendez disponible vous-même, une fois, depuis les Réglages.
+
+    <Steps>
+      <Step title="Ouvrir les Réglages">
+        Dans le Flight Planner, ouvrez les **Réglages** et choisissez la section **Serveur**.
+      </Step>
+      <Step title="Repérer la ligne Flight Planner CLI">
+        Dans la carte **Serveur MCP (agent IA)**, cherchez la ligne **Flight Planner CLI**. Elle n'apparaît que si votre licence inclut la ligne de commande, et seulement quand vous lancez l'application installée.
+      </Step>
+      <Step title="Cliquer sur Installer">
+        Cliquez sur **Installer**. Le bouton crée le lien `/usr/local/bin/helix-cli`. Si votre compte ne peut pas modifier le dossier `/usr/local/bin`, macOS demande une fois le mot de passe administrateur, avec le texte **Flight Planner CLI veut s'installer sur ce Mac.**
+      </Step>
+      <Step title="Vérifier la ligne">
+        Une fois le lien créé, la ligne affiche **Installée**. En cas d'erreur, elle s'affiche sous le bouton.
+      </Step>
+    </Steps>
+
+    Quelques règles à connaître :
+
+    - L'application ne demande jamais ce mot de passe au lancement. Seul le bouton **Installer** le déclenche.
+    - Si un fichier ordinaire se trouve déjà à l'emplacement `/usr/local/bin/helix-cli`, il n'est jamais remplacé.
+    - Si le lien pointe vers une application déplacée ou supprimée, **Installer** propose de le recréer.
+  </Tab>
+</Tabs>
+
+## Vérifier que ça fonctionne
+
+Avec le Flight Planner lancé et connecté, exécutez :
+
+```sh
+helix-cli status
+```
+
+La commande répond par une ligne de JSON, par exemple :
+
+```json
+{"ok":true,"name":"helix-flight-planner","version":"<version>"}
+```
+
+`version` est la version de l'application qui a répondu. Cette réponse prouve que `helix-cli` a trouvé l'application et sait lui parler.
+
+Pour vérifier aussi la licence, faites un vrai appel :
+
+```sh
+helix-cli app_status --pretty
+```
+
+- Si vous obtenez un objet JSON décrivant l'état du planificateur, tout est en place.
+- Si vous obtenez `LICENSE_REQUIRED: add-on addon.cli requis par la licence`, votre licence n'inclut pas la ligne de commande. Voir [Prérequis et licence](/fr/cli/demarrage/prerequis-et-licence).
+- Si vous obtenez un message qui commence par `AERO Flight Planner n'est pas lancé`, lancez l'application et connectez-vous. Voir [Dépannage](/fr/cli/aide/depannage).
+
+<Tip>
+Si le terminal répond que `helix-cli` n'est pas une commande connue, ouvrez une nouvelle fenêtre de terminal (Windows) ou vérifiez que la ligne **Flight Planner CLI** affiche **Installée** (macOS). Sous Windows, vous pouvez aussi saisir le chemin complet de `helix-cli.exe`.
+</Tip>
+
+## Étape suivante
+
+Faites vos premiers appels : [Premières commandes](/fr/cli/demarrage/premieres-commandes).
