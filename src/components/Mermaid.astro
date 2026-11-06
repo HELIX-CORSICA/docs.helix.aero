@@ -30,6 +30,9 @@
         const figure = document.createElement('div');
         figure.className = 'hx-mermaid';
         figure.innerHTML = svg;
+        // Expressive Code pose sa feuille de style dans le premier bloc de la page : si c'est ce diagramme, la retirer
+        // enlèverait la mise en forme de tous les blocs de code suivants (défilement, bouton copier), d'où la page trop large sur téléphone.
+        bloc.querySelectorAll('link[rel="stylesheet"]').forEach((feuille) => document.head.append(feuille));
         bloc.replaceWith(figure);
       } catch {
         echec(bloc);
